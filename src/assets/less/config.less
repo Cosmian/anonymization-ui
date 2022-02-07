@@ -1,0 +1,207 @@
+/*
+* CUSTOM STYLES
+*/
+
+h1,
+h1.ant-typography,
+h2,
+h2.ant-typography,
+h3,
+h3.ant-typography,
+h4,
+h4.ant-typography,
+h5,
+h5.ant-typography,
+h6,
+h6.ant-typography {
+  font-family: "Open Sans", sans-serif;
+  font-weight: bold;
+  font-weight: 700;
+  margin-bottom: 0.8em;
+}
+
+h1,
+h1.ant-typography {
+  font-size: 28px;
+  line-height: 32px;
+}
+h2,
+h2.ant-typography {
+  font-size: 23px;
+  line-height: 28px;
+}
+h3,
+h3.ant-typography {
+  font-size: 20px;
+  line-height: 23px;
+}
+h4,
+h4.ant-typography {
+  font-size: 18px;
+}
+h5,
+h5.ant-typography {
+  font-size: 16px;
+}
+h6,
+h6.ant-typography {
+  font-size: 16px;
+}
+
+p {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 300;
+}
+
+.strong {
+  font-weight: 600;
+}
+
+@primary-color: @indigo; // primary color for all components
+
+.success {
+  color: @success;
+}
+.danger {
+  color: @danger;
+}
+.warning {
+  color: @warning;
+}
+.disabled {
+  color: @grey3;
+}
+.dark {
+  color: @dark;
+}
+.grey1 {
+  color: @grey1;
+}
+.grey2,
+.text-gray {
+  color: @grey2;
+}
+.grey3,
+.disabled {
+  color: @grey3;
+}
+.grey4 {
+  color: @grey4;
+}
+.grey5 {
+  color: @grey5;
+}
+
+.state-picto {
+  margin-right: 0.5em;
+  margin-bottom: -0.1em;
+}
+
+.ant-form-large .ant-form-item-label > label {
+  height: auto;
+  font-size: 1.25em;
+  .option {
+    font-size: 0.85em;
+  }
+}
+
+.button-radio .ant-radio-wrapper,
+.button-radio .ant-radio-wrapper .ant-radio-wrapper-checked {
+  padding: 1em;
+  background: #f2f2f2;
+  border-radius: 2px;
+}
+.button-radio .ant-radio-wrapper-checked {
+  background: #e0e0e0;
+}
+.flex-end {
+  display: flex;
+  justify-content: flex-end;
+}
+.flex-end-md {
+  @media screen and (min-width: 768px) {
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+// Table layout
+.last-right {
+  table td:last-child {
+    text-align: right;
+  }
+}
+.ant-table-cell {
+  .h4 {
+    font-weight: 600;
+  }
+}
+
+// text with icon in table
+.text-with-icon {
+  display: flex;
+  align-items: center;
+}
+
+// Misc
+.d-none {
+  display: none;
+}
+
+// Ant form (optional)
+.ant-form-item-optional {
+  font-size: 0.75em;
+  margin-top: 0.15em;
+}
+
+// Ant buttons
+.ant-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ant-btn-primary {
+  background: @indigo;
+  border-color: @indigo;
+}
+
+.btn-outline-csm {
+  border-color: @indigo;
+  color: @indigo;
+}
+
+// override ant style
+.ant-form-item-label > label {
+  font-size: 1.25em;
+  color: @dark;
+}
+.ant-alert-success {
+  background-color: #f6ffed;
+}
+
+// Modal
+.ant-modal .ant-modal-content {
+  .ant-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+  }
+  .ant-modal-footer {
+    border: none;
+  }
+  .ant-modal-body + .ant-modal-footer {
+    margin-top: -16px;
+  }
+}
+
+// Skeleton
+.skeleton-margin {
+  margin: 30px;
+}
+.ant-skeleton.skeleton-margin {
+  width: 90%;
+}
+
+// For debug only. Please keep this commented
+// .ant-dropdown-hidden {
+//   display: block;
+// }

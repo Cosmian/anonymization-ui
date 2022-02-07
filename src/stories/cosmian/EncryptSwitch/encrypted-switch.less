@@ -1,0 +1,32 @@
+@import "../../../assets/less/variables.less";
+
+.encrypted-switch {
+  display: flex;
+  align-items: center;
+  .lock {
+    color: #fff;
+    font-size: 20px;
+    transition: @transition-all;
+  }
+  .muted {
+    color: #6f6be2;
+  }
+  button {
+    margin: 0 10px;
+  }
+  .ant-switch {
+    background-color: #6f6be2;
+  }
+  .ant-switch-checked {
+    background-color: @peach;
+  }
+  .ant-switch-handle {
+    position: absolute;
+    top: 3px;
+    width: 16px;
+    height: 16px;
+  }
+  .ant-switch-handle::before {
+    box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.35);
+  }
+}
