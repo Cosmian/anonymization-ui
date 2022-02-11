@@ -10,7 +10,7 @@
 
 # production
 /build
-orchestrator_ui.tar.gz
+anonymization_ui.tar.gz
 
 # misc
 .env

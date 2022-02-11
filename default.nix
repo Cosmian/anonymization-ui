@@ -8,7 +8,7 @@ let
   ];
 in
 pkgs.stdenv.mkDerivation {
-  name = "orchestrator-ui";
+  name = "anonymization_ui";
   buildInputs = nixPackages;
   postInstall =
     ''

@@ -1,6 +1,5 @@
 variables:
-  ORCHESTRATOR_UI_IMAGE_NAME: gitlab.cosmian.com:5000/core/orchestrator_ui:latest
-  COSMIAN_STORYBOOK_IMAGE_NAME: gitlab.cosmian.com:5000/core/cosmian_storybook:latest
+  ANONYMIZATION_UI_IMAGE_NAME: gitlab.cosmian.com:5000/core/anonymization_ui:latest
 
 stages:
   - build
@@ -10,46 +9,21 @@ stages:
 build_and_push:
   stage: build
   tags: [shell]
-  only: [master, develop, tags]
+  only: [main, develop, tags]
   cache: {}
   before_script:
-    - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.cosmian.com/core/orchestrator_ui.git
-    - cd orchestrator_ui
+    - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.cosmian.com/core/anonymization_ui.git
+    - cd anonymization_ui
   script:
     - ./scripts/build_push.sh
 
 test_e2e:
   stage: test
   tags: [shell]
-  only: [master, develop, tags, merge_requests]
+  only: [main, develop, tags, merge_requests]
   before_script:
-    - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.cosmian.com/core/orchestrator_ui.git
-    - cd orchestrator_ui
+    - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.cosmian.com/core/anonymization_ui.git
+    - cd anonymization_ui
     - git checkout ${CI_COMMIT_REF_NAME}
   script:
     - ./scripts/build_test_e2e.sh
-
-deploy:
-  stage: deploy
-  only: [master, develop, tags]
-  tags: [shell]
-  cache: {}
-  before_script:
-    - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.cosmian.com/core/orchestrator_ui.git
-    - cd orchestrator_ui
-  script:
-    - ./scripts/install_all_players.sh
-  when: manual
-
-### DESIGN SYSTEM
-
-build_deploy_designsystem:
-  stage: deploy
-  only: [master, develop, tags]
-  tags: [shell]
-  cache: {}
-  before_script:
-    - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.cosmian.com/core/orchestrator_ui.git
-    - cd orchestrator_ui
-  script:
-    - ./scripts/build_push_design_system.sh
