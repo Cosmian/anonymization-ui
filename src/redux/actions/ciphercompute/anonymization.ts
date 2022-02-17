@@ -67,7 +67,7 @@ export const getOneAnonymization = (anonymization_uuid: string): AppThunk => {
   }
 }
 
-export const updateAnonymization = (anonymization_to_update: Anonymization): AppThunk => {
+export const updateAnonymization = (anonymization_to_update: Anonymization): AppThunk<Promise<Anonymization>> => {
   return async (dispatch: Dispatch) => {
     let anonymizationList = (await localForage.getItem(LS_ANONYMIZATIONS)) as Anonymization[]
     if (!isEmpty(anonymizationList) && anonymizationList != null) {
@@ -82,6 +82,7 @@ export const updateAnonymization = (anonymization_to_update: Anonymization): App
       data: response,
       obj: anonymization_to_update,
     })
+    return last(response) as Anonymization
   }
 }
 export const deleteAnonymization = (anonymization_uuid: string): AppThunk => {
