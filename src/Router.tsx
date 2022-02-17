@@ -3,12 +3,12 @@ import { connect } from "react-redux"
 import { BrowserRouter, Navigate, Route, RouteProps, Routes } from "react-router-dom"
 import { BASE_PATH, link_config, paths_config } from "./configs/paths"
 import { FallbackAnimation } from "./stories/cosmian/FallbackAnimation/FallbackAnimation"
-import Layout from "./views/pages/ciphercompute/Layout"
+import Layout from "./views/pages/layout/Layout"
 
 // Route-based code splitting
-const Anonymization = lazy(() => import("./views/pages/ciphercompute/Anonymization"))
-const HelpPage = lazy(() => import("./views/pages/ciphercompute/anonymization/HelpPage"))
-const FourZeroFourPage = lazy(() => import("./views/pages/ciphercompute/404"))
+const Anonymization = lazy(() => import("./views/pages/Anonymization"))
+const HelpPage = lazy(() => import("./views/pages/anonymization/HelpPage"))
+const FourZeroFourPage = lazy(() => import("./views/pages/404"))
 
 interface RouteParameters extends RouteProps {
   fullLayout?: boolean

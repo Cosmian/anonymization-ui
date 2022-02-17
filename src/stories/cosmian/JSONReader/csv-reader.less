@@ -1,0 +1,36 @@
+@import "../../../assets/less/variables.less";
+
+.csv-dropzone {
+  width: 100%;
+  padding: 30px;
+  border: 1px dashed @grey2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  p {
+    text-align: center;
+  }
+  p:last-child {
+    margin-bottom: 0;
+    margin-block-end: 0;
+  }
+  // turn input into link
+  label {
+    color: @indigo;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  #file_input {
+    display: none;
+  }
+}
+.csv-dropzone.hover {
+  border: 1px solid @grey2;
+  background-color: rgba(@indigo, 0.02);
+}
+.csv-dropzone.error {
+  border: 1px solid @danger;
+  background-color: rgba(@danger, 0.02);
+}
