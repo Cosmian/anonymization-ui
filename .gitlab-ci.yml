@@ -33,7 +33,7 @@ deliver:
   tags: [shell]
   only: [tags]
   before_script:
-    # - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.cosmian.com/core/anonymization_ui.git
+    - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.cosmian.com/core/anonymization_ui.git
     - pushd anonymization_ui
     - git checkout ${CI_COMMIT_REF_NAME}
   script:
