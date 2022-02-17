@@ -1,10 +1,10 @@
 variables:
-  ANONYMIZATION_UI_IMAGE_NAME: gitlab.cosmian.com:5000/core/anonymization_ui:latest
+  ANONYMIZATION_UI_IMAGE_NAME: gitlab.cosmian.com:5000/core/anonymization_ui
 
 stages:
   - build
   - test
-  - deploy
+  - delivery
 
 build_and_push:
   stage: build
@@ -13,7 +13,7 @@ build_and_push:
   cache: {}
   before_script:
     - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.cosmian.com/core/anonymization_ui.git
-    - cd anonymization_ui
+    - pushd anonymization_ui
   script:
     - ./scripts/build_push.sh
 
@@ -23,7 +23,25 @@ test_e2e:
   only: [main, develop, tags, merge_requests]
   before_script:
     - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.cosmian.com/core/anonymization_ui.git
-    - cd anonymization_ui
+    - pushd anonymization_ui
     - git checkout ${CI_COMMIT_REF_NAME}
   script:
     - ./scripts/build_test_e2e.sh
+
+deliver:
+  stage: delivery
+  tags: [shell]
+  only: [tags]
+  before_script:
+    # - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.cosmian.com/core/anonymization_ui.git
+    - pushd anonymization_ui
+    - git checkout ${CI_COMMIT_REF_NAME}
+  script:
+    - docker build . -t "${ANONYMIZATION_UI_IMAGE_NAME}:${CI_COMMIT_TAG}"
+    - docker tag "${ANONYMIZATION_UI_IMAGE_NAME}:${CI_COMMIT_TAG}" cosmian/anonymization_ui:"${CI_COMMIT_TAG}"
+    - docker save cosmian/anonymization_ui:"${CI_COMMIT_TAG}" | pigz > cosmian_anonymization_ui_"${CI_COMMIT_TAG}".tar.gz
+    - docker push "${ANONYMIZATION_UI_IMAGE_NAME}:${CI_COMMIT_TAG}"
+    - docker login -u cosmian -p "${DOCKER_HUB_PWD}"
+    - docker tag cosmian/anonymization_ui:"${CI_COMMIT_TAG}" cosmian/anonymization_ui:latest
+    - docker push cosmian/anonymization_ui:"${CI_COMMIT_TAG}"
+    - docker push cosmian/anonymization_ui:latest

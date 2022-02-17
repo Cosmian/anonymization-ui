@@ -19,21 +19,12 @@ RUN npm install -g npm@8.2.0 && \
     npm --version
 RUN npm ci
 COPY . ./
-ENV REACT_APP_CIPHERCOMPUTE_API_URL=http://TOREPLACE
-ENV REACT_APP_ZEROTRUST_API_URL=http://TOREPLACE
 ENV NODE_ENV production
 RUN npm run build
-RUN npm run build-storybook -- -o /usr/src/app/storybook
-
-# Production environment for storybook
-FROM nginx:1.19-alpine as storybook
-COPY --from=build-deps /usr/src/app/storybook /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
 
 # Stage 2 - the production environment
 FROM nginx:1.19-alpine
 COPY --from=build-deps /usr/src/app/build /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
-CMD sed -i "s+http://TOREPLACE+${REACT_APP_API_URL}+g" /usr/share/nginx/html/static/js/* && nginx -g "daemon off;"
+CMD nginx -g "daemon off;"
