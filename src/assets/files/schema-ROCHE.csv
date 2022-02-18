@@ -1,0 +1,9 @@
+name,format,example
+Site ID,integer,19484340
+Patient Id,integer,202193
+Birth date,date,10 Jan 1960 13:31:18 GMT
+Weight (kg),float,60
+Height (cm),float,160
+Absence of invasive and in situ residues in the breast and in the lymph nodes,integer,2
+Classification Chevallier,integer,3
+Other type of care consumption,text,Le patient a reçu du Kadcyla
