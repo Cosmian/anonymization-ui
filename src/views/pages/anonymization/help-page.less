@@ -13,6 +13,9 @@
       margin-top: 1.5em;
       margin-bottom: 0.5em;
     }
+    p {
+      font-size: 16px;
+    }
     table {
       margin-bottom: 1.5em;
       tr {
@@ -21,9 +24,6 @@
         th {
           padding: 0.75em 1em;
           border-right: 1px @grey4 solid;
-        }
-        td {
-          //
         }
         th {
           background-color: @grey5;
@@ -36,11 +36,16 @@
       word-wrap: break-word;
       white-space: pre-wrap;
       word-break: normal;
-      font: 13px sans-serif;
+      font-size: 14px;
+      font-family: Courier, monospace;
       line-height: 1.5em;
       padding: 15px;
       background-color: @dark;
       color: @grey5;
+    }
+    pre::selection {
+      color: @dark;
+      background-color: @grey3 !important;
     }
   }
   img {
