@@ -42,6 +42,6 @@ deliver:
     - docker save cosmian/anonymization_ui:"${CI_COMMIT_TAG}" | pigz > cosmian_anonymization_ui_"${CI_COMMIT_TAG}".tar.gz
     - docker push "${ANONYMIZATION_UI_IMAGE_NAME}:${CI_COMMIT_TAG}"
     - docker login -u cosmian -p "${DOCKER_HUB_PWD}"
-    - docker tag cosmian/anonymization_ui:"${CI_COMMIT_TAG}" cosmian/anonymization_ui:latest
-    - docker push cosmian/anonymization_ui:"${CI_COMMIT_TAG}"
-    - docker push cosmian/anonymization_ui:latest
+    - docker image tag cosmian/anonymization_ui:"${CI_COMMIT_TAG}" cosmian/anonymization_ui:latest
+    - docker image push cosmian/anonymization_ui:"${CI_COMMIT_TAG}"
+    - docker image push cosmian/anonymization_ui:latest
