@@ -2,7 +2,6 @@ import { Drawer } from "antd"
 import React, { FC, useEffect, useState } from "react"
 import ActiveOptions from "../../../../assets/img/illustrations/active-options.svg"
 import { Treatment } from "../../../../redux/reducers/ciphercompute/anonymization/types"
-import { ExternalLink } from "../../../../stories/cosmian/externalLink/ExternalLink"
 import "./anonymization-drawer.less"
 
 type AnonymizationDrawerProps = {
@@ -105,9 +104,6 @@ const AnonymizationDrawer: FC<AnonymizationDrawerProps> = ({ visible, treatment,
             )
         }
       })()}
-      <ExternalLink link="https://cosmian.com" blank={true}>
-        More info about Cosmian solutions
-      </ExternalLink>
     </Drawer>
   )
 }

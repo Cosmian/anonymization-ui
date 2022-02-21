@@ -1,10 +1,11 @@
 import { CaretRightOutlined, CheckCircleOutlined } from "@ant-design/icons"
-import { Button, Collapse, Form, Input, message, Skeleton, Space } from "antd"
+import { Button, Collapse, Form, Input, message, Skeleton, Space, Typography } from "antd"
 import React, { useEffect, useState } from "react"
 import { connect, ConnectedProps } from "react-redux"
 import { useNavigate, useParams } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
 import { errorMessage } from "../../../actions/messages/messages"
+import csvFile from "../../../assets/files/schema-ROCHE.csv"
 import { link_config } from "../../../configs/paths"
 import {
   addAnonymization,
@@ -242,27 +243,44 @@ const CreateAnonymization: React.FC<CreateAnonymizationProps> = ({
               </Form.Item>
             </Panel>
             <Panel header="Source config" key="2" className="custom-panel" showArrow={false} extra={genExtra(fileSchema != null)}>
-              {/* Source */}
-              {update && (
-                <>
-                  <p>
-                    <span className="strong">Existing file:</span> {fileInfo?.name} – <span className="strong">Type:</span> {fileInfo?.type}{" "}
-                    – <span className="strong">Size:</span> {fileInfo?.size} – <span className="strong">Last modified date:</span>{" "}
-                    {fileInfo?.last_modified}{" "}
-                  </p>
+              <>
+                <p>
+                  Your schema file must be a CSV file with .csv extention. It must contains a header with 3 columns:{" "}
+                  <span className="strong">column_name</span>, <span className="strong">type</span> and{" "}
+                  <span className="strong">example</span>, columns can be separated with comma or semi-colon. The types can be:{" "}
+                  <Typography.Text code>integer</Typography.Text> <Typography.Text code>float</Typography.Text>{" "}
+                  <Typography.Text code>text</Typography.Text> <Typography.Text code>date</Typography.Text>.
+                </p>
+                <p>
+                  Download our{" "}
+                  <a href={csvFile} target="_blank" rel="noreferrer">
+                    {" "}
+                    example file
+                  </a>
+                  .
+                </p>
+                {/* Source */}
+                {update && (
+                  <>
+                    <p>
+                      <span className="strong">Existing file:</span> {fileInfo?.name} – <span className="strong">Type:</span>{" "}
+                      {fileInfo?.type} – <span className="strong">Size:</span> {fileInfo?.size} –{" "}
+                      <span className="strong">Last modified date:</span> {fileInfo?.last_modified}{" "}
+                    </p>
+                    <CSVReader
+                      getFileInfo={(file) => getFileInfo(file)}
+                      getResult={(result) => parseFile(result.data, result.meta?.fields as string[])}
+                      updateFile={fileInfo}
+                    />
+                  </>
+                )}
+                {!update && (
                   <CSVReader
                     getFileInfo={(file) => getFileInfo(file)}
                     getResult={(result) => parseFile(result.data, result.meta?.fields as string[])}
-                    updateFile={fileInfo}
                   />
-                </>
-              )}
-              {!update && (
-                <CSVReader
-                  getFileInfo={(file) => getFileInfo(file)}
-                  getResult={(result) => parseFile(result.data, result.meta?.fields as string[])}
-                />
-              )}
+                )}
+              </>
             </Panel>
           </Collapse>
 

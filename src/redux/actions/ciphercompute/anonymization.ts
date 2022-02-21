@@ -60,10 +60,14 @@ export const getOneAnonymization = (anonymization_uuid: string): AppThunk => {
   return async (dispatch: Dispatch) => {
     const anonymizationList = (await localForage.getItem(LS_ANONYMIZATIONS)) as Anonymization[]
     const oneAnonymization = anonymizationList.find((item) => item.uuid === anonymization_uuid)
-    dispatch<GetOneAnonymizationAction>({
-      type: GET_ONE_ANONYMIZATION,
-      obj: oneAnonymization as Anonymization,
-    })
+    if (oneAnonymization != null) {
+      dispatch<GetOneAnonymizationAction>({
+        type: GET_ONE_ANONYMIZATION,
+        obj: oneAnonymization as Anonymization,
+      })
+    } else {
+      throw "Anonymization not found"
+    }
   }
 }
 

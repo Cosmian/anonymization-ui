@@ -4,7 +4,8 @@ import { NamePath } from "antd/lib/form/interface"
 import { isEmpty } from "lodash"
 import React, { FC, useContext, useEffect, useRef, useState } from "react"
 import { connect, ConnectedProps } from "react-redux"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
+import { errorMessage } from "../../../actions/messages/messages"
 import { link_config } from "../../../configs/paths"
 import { cleanAnonymizationDetails, getOneAnonymization, updateAnonymization } from "../../../redux/actions/ciphercompute/anonymization"
 import { Format, Schema, Treatment, TreatmentOptions } from "../../../redux/reducers/ciphercompute/anonymization/types"
@@ -90,11 +91,21 @@ const EditTreatment: FC<EditTreatmentProps> = ({
   const [displayDrawer, setDisplayDrawer] = useState(false)
   const [displayOption, setDisplayOption] = useState(false)
   const [activeTreatment, setActiveTreatment] = useState<Treatment | undefined>()
+  const navigate = useNavigate()
 
   useEffect(() => {
-    getOneAnonymization(anonymization_uuid as string)
+    const getAnonymization = async (): Promise<void> => {
+      try {
+        await getOneAnonymization(anonymization_uuid as string)
+      } catch (err) {
+        errorMessage(err)
+        navigate(`${link_config.anonymizations}`)
+      }
+    }
+    getAnonymization()
     return () => cleanAnonymizationDetails()
   }, [])
+
   useEffect(() => {
     if (anonymizationDetails != null && !isEmpty(anonymizationDetails)) {
       setDatasetSchema(anonymizationDetails.input_dataset.dataset_schema)
