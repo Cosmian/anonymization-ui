@@ -247,7 +247,7 @@ const CreateAnonymization: React.FC<CreateAnonymizationProps> = ({
                 <p>
                   Your schema file must be a CSV file with .csv extention. It must contains a header with 3 columns:{" "}
                   <span className="strong">column_name</span>, <span className="strong">type</span> and{" "}
-                  <span className="strong">example</span>, columns can be separated with comma or semi-colon. The types can be:{" "}
+                  <span className="strong">example_value</span>, columns can be separated with comma or semi-colon. The types can be:{" "}
                   <Typography.Text code>integer</Typography.Text> <Typography.Text code>float</Typography.Text>{" "}
                   <Typography.Text code>text</Typography.Text> <Typography.Text code>date</Typography.Text>.
                 </p>
