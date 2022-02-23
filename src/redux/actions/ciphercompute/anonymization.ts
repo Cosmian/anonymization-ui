@@ -24,6 +24,7 @@ import {
 import { AppThunk } from "./types"
 
 const LS_ANONYMIZATIONS = "anonymizations"
+const ERROR_WITH_DB = "Error with browser database"
 
 export const addAnonymization = (anonymization: Anonymization): AppThunk<Promise<Anonymization>> => {
   return async (dispatch): Promise<Anonymization> => {
@@ -34,12 +35,16 @@ export const addAnonymization = (anonymization: Anonymization): AppThunk<Promise
       anonymizationList = [anonymization]
     }
     const response = await localForage.setItem(LS_ANONYMIZATIONS, anonymizationList)
-    dispatch<AddAnonymizationsAction>({
-      type: ADD_ANONYMIZATIONS,
-      data: response,
-    })
-    dispatch(getAnonymizations())
-    return last(response) as Anonymization
+    if (response != null) {
+      dispatch<AddAnonymizationsAction>({
+        type: ADD_ANONYMIZATIONS,
+        data: response,
+      })
+      dispatch(getAnonymizations())
+      return last(response) as Anonymization
+    } else {
+      throw ERROR_WITH_DB
+    }
   }
 }
 
@@ -49,10 +54,14 @@ export const getAnonymizations = (): AppThunk => {
       type: LOAD_ANONYMIZATIONS,
     })
     const anonymizationList = (await localForage.getItem(LS_ANONYMIZATIONS)) as Anonymization[]
-    dispatch<GetAnonymizationsAction>({
-      type: GET_ANONYMIZATIONS,
-      data: anonymizationList || [],
-    })
+    if (anonymizationList != null) {
+      dispatch<GetAnonymizationsAction>({
+        type: GET_ANONYMIZATIONS,
+        data: anonymizationList || [],
+      })
+    } else {
+      throw ERROR_WITH_DB
+    }
   }
 }
 
@@ -60,10 +69,14 @@ export const getOneAnonymization = (anonymization_uuid: string): AppThunk => {
   return async (dispatch: Dispatch) => {
     const anonymizationList = (await localForage.getItem(LS_ANONYMIZATIONS)) as Anonymization[]
     const oneAnonymization = anonymizationList.find((item) => item.uuid === anonymization_uuid)
-    dispatch<GetOneAnonymizationAction>({
-      type: GET_ONE_ANONYMIZATION,
-      obj: oneAnonymization as Anonymization,
-    })
+    if (oneAnonymization != null) {
+      dispatch<GetOneAnonymizationAction>({
+        type: GET_ONE_ANONYMIZATION,
+        obj: oneAnonymization as Anonymization,
+      })
+    } else {
+      throw "Anonymization not found"
+    }
   }
 }
 
@@ -77,12 +90,16 @@ export const updateAnonymization = (anonymization_to_update: Anonymization): App
       anonymizationList = [anonymization_to_update]
     }
     const response = await localForage.setItem(LS_ANONYMIZATIONS, anonymizationList)
-    dispatch<UpdateAnonymizationsAction>({
-      type: UPDATE_ANONYMIZATIONS,
-      data: response,
-      obj: anonymization_to_update,
-    })
-    return last(response) as Anonymization
+    if (response != null) {
+      dispatch<UpdateAnonymizationsAction>({
+        type: UPDATE_ANONYMIZATIONS,
+        data: response,
+        obj: anonymization_to_update,
+      })
+      return last(response) as Anonymization
+    } else {
+      throw ERROR_WITH_DB
+    }
   }
 }
 export const deleteAnonymization = (anonymization_uuid: string): AppThunk => {
@@ -91,10 +108,14 @@ export const deleteAnonymization = (anonymization_uuid: string): AppThunk => {
     const index = findIndex(anonymizationList, (item) => item.uuid === anonymization_uuid)
     anonymizationList.splice(index, 1)
     const response = await localForage.setItem(LS_ANONYMIZATIONS, anonymizationList)
-    dispatch<DeleteAnonymizationsAction>({
-      type: DELETE_ANONYMIZATIONS,
-      data: response,
-    })
+    if (response != null) {
+      dispatch<DeleteAnonymizationsAction>({
+        type: DELETE_ANONYMIZATIONS,
+        data: response,
+      })
+    } else {
+      throw ERROR_WITH_DB
+    }
   }
 }
 
@@ -112,10 +133,14 @@ export const duplicateAnonymization = (anonymization_uuid: string): AppThunk => 
       anonymizationList.push(newAnonymization)
     }
     const response = await localForage.setItem(LS_ANONYMIZATIONS, anonymizationList)
-    dispatch<DuplicateAnonymizationsAction>({
-      type: DUPLICATE_ANONYMIZATIONS,
-      data: response,
-    })
+    if (response != null) {
+      dispatch<DuplicateAnonymizationsAction>({
+        type: DUPLICATE_ANONYMIZATIONS,
+        data: response,
+      })
+    } else {
+      throw ERROR_WITH_DB
+    }
   }
 }
 

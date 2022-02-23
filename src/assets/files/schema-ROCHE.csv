@@ -1,4 +1,4 @@
-name,format,example
+column_name,type,example_value
 Site ID,integer,19484340
 Patient Id,integer,202193
 Birth date,date,10 Jan 1960 13:31:18 GMT

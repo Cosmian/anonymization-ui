@@ -3,8 +3,10 @@ import FileAddOutlined from "@ant-design/icons/lib/icons/FileAddOutlined"
 import FileDoneOutlined from "@ant-design/icons/lib/icons/FileDoneOutlined"
 import FileTextOutlined from "@ant-design/icons/lib/icons/FileTextOutlined"
 import LoadingOutlined from "@ant-design/icons/lib/icons/LoadingOutlined"
+import { message, notification } from "antd"
 import { parse, ParseResult } from "papaparse"
 import React, { FC, useEffect, useState } from "react"
+import csvValidation from "../../../actions/anonymizations/csvValidation"
 import { FileInfo } from "../../../redux/reducers/ciphercompute/anonymization/types"
 import "./csv-reader.less"
 
@@ -37,54 +39,63 @@ const CSVReader: FC<CSVReaderProps> = ({ getResult, getFileInfo, updateFile }): 
     }
   }, [updateFile])
 
-  // TODO: avoid multiple files
   // Drag n drop file
   const handleOnDrop = (e: React.DragEvent): void => {
     e.preventDefault()
-    setHightLigted(false)
-    setOnProcess(true)
-    setFileInfo(e.dataTransfer.files[0])
-    getFileInfo(e.dataTransfer.files[0])
-    if (e.dataTransfer.files[0].type !== TEXT_CSV) {
-      setOnProcess(false)
-      setWrongfile(true)
-      setFileInfo({} as File)
-    }
-    Array.from(e.dataTransfer.files)
-      .filter((file: File) => file.type === TEXT_CSV)
-      .forEach(async (file) => {
-        const text = await file.text()
-        const result = parse(text, { header: true })
-        getResult(result)
-        setOnProcess(false)
-      })
+    const fileList = e.dataTransfer.files
+    parseCSVFile(fileList as FileList)
   }
-  const handleOnDragOver = (e: React.DragEvent): void => {
-    e.preventDefault()
-    setWrongfile(false)
-  }
-
   // Selected file
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSelect = (e: any): void => {
     e.preventDefault()
+    const fileList = e.target.files
+    parseCSVFile(fileList as FileList)
+  }
+
+  const parseCSVFile = (csvFile: FileList): void => {
     setHightLigted(false)
     setOnProcess(true)
-    setFileInfo(e.target.files[0] as File)
-    getFileInfo(e.target.files[0])
-    if (e.target.files[0].type !== TEXT_CSV) {
+    setFileInfo(csvFile[0] as File)
+    getFileInfo(csvFile[0])
+    if (csvFile[0].type !== TEXT_CSV) {
       setOnProcess(false)
       setWrongfile(true)
       setFileInfo({} as File)
+    } else {
+      Array.from(csvFile)
+        .filter((file) => file.type === TEXT_CSV)
+        .forEach(async (file) => {
+          const text = await file.text()
+          const result = parse(text, { header: true })
+          console.log(result)
+          // verify
+          const validation = await csvValidation(result)
+          if (validation.error) {
+            handleCsvError(validation.error)
+            return
+          }
+          message.success(`Your file ${fileInfos.name} has been successfully imported`)
+          getResult(result)
+          setOnProcess(false)
+        })
     }
-    Array.from(e.target.files as FileList)
-      .filter((file: File) => file.type === TEXT_CSV)
-      .forEach(async (file) => {
-        const text = await (file as File).text()
-        const result = parse(text, { header: true })
-        getResult(result)
-        setOnProcess(false)
-      })
+  }
+
+  const handleCsvError = (err: string): void => {
+    setWrongfile(false)
+    setOnProcess(false)
+    setFileInfo({} as File)
+    notification.error({
+      message: `error with ${fileInfos.name ? fileInfos.name : "your file"}`,
+      description: err,
+      duration: 0,
+    })
+  }
+
+  const handleOnDragOver = (e: React.DragEvent): void => {
+    e.preventDefault()
+    setWrongfile(false)
   }
 
   return (

@@ -323,7 +323,7 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
       <OptionPanel.MoreInfo onClick={() => openInfo(activeTreatment)}>
         {activeTreatment !== Treatment.None && (
           <>
-            <QuestionCircleFilled />
+            <QuestionCircleFilled style={{ fontSize: 20 }} />
             <p>
               Give me more information about <span className="strong">{activeTreatment}</span> treatment.
             </p>

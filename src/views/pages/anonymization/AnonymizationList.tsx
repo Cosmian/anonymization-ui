@@ -4,6 +4,7 @@ import React, { FC, useEffect } from "react"
 import { FaArrowRight } from "react-icons/fa"
 import { connect, ConnectedProps } from "react-redux"
 import { useNavigate } from "react-router-dom"
+import { errorMessage } from "../../../actions/messages/messages"
 import { prettyDate } from "../../../actions/PrettyDates/PrettyDate"
 import { link_config } from "../../../configs/paths"
 import { deleteAnonymization, duplicateAnonymization, getAnonymizations } from "../../../redux/actions/ciphercompute/anonymization"
@@ -40,7 +41,11 @@ const AnonymizationsList: FC<AnonymizationsListProps> = ({
   const navigate = useNavigate()
 
   useEffect(() => {
-    getAnonymizations()
+    try {
+      getAnonymizations()
+    } catch (error) {
+      errorMessage(error)
+    }
   }, [])
 
   const gotToCreate = (): void => {
@@ -54,11 +59,19 @@ const AnonymizationsList: FC<AnonymizationsListProps> = ({
   }
 
   const handleOnDelete = async (anonymization_uuid: string): Promise<void> => {
-    return deleteAnonymization(anonymization_uuid)
+    try {
+      deleteAnonymization(anonymization_uuid)
+    } catch (err) {
+      errorMessage(err)
+    }
   }
 
   const handleOnDuplicate = (anonymization_uuid: string): void => {
-    duplicateAnonymization(anonymization_uuid)
+    try {
+      duplicateAnonymization(anonymization_uuid)
+    } catch (err) {
+      errorMessage(err)
+    }
   }
   const handleOnUpdate = (anonymization_uuid: string): void => {
     navigate(`${link_config.anonymizations}/${anonymization_uuid}/update`)
