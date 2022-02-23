@@ -45,7 +45,7 @@ interface MoreInfoProps {
 }
 
 const Title: FC = ({ children }) => {
-  return <h5>Column: {children}</h5>
+  return <h4>Column: {children}</h4>
 }
 Title.displayName = "Title"
 OptionPanel.Title = Title

@@ -9,7 +9,6 @@ import {
   addAnonymization,
   cleanAnonymizationDetails,
   getAnonymizations,
-  getOneAnonymization,
   updateAnonymization,
 } from "../../../redux/actions/ciphercompute/anonymization"
 import { Anonymization, FileInfo } from "../../../redux/reducers/ciphercompute/anonymization/types"
@@ -27,7 +26,6 @@ const mapDispatchToProps = {
   getAnonymizations,
   updateAnonymization,
   cleanAnonymizationDetails,
-  getOneAnonymization,
 }
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const mapStateToProps = (state: RootState) => {
@@ -54,7 +52,11 @@ const ImportAnonymization: React.FC<ImportAnonymizationProps> = ({
   const navigate = useNavigate()
 
   useEffect(() => {
-    getAnonymizations()
+    try {
+      getAnonymizations()
+    } catch (error) {
+      errorMessage(error)
+    }
     cleanAnonymizationDetails()
     return () => cleanAnonymizationDetails()
   }, [])
