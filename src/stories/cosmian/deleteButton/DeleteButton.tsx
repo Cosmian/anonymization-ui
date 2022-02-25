@@ -139,7 +139,7 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({ onCancel, onDelete, 
         <FaRegTrashAlt />
       </Typography.Text>
       <Typography.Text type="danger" className="delete-text">
-        Delete {itemType}
+        Delete
       </Typography.Text>
     </div>
   )

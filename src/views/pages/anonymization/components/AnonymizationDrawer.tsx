@@ -86,19 +86,28 @@ const AnonymizationDrawer: FC<AnonymizationDrawerProps> = ({ visible, treatment,
               <>
                 <h3>Block words</h3>
                 <p>
-                  The technique of noise addition is especially useful when attributes may have an important adverse effect on individuals
-                  and consists of modifying attributes in the dataset such that they are less accurate whilst retaining the overall
-                  distribution. When processing a dataset, an observer will assume that values are accurate but this will only be true to a
-                  certain degree.
+                  This treatment can be used to hide certain sensitive words from your dataset. These words can be either masked, i.e.
+                  replaced with XXXX, or tokenized, i.e. replace with a non-deterministic UID. During the anonymization, every occurrence of
+                  a word that is in the word list will be tokenized by the same UID. But if you create new anonymization, a new UID will be
+                  generated, even if the word is the same. Also, please note that this system does not provide any way to decipher the token
+                  and reveal the original data.
                 </p>
                 <p className="strong title">Example</p>
                 <p>
-                  As an example, if an individual’s height was originally measured to the nearest centimetre the anonymised dataset may
-                  contain a height accurate to only +-10cm. If this technique is applied effectively, a third-party will not be able to
-                  identify an individual nor should he be able to repair the data or otherwise detect how the data have been modified. Noise
-                  addition will commonly need to be combined with other anonymization techniques such as the removal of obvious attributes
-                  and quasi-identifiers. The level of noise should depend on the necessity of the level of information required and the
-                  impact on individuals’ privacy as a result of disclosure of the protected attributes.
+                  As an example, if the word list contains the words “Doe” and “Smith”, the text “Mr. Doe and Ms. Smith were sentenced to
+                  100 months imprisonment” will become:
+                  <ul>
+                    <li>
+                      <i>Mr. XXXX and Ms. XXXX were sentenced to 100 months imprisonment”</i>“ if you choose the Mask option.
+                    </li>
+                    <li>
+                      <i>
+                        “Mr. edc8e2e1-2963-49b0-b32b-f553a7378985 and Ms. 15bfc4a5-dc2d-4c27-8187-3c0e84c9043d were sentenced to 100 months
+                        imprisonment”
+                      </i>{" "}
+                      if you choose the Mask option.
+                    </li>
+                  </ul>
                 </p>
               </>
             )

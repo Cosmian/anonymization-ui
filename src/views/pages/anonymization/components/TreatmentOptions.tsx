@@ -45,6 +45,11 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
   const [treated, setTreated] = useState("")
   const [form] = Form.useForm()
 
+  // update active row from parent
+  useEffect(() => {
+    setActiveTreatment(activeRow.treatment)
+  }, [activeRow])
+
   // Default options
   useEffect(() => {
     switch (activeTreatment) {
@@ -84,7 +89,7 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
         } else if (activeRow.format === Format.Float || activeRow.format === Format.Integer) {
           setAddnoiseOptions({
             noise_type: NoiseType.Gaussian,
-            standard_deviation: 100,
+            standard_deviation: 1,
           })
         }
         setTreated("")
@@ -100,7 +105,7 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
       case Treatment.None:
         setHashOptions(undefined)
     }
-  }, [activeTreatment])
+  }, [activeTreatment, activeRow])
 
   // Output example
   useEffect(() => {
@@ -302,7 +307,7 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
     <OptionPanel>
       <OptionPanel.Title>{activeRow.name}</OptionPanel.Title>
       <OptionPanel.Treatment>
-        <Select style={{ width: "100%" }} defaultValue={activeTreatment} onChange={(value) => handleOnChangeTreatment(value)}>
+        <Select style={{ width: "100%" }} value={activeTreatment} onChange={(value) => handleOnChangeTreatment(value)}>
           <Select.Option value={Treatment.None} disabled={disableTreatment(activeRow.format, Treatment.None)}>
             {Treatment.None}
           </Select.Option>
@@ -336,7 +341,7 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
             case Treatment.None:
               return (
                 <>
-                  <p>No param</p>
+                  <p>No parameter</p>
                 </>
               )
             case Treatment.Hash:

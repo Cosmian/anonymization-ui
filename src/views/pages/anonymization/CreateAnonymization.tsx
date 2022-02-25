@@ -246,7 +246,7 @@ const CreateAnonymization: React.FC<CreateAnonymizationProps> = ({
                 <Input placeholder="Dataset description" />
               </Form.Item>
             </Panel>
-            <Panel header="Source config" key="2" className="custom-panel" showArrow={false} extra={genExtra(fileSchema != null)}>
+            <Panel header="Source configuration" key="2" className="custom-panel" showArrow={false} extra={genExtra(fileSchema != null)}>
               <>
                 <p>
                   Your schema file must be a CSV file with .csv extention. It must contains a header with 3 columns:{" "}
@@ -303,7 +303,7 @@ const CreateAnonymization: React.FC<CreateAnonymizationProps> = ({
                 htmlType="submit"
                 disabled={myForm?.name === "" || myForm?.name == null || fileSchema == null}
               >
-                {update ? "Update anonymization" : "Create anonymization"}
+                {update ? "Edit anonymization" : "Create anonymization"}
               </Button>
             </Space>
           </Form.Item>

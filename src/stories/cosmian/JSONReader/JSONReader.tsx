@@ -105,7 +105,7 @@ const JSONReader: FC<JSONReaderProps> = ({ getResult, getFileInfo }): JSX.Elemen
         <>
           {hightLighted ? <FileAddOutlined style={{ fontSize: 34 }} /> : <FileTextOutlined style={{ fontSize: 24 }} />}
           <p>
-            Drag and drop your JSON config file here <br />
+            Drag and drop your JSON configuration file here <br />
             or <label htmlFor="file_input">click here</label> to import file <br />
             <input id="file_input" type="file" onInput={(event) => handleSelect(event)} accept={APP_JSON} />
           </p>

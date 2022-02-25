@@ -106,10 +106,10 @@ const AnonymizationsList: FC<AnonymizationsListProps> = ({
         const menu = (
           <Menu>
             <Menu.Item key="update" onClick={() => handleOnUpdate(anonymization.uuid)}>
-              Update anonymization
+              Edit anonymization
             </Menu.Item>
             <Menu.Item key="duplicate" onClick={() => handleOnDuplicate(anonymization.uuid)}>
-              Duplicate anonymization
+              Copy anonymization
             </Menu.Item>
             <Menu.Item key="delete" className="danger-status">
               <DeleteButton
