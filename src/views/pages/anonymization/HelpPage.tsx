@@ -46,7 +46,7 @@ const HelpPage = (): JSX.Element => {
       <div className="help-box">
         <Title level={1}>How to use Cosmian anonymization tool</Title>
         <Title level={2} id="step1">
-          1. Create anonymization config
+          1. Create anonymization configuration
         </Title>
         <p>
           – Click on <span className="strong">Create new anonymization</span> button
@@ -73,7 +73,7 @@ const HelpPage = (): JSX.Element => {
         <p>– It must contains a header.</p>
         <p>
           – It must have 3 columns: <span className="strong">column_name</span>, <span className="strong">type</span> and{" "}
-          <span className="strong">example</span>.
+          <span className="strong">example_value</span>.
         </p>
         <p>– Columns can be separated with comma or semi-colon.</p>
         <p>
@@ -156,17 +156,17 @@ const HelpPage = (): JSX.Element => {
           <img src={tuto_6} alt="tuto-6" loading="lazy" />
         </p>
         <p>– Then repeat the operation on each columns.</p>
-        <Title level={2}>3. Download config file</Title>
+        <Title level={2}>3. Download configuration file</Title>
         <p>
-          Once every column are set, click on <span className="strong">Dowload configuration file</span>. This will download a json config
-          file on your computer.
+          Once every column are set, click on <span className="strong">Dowload configuration file</span>. This will download a json
+          configuration file on your computer.
         </p>
         <img src={tuto_12} alt="tuto-12" loading="lazy" />
         <p>See example file below:</p>
         <pre>{jsonPre}</pre>
         <hr style={{ marginTop: "3em" }} />
-        <Title level={2}>Import config file</Title>
-        <p>You can import a previously exported JSON config file as a new anonymization:</p>
+        <Title level={2}>Import configuration file</Title>
+        <p>You can import a previously exported JSON configuration file as a new anonymization:</p>
         <p>
           – On anonymization list page, click on <span className="strong">Import configuration file</span> button.
         </p>
@@ -177,7 +177,7 @@ const HelpPage = (): JSX.Element => {
         <p>
           – Click on <span className="strong">Create anonymization</span> button and follow{" "}
           <Link href="#step2">Configure anonymization treatments</Link>. <br />
-          If an anonymization with same ID exists, it will be replace with this new config file.
+          If an anonymization with same ID exists, it will be replace with this new configuration file.
         </p>
       </div>
     </div>

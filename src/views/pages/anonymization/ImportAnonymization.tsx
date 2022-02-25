@@ -134,7 +134,13 @@ const ImportAnonymization: React.FC<ImportAnonymizationProps> = ({
           expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
           className="custom-collapse"
         >
-          <Panel header="Import JSON config file" key="1" className="custom-panel" showArrow={false} extra={genExtra(fileConfig != null)}>
+          <Panel
+            header="Import JSON configuration file"
+            key="1"
+            className="custom-panel"
+            showArrow={false}
+            extra={genExtra(fileConfig != null)}
+          >
             <JSONReader getFileInfo={(file) => getFileInfo(file)} getResult={(result) => getFileResult(result as Anonymization)} />
             {anonymizationToUpdate != null && (
               <p>
