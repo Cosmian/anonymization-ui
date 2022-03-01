@@ -5,7 +5,7 @@ import { connect, ConnectedProps } from "react-redux"
 import { useNavigate, useParams } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
 import { errorMessage } from "../../../actions/messages/messages"
-import csvFile from "../../../assets/files/schema-ROCHE.csv"
+import csvFile from "../../../assets/files/schema_example.csv"
 import { link_config } from "../../../configs/paths"
 import {
   addAnonymization,

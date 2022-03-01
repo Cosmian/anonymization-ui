@@ -112,7 +112,7 @@ const CSVReader: FC<CSVReaderProps> = ({ getResult, getFileInfo, updateFile }): 
       {/* Default */}
       {!onProcess && !wrongFile && fileInfos.name == null && (
         <>
-          {hightLighted ? <FileAddOutlined style={{ fontSize: 34 }} /> : <FileTextOutlined style={{ fontSize: 24 }} />}
+          {hightLighted ? <FileAddOutlined /> : <FileTextOutlined />}
           <p>
             Drag and drop your .csv file here <br />
             or <label htmlFor="file_input">click here</label> to import file <br />
@@ -121,7 +121,7 @@ const CSVReader: FC<CSVReaderProps> = ({ getResult, getFileInfo, updateFile }): 
         </>
       )}
       {/* Loading (on process) */}
-      {onProcess && !wrongFile && <LoadingOutlined style={{ fontSize: 34 }} spin />}
+      {onProcess && !wrongFile && <LoadingOutlined spin />}
 
       {/* Valid */}
       {fileInfos.name != null && !wrongFile && (
@@ -134,7 +134,7 @@ const CSVReader: FC<CSVReaderProps> = ({ getResult, getFileInfo, updateFile }): 
       {/* Error */}
       {wrongFile && (
         <>
-          <ExceptionOutlined style={{ fontSize: 34 }} />
+          <ExceptionOutlined />
           <p>Only support .csv file. Please check your file type</p>
         </>
       )}
