@@ -1,7 +1,7 @@
 import { Typography } from "antd"
 import Title from "antd/lib/typography/Title"
 import React from "react"
-import csvFile from "../../../assets/files/schema-ROCHE.csv"
+import csvFile from "../../../assets/files/schema_example.csv"
 import tuto_1 from "../../../assets/img/anonymization/tuto-1.png"
 import tuto_12 from "../../../assets/img/anonymization/tuto-12.png"
 import tuto_13 from "../../../assets/img/anonymization/tuto-13.png"
@@ -20,22 +20,22 @@ const { Text, Link } = Typography
 
 const jsonPre = `{
   "computation_id": "ba5f2fe9-f398-43db-95cb-be7c70ba7a83",
-  "name": "Patient data 2020-2021",
-  "description": "Data from january 2020 to december 2021",
-  "creation_date": "Thu, 10 Feb 2022 09:55:52 GMT",
+  "name": "Products",
+  "description": "Product list - january 2022",
+  "creation_date": "Tue, 01 Mar 2022 14:38:25 GMT",
   "dataset_schema": [
     {
-      "column": 1,
+      "key": 1,
       "treatment_type": "Hash",
       "treatment_options": { "hash_function": "SHA256", "salt": "17d587b9-1b27-4e41-9261-98f2ecf6a66f" }
     },
     {
-      "column": 2,
+      "key": 2,
       "treatment_type": "AddNoise",
       "treatment_options": { "noise_type": "Gaussian", "standard_deviation": 10, "precision_type": "Year" }
     },
-    { "column": 4, "treatment_type": "AddNoise", "treatment_options": { "noise_type": "Gaussian", "standard_deviation": 50 } },
-    { "column": 7, "treatment_type": "BlockWords", "treatment_options": { "block_type": "Tokenize", "word_list": ["Kadcyla"] } }
+    { "key": 4, "treatment_type": "AddNoise", "treatment_options": { "noise_type": "Gaussian", "standard_deviation": 50 } },
+    { "key": 7, "treatment_type": "BlockWords", "treatment_options": { "block_type": "Tokenize", "word_list": ["Kadcyla"] } }
   ]
 }`
 
@@ -90,47 +90,90 @@ const HelpPage = (): JSX.Element => {
           <tr>
             <th>column_name</th>
             <th>type</th>
-            <th>example</th>
+            <th>example_value</th>
           </tr>
           <tr>
             <td>Site ID</td>
             <td>integer</td>
-            <td>19484340</td>
+            <td>23578901</td>
           </tr>
           <tr>
-            <td>Patient Id</td>
+            <td>Brand ID</td>
             <td>integer</td>
-            <td>202193</td>
+            <td>26419574</td>
           </tr>
           <tr>
-            <td>Birth date</td>
-            <td>date</td>
-            <td>10 Jan 1960</td>
+            <td>Product ID</td>
+            <td>integer</td>
+            <td>167836</td>
           </tr>
           <tr>
-            <td>Weight (kg)</td>
+            <td>Price</td>
             <td>float</td>
-            <td>60.5</td>
+            <td>189.25</td>
           </tr>
           <tr>
-            <td>Height (cm)</td>
+            <td>Stock</td>
             <td>integer</td>
-            <td>163</td>
+            <td>200</td>
           </tr>
           <tr>
-            <td>Absence of residues</td>
-            <td>integer</td>
-            <td>2</td>
+            <td>Promotion</td>
+            <td>float</td>
+            <td>18.75</td>
           </tr>
           <tr>
-            <td>Classification Chevallier</td>
-            <td>integer</td>
-            <td>3</td>
+            <td>Product release</td>
+            <td>date</td>
+            <td>02/16/2022</td>
           </tr>
           <tr>
-            <td>Other type of care consumption</td>
+            <td>Product expiration</td>
+            <td>date</td>
+            <td>Monday 1 January 2029 00:00:00</td>
+          </tr>
+          <tr>
+            <td>Discount expiration</td>
+            <td>date</td>
+            <td>Thursday 14 July 2022 00:00:00</td>
+          </tr>
+          <tr>
+            <td>Product name</td>
             <td>text</td>
-            <td>Le patient a reçu du Kadcyla</td>
+            <td>Techilog Wireless Keyboard</td>
+          </tr>
+          <tr>
+            <td>Brand</td>
+            <td>text</td>
+            <td>Techilog</td>
+          </tr>
+          <tr>
+            <td>Tags</td>
+            <td>text</td>
+            <td>techilog, keyboard, wireless</td>
+          </tr>
+          <tr>
+            <td>Category</td>
+            <td>text</td>
+            <td>keyboard</td>
+          </tr>
+          <tr>
+            <td>Description</td>
+            <td>text</td>
+            <td>
+              Techilog advanced 2.4 GHz wireless connectivity gives you the reliability of a cord plus wireless convenience and freedom—fast
+              data transmission, virtually no delays or dropouts, and wireless encryption.
+            </td>
+          </tr>
+          <tr>
+            <td>Comments</td>
+            <td>text</td>
+            <td>
+              Quantity paddle on both Techilog vertical integration work flows. Quarterly sales are at an all-time low rehydrate the team
+              exposing new ways to evolve our design language 4-blocker and conversational banana, show pony sorry i was triple muted. Pull
+              in ten extra bodies to help roll the tortoise. Copy and paste from stack overflow we don't need to boil the ocean here prairie
+              dogging, for waste of resources, or on this journey for incentivize adoption. Tribal knowledge window of opportunity.
+            </td>
           </tr>
         </table>
         <Title level={2} id="step2">

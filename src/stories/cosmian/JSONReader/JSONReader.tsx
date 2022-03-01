@@ -103,7 +103,7 @@ const JSONReader: FC<JSONReaderProps> = ({ getResult, getFileInfo }): JSX.Elemen
       {/* Default */}
       {!onProcess && !wrongFile && fileInfos.name == null && (
         <>
-          {hightLighted ? <FileAddOutlined style={{ fontSize: 34 }} /> : <FileTextOutlined style={{ fontSize: 24 }} />}
+          {hightLighted ? <FileAddOutlined /> : <FileTextOutlined />}
           <p>
             Drag and drop your JSON configuration file here <br />
             or <label htmlFor="file_input">click here</label> to import file <br />
@@ -112,12 +112,12 @@ const JSONReader: FC<JSONReaderProps> = ({ getResult, getFileInfo }): JSX.Elemen
         </>
       )}
       {/* Loading (on process) */}
-      {onProcess && !wrongFile && <LoadingOutlined style={{ fontSize: 34 }} spin />}
+      {onProcess && !wrongFile && <LoadingOutlined spin />}
 
       {/* Valid */}
       {fileInfos.name != null && !wrongFile && (
         <>
-          <FileDoneOutlined style={{ fontSize: 34, color: "#219653", marginBottom: 10 }} />
+          <FileDoneOutlined style={{ color: "#219653" }} />
           <p>{fileInfos.name}</p>
         </>
       )}
