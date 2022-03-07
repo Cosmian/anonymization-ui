@@ -58,7 +58,7 @@ export interface Anonymization {
 }
 
 export interface InputDataset {
-  dataset_schema: Schema[]
+  dataset_metadata: Metadata[]
   file_info: FileInfo
 }
 export interface FileInfo {
@@ -67,17 +67,17 @@ export interface FileInfo {
   size: number
   type: string
 }
-export interface Schema {
+export interface Metadata {
   key: number
   name: string
-  format: Format
+  type: DataType
   example: string
-  treatment: Treatment
-  treatment_options?: TreatmentOptions
+  technique: Technique
+  technique_options?: TechniqueOptions
   treated_example?: string
 }
 
-export enum Format {
+export enum DataType {
   Integer = "Integer",
   Text = "Text",
   Float = "Float",
@@ -85,9 +85,9 @@ export enum Format {
   Boolean = "Boolean",
 }
 
-// TREATMENTS
+// TECHNIQUES
 
-export enum Treatment {
+export enum Technique {
   None = "None",
   Hash = "Hash",
   Aggregate = "Aggregate",
@@ -95,7 +95,7 @@ export enum Treatment {
   BlockWords = "BlockWords",
 }
 
-export type TreatmentOptions = Hash | Aggregate | AddNoise | BlockWords
+export type TechniqueOptions = Hash | Aggregate | AddNoise | BlockWords
 
 export type Hash = {
   hash_function: HashFunction

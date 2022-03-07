@@ -84,8 +84,6 @@ const ImportAnonymization: React.FC<ImportAnonymizationProps> = ({
   }
 
   const getFileResult = (result: Anonymization): void => {
-    // TODO check if result object is type of Anonymization
-    // try validation format with JOY or YUP
     setFileConfig(result as Anonymization)
     const existing = anonymizationList.find((el) => el.uuid === result.uuid)
     if (existing != null) {

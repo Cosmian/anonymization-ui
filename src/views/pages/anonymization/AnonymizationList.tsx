@@ -91,7 +91,7 @@ const AnonymizationsList: FC<AnonymizationsListProps> = ({
       render: (created_at: string) => <span>{prettyDate(created_at)}</span>,
     },
     {
-      title: "Schema file",
+      title: "Metadata file",
       dataIndex: "input_dataset",
       key: "input_dataset",
       render: (input_dataset: InputDataset) => <span>{input_dataset.file_info.name}</span>,
@@ -139,7 +139,7 @@ const AnonymizationsList: FC<AnonymizationsListProps> = ({
       render: (anonymization: Anonymization) => {
         return (
           <Button type="primary" onClick={() => goToEdit(anonymization.uuid)} style={{ marginLeft: "auto" }}>
-            Edit treatment
+            Edit technique
             <FaArrowRight style={{ marginLeft: ".5em" }} />
           </Button>
         )

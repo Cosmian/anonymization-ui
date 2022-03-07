@@ -58,6 +58,7 @@
         "react-codemirror2-react-17": "^1.0.0",
         "react-dev-utils": "12.0.0-next.47",
         "react-dom": "^17.0.2",
+        "react-favicon": "^1.0.0",
         "react-feather": "^2.0.9",
         "react-icons": "^4.2.0",
         "react-lazylog": "^4.5.3",
@@ -33271,6 +33272,20 @@
       "resolved": "https://registry.npmjs.org/react-fast-compare/-/react-fast-compare-3.2.0.tgz",
       "integrity": "sha512-rtGImPZ0YyLrscKI9xTpV8psd6I8VAtjKCzQDlzyDvqJA8XOW78TXYQwNRNd8g8JZnDu8q9Fu/1v4HPAVwVdHA==",
       "dev": true
+    },
+    "node_modules/react-favicon": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/react-favicon/-/react-favicon-1.0.0.tgz",
+      "integrity": "sha512-BjiZWXTLRTuwdsp2PhRZMVzPADM+ZPco/3EBRZGTQBLLsrv9D0rzhfQ4BPmVLaZNHPwNURSg2SrOmHyE18eu9g==",
+      "dependencies": {
+        "prop-types": "^15.8.1"
+      },
+      "engines": {
+        "node": ">=10"
+      },
+      "peerDependencies": {
+        "react": "^16.0.0 || ^17.0.0"
+      }
     },
     "node_modules/react-feather": {
       "version": "2.0.9",
@@ -67149,6 +67164,14 @@
       "resolved": "https://registry.npmjs.org/react-fast-compare/-/react-fast-compare-3.2.0.tgz",
       "integrity": "sha512-rtGImPZ0YyLrscKI9xTpV8psd6I8VAtjKCzQDlzyDvqJA8XOW78TXYQwNRNd8g8JZnDu8q9Fu/1v4HPAVwVdHA==",
       "dev": true
+    },
+    "react-favicon": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/react-favicon/-/react-favicon-1.0.0.tgz",
+      "integrity": "sha512-BjiZWXTLRTuwdsp2PhRZMVzPADM+ZPco/3EBRZGTQBLLsrv9D0rzhfQ4BPmVLaZNHPwNURSg2SrOmHyE18eu9g==",
+      "requires": {
+        "prop-types": "^15.8.1"
+      }
     },
     "react-feather": {
       "version": "2.0.9",

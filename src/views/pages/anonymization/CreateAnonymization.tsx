@@ -5,7 +5,7 @@ import { connect, ConnectedProps } from "react-redux"
 import { useNavigate, useParams } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
 import { errorMessage } from "../../../actions/messages/messages"
-import csvFile from "../../../assets/files/schema_example.csv"
+import csvFile from "../../../assets/files/metadata_example.csv"
 import { link_config } from "../../../configs/paths"
 import {
   addAnonymization,
@@ -13,7 +13,7 @@ import {
   getOneAnonymization,
   updateAnonymization,
 } from "../../../redux/actions/ciphercompute/anonymization"
-import { Anonymization, FileInfo, Format, Schema, Treatment } from "../../../redux/reducers/ciphercompute/anonymization/types"
+import { Anonymization, DataType, FileInfo, Metadata, Technique } from "../../../redux/reducers/ciphercompute/anonymization/types"
 import { RootState } from "../../../redux/reducers/RootReducer"
 import BackArrow from "../../../stories/cosmian/BackArrow/BackArrow"
 import CSVReader from "../../../stories/cosmian/CSVReader/CSVReader"
@@ -47,7 +47,7 @@ const CreateAnonymization: React.FC<CreateAnonymizationProps> = ({
   cleanAnonymizationDetails,
   anonymizationToUpdate,
 }) => {
-  const [fileSchema, setFileSchema] = useState<Schema[] | undefined>()
+  const [fileMetadata, setFileMetadata] = useState<Metadata[] | undefined>()
   const [fileInfo, setFileInfo] = useState<FileInfo | undefined>()
   const [myForm, setMyForm] = useState<FormValues | undefined>()
   const [form] = Form.useForm()
@@ -59,7 +59,7 @@ const CreateAnonymization: React.FC<CreateAnonymizationProps> = ({
   type FormValues = {
     name?: string
     description?: string
-    dataset_schema?: Schema[]
+    dataset_metadata?: Metadata[]
     output_type?: string
     output_path?: string
   }
@@ -82,7 +82,7 @@ const CreateAnonymization: React.FC<CreateAnonymizationProps> = ({
     if (
       anonymizationToUpdate != null &&
       anonymizationToUpdate.input_dataset != null &&
-      anonymizationToUpdate.input_dataset.dataset_schema != null
+      anonymizationToUpdate.input_dataset.dataset_metadata != null
     ) {
       const fieldsValue = {
         name: anonymizationToUpdate.name,
@@ -90,7 +90,7 @@ const CreateAnonymization: React.FC<CreateAnonymizationProps> = ({
       }
       form.setFieldsValue(fieldsValue)
       setMyForm(fieldsValue)
-      setFileSchema(anonymizationToUpdate.input_dataset.dataset_schema as Schema[])
+      setFileMetadata(anonymizationToUpdate.input_dataset.dataset_metadata as Metadata[])
       setFileInfo(anonymizationToUpdate.input_dataset.file_info)
     } else {
       form.setFieldsValue({})
@@ -105,7 +105,7 @@ const CreateAnonymization: React.FC<CreateAnonymizationProps> = ({
   const handleOnSubmit = async (): Promise<void> => {
     const values = await form.validateFields()
     const now = new Date()
-    if (!update && fileSchema) {
+    if (!update && fileMetadata) {
       const uuid = uuidv4()
       const newAnonymization: Anonymization = {
         uuid: uuid,
@@ -113,7 +113,7 @@ const CreateAnonymization: React.FC<CreateAnonymizationProps> = ({
         description: values.description,
         created_at: now.toUTCString(),
         input_dataset: {
-          dataset_schema: fileSchema,
+          dataset_metadata: fileMetadata,
           file_info: fileInfo as FileInfo,
         },
       }
@@ -127,14 +127,14 @@ const CreateAnonymization: React.FC<CreateAnonymizationProps> = ({
       } finally {
         hide()
       }
-    } else if (update && fileSchema) {
+    } else if (update && fileMetadata) {
       const updatedAnonymization: Anonymization = {
         uuid: anonymizationToUpdate.uuid,
         name: values.name,
         description: values.description,
         created_at: now.toUTCString(),
         input_dataset: {
-          dataset_schema: fileSchema,
+          dataset_metadata: fileMetadata,
           file_info: fileInfo as FileInfo,
         },
       }
@@ -158,30 +158,30 @@ const CreateAnonymization: React.FC<CreateAnonymizationProps> = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const parseFile = (data: any, fields: string[]): void => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const schema = data.map((obj: any, index: number) => {
-      let format: Format
+    const metadata = data.map((obj: any, index: number) => {
+      let type: DataType
       switch (obj[fields[1]]) {
         case "integer":
-          format = Format.Integer
+          type = DataType.Integer
           break
         case "float":
-          format = Format.Float
+          type = DataType.Float
           break
         case "text":
-          format = Format.Text
+          type = DataType.Text
           break
         case "date":
-          format = Format.Date
+          type = DataType.Date
           break
         case "boolean":
-          format = Format.Boolean
+          type = DataType.Boolean
           break
         default:
-          format = Format.Text
+          type = DataType.Text
       }
-      return { key: index, name: obj[fields[0]], format: format, example: obj[fields[2]], treatment: Treatment.None }
+      return { key: index, name: obj[fields[0]], type: type, example: obj[fields[2]], technique: Technique.None }
     })
-    setFileSchema(schema)
+    setFileMetadata(metadata)
   }
 
   const getFileInfo = (file: File): void => {
@@ -230,42 +230,48 @@ const CreateAnonymization: React.FC<CreateAnonymizationProps> = ({
             className="custom-collapse"
           >
             <Panel
-              header="Dataset informations"
+              header="Your anonymization"
               key="1"
               className="custom-panel"
               showArrow={false}
               extra={genExtra(myForm?.name !== "" && myForm?.name != null)}
             >
               {/* Dataset name */}
-              <Form.Item name="name" label="Dataset name" rules={[{ required: true }]}>
-                <Input placeholder="Dataset name" onChange={updateForm} />
+              <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+                <Input placeholder="My dataset" onChange={updateForm} />
               </Form.Item>
 
               {/* Dataset description */}
-              <Form.Item name="description" label="Dataset description" rules={[{ required: false }]}>
-                <Input placeholder="Dataset description" />
+              <Form.Item name="description" label="Description" rules={[{ required: false }]}>
+                <Input placeholder="Confidential data from 2020" />
               </Form.Item>
             </Panel>
-            <Panel header="Source configuration" key="2" className="custom-panel" showArrow={false} extra={genExtra(fileSchema != null)}>
+            <Panel header="Dataset metadata" key="2" className="custom-panel" showArrow={false} extra={genExtra(fileMetadata != null)}>
               <>
                 <p>
-                  Your schema file must be a CSV file with .csv extention. It must contains a header with 3 columns:{" "}
-                  <span className="strong">column_name</span>, <span className="strong">type</span> and{" "}
-                  <span className="strong">example_value</span>, columns can be separated with comma or semi-colon. The types can be:{" "}
-                  <Typography.Text code>integer</Typography.Text> <Typography.Text code>float</Typography.Text>{" "}
-                  <Typography.Text code>text</Typography.Text> <Typography.Text code>date</Typography.Text>.
+                  Import a CSV file to describe the structure of your dataset. It should start with a header with three columns: <br />
+                  <ul>
+                    <li>
+                      <span className="strong">column_name</span>: the name of the column
+                    </li>
+                    <li>
+                      <span className="strong">type</span>: the column data type (<Typography.Text code>integer</Typography.Text>,{" "}
+                      <Typography.Text code>float</Typography.Text>, <Typography.Text code>text</Typography.Text> or{" "}
+                      <Typography.Text code>date</Typography.Text>)
+                    </li>
+                    <li>
+                      <span className="strong">example_value</span>: an example so you can preview what an anonymization technique is doing
+                    </li>
+                  </ul>
                 </p>
                 <p>
-                  Download our{" "}
+                  You can download an{" "}
                   <a href={csvFile} target="_blank" rel="noreferrer">
-                    {" "}
                     example file
-                  </a>
-                  .
+                  </a>{" "}
+                  or read the <Typography.Link onClick={() => navigate(link_config.help)}>help page</Typography.Link> for more information.
                 </p>
-                <p>
-                  See <Typography.Link onClick={() => navigate(link_config.help)}>help page</Typography.Link> for more informations.
-                </p>
+
                 {/* Source */}
                 {update && (
                   <>
@@ -301,7 +307,7 @@ const CreateAnonymization: React.FC<CreateAnonymizationProps> = ({
                 size="large"
                 type="primary"
                 htmlType="submit"
-                disabled={myForm?.name === "" || myForm?.name == null || fileSchema == null}
+                disabled={myForm?.name === "" || myForm?.name == null || fileMetadata == null}
               >
                 {update ? "Edit anonymization" : "Create anonymization"}
               </Button>

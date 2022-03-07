@@ -1,12 +1,15 @@
 import React from "react"
 import ReactDOM from "react-dom"
+import Favicon from "react-favicon"
 import { Provider } from "react-redux"
 import App from "./App"
+import cosmianIcon from "./assets/img/logo/CosmianIcon.svg"
 import { store } from "./redux/store"
 import * as serviceWorker from "./serviceWorker"
 
 ReactDOM.render(
   <Provider store={store}>
+    <Favicon url={cosmianIcon} />
     <React.StrictMode>
       <App />
     </React.StrictMode>

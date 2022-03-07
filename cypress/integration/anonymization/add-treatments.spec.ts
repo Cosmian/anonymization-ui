@@ -1,6 +1,6 @@
 import localForage from "localforage"
 import { link_config } from "../../../src/configs/paths"
-import { Anonymization, Format } from "../../../src/redux/reducers/ciphercompute/anonymization/types"
+import { Anonymization, DataType } from "../../../src/redux/reducers/ciphercompute/anonymization/types"
 import untreated from "../../fixtures/anonymization/untreated-anonymization.json"
 
 const untreatedAnonymization: Anonymization = JSON.parse(JSON.stringify(untreated))
@@ -30,20 +30,20 @@ describe("Anonymization", () => {
     cy.visit(`${link_config.anonymizations}/152c6e1e-9b4d-40cd-bc1e-ab107f9e0239/edit`)
     // verify elements
     cy.get("h2").contains(untreatedAnonymization.name).should("be.visible")
-    untreatedAnonymization.input_dataset.dataset_schema.map((column) => cy.contains(column.name).should("be.visible"))
-    untreatedAnonymization.input_dataset.dataset_schema.map((column) => cy.contains(column.format).should("be.visible"))
-    untreatedAnonymization.input_dataset.dataset_schema.map((column) =>
-      cy.contains(column.format !== Format.Date ? column.example : new Date(column.example).toUTCString()).should("be.visible")
+    untreatedAnonymization.input_dataset.dataset_metadata.map((column) => cy.contains(column.name).should("be.visible"))
+    untreatedAnonymization.input_dataset.dataset_metadata.map((column) => cy.contains(column.type).should("be.visible"))
+    untreatedAnonymization.input_dataset.dataset_metadata.map((column) =>
+      cy.contains(column.type !== DataType.Date ? column.example : new Date(column.example).toUTCString()).should("be.visible")
     )
   })
 
-  it("Set treatments on dataset", () => {
+  it("Set techniques on dataset", () => {
     cy.visit(`${link_config.anonymizations}/152c6e1e-9b4d-40cd-bc1e-ab107f9e0239/edit`)
     // 0 - Hash client Id
     cy.get(".editable-cell-value-wrap").eq(0).click()
     cy.get(".ant-form-item-control-input").click()
     cy.get("[data-cy=0]").contains("Hash").click()
-    cy.get("#hash_treatment_salt").type("{selectall}").type(PBKDF2_SALT)
+    cy.get("#hash_technique_salt").type("{selectall}").type(PBKDF2_SALT)
     cy.get("#after_output")
     cy.get("#after_output").should("have.value", "a163eb69d3ef8ba98f61b9fdb2852687f39b6870d72c7f9ef394ac91c219376b")
     // save
@@ -53,7 +53,7 @@ describe("Anonymization", () => {
     cy.get(".editable-cell-value-wrap").eq(1).click()
     cy.get(".ant-form-item-control-input").click()
     cy.get("[data-cy=1]").contains("Aggregate").click()
-    cy.get("#aggregate_treatment_precision").type("{selectall}").type("1")
+    cy.get("#aggregate_technique_precision").type("{selectall}").type("1")
     cy.get("#after_output").should("have.value", "10")
     // save
     cy.get("button").contains("Save").click()
@@ -86,7 +86,7 @@ describe("Anonymization", () => {
     cy.get(".editable-cell-value-wrap").eq(4).click()
     cy.get(".ant-form-item-control-input").click()
     cy.get("[data-cy=4]").contains("BlockWords").click()
-    cy.get("#blocknoise_treatment_word_list").type("phone").type("{enter}").type("laptop").type("{enter}")
+    cy.get("#blocknoise_technique_word_list").type("phone").type("{enter}").type("laptop").type("{enter}")
     cy.get("#before_output")
       .invoke("val")
       .then((text) => {
