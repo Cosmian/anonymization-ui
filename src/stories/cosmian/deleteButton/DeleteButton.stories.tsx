@@ -24,7 +24,7 @@ const Template: Story<DeleteButtonProps> = (args: any) => <DeleteButton {...args
 export const DeleteDatasource = Template.bind({})
 DeleteDatasource.args = {
   itemType: ItemType.Datasource,
-  itemName: "Clients informations",
+  itemName: "Client information",
 }
 
 export const DeleteParticipant = Template.bind({})

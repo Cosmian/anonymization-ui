@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Joi from "joi"
 
-const metaSchema = Joi.object({
+const metaMetadata = Joi.object({
   aborted: Joi.boolean(),
   cursor: Joi.number(),
   linebreak: Joi.string(),
@@ -10,15 +10,15 @@ const metaSchema = Joi.object({
   fields: Joi.array().items(Joi.string(), Joi.number()).length(3).required(),
 })
 
-const dataSchema = Joi.object({
+const dataMetadata = Joi.object({
   column_name: Joi.string().required(),
   type: Joi.string().valid("integer", "float", "text", "date").required(),
   example_value: Joi.string().required(),
 })
 
-const sourceSchema = Joi.object({
-  meta: metaSchema,
-  data: Joi.array().items(dataSchema),
+const sourceMetadata = Joi.object({
+  meta: metaMetadata,
+  data: Joi.array().items(dataMetadata),
   errors: Joi.array(), // array of any
 })
 
@@ -28,7 +28,7 @@ const csvValidation = async (parsedCSV: unknown): Promise<any> => {
     error: null as string | null,
   }
   try {
-    result.data = await sourceSchema.validateAsync(parsedCSV)
+    result.data = await sourceMetadata.validateAsync(parsedCSV)
     return result
   } catch (error: any) {
     let errorMessage = ""

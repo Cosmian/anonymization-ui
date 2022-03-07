@@ -4,41 +4,41 @@
   "description": "For test only",
   "created_at": "Wed, 20 Oct 2021 10:01:32 GMT",
   "input_dataset": {
-    "dataset_schema": [
+    "dataset_metadata": [
       {
         "key": 0,
         "name": "Client ID",
-        "format": "Integer",
+        "type": "Integer",
         "example": "19484340"
       },
       {
         "key": 1,
         "name": "Orders",
-        "format": "Integer",
+        "type": "Integer",
         "example": "13"
       },
       {
         "key": 2,
         "name": "Birth date",
-        "format": "Date",
+        "type": "Date",
         "example": "Wed, 10 Apr 1963 13:31:18 GMT"
       },
       {
         "key": 3,
         "name": "Registration date",
-        "format": "Date",
+        "type": "Date",
         "example": "Thu, 22 Oct 2020 10:30:30 +0100"
       },
       {
         "key": 4,
         "name": "Products",
-        "format": "Text",
+        "type": "Text",
         "example": "mobile, tech, phone, computer, laptop"
       }
     ],
     "file_info": {
       "last_modified": 1644252003647,
-      "name": "schema-ROCHE 2.csv",
+      "name": "metadata-ROCHE 2.csv",
       "size": 352,
       "type": "text/csv"
     }

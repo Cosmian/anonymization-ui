@@ -7,7 +7,7 @@ import React, { FC, useEffect, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
 import { roundDate, roundNumber } from "../../../../actions/anonymizations/aggregate"
 import { blockWords } from "../../../../actions/anonymizations/block-words"
-import { addNoiseToDate, gaussian, laplace } from "../../../../actions/anonymizations/noise-treatment"
+import { addNoiseToDate, gaussian, laplace } from "../../../../actions/anonymizations/noise-technique"
 import { prettyDate } from "../../../../actions/PrettyDates/PrettyDate"
 import {
   AddNoise,
@@ -15,27 +15,27 @@ import {
   AggregationType,
   BlockType,
   BlockWords,
-  Format,
+  DataType,
   Hash,
   HashFunction,
+  Metadata,
   NoiseType,
   PrecisionType,
-  Schema,
-  Treatment,
-  TreatmentOptions,
+  Technique,
+  TechniqueOptions,
 } from "../../../../redux/reducers/ciphercompute/anonymization/types"
-import { disableTreatment } from "../EditTreatment"
+import { disableTechnique } from "../EditTechnique"
 import OptionPanel from "./OptionPanel"
 
-type TreatmentOptionProps = {
-  activeRow: Schema
-  openInfo: (treatment: Treatment) => void
+type TechniqueOptionProps = {
+  activeRow: Metadata
+  openInfo: (technique: Technique) => void
   onCancel: () => void
-  onSave: (rowKey: number, treatment: Treatment, treatment_options?: TreatmentOptions, treated_example?: string) => void
-  onChangeTreatment: (treatment: Treatment) => void
+  onSave: (rowKey: number, technique: Technique, technique_options?: TechniqueOptions, treated_example?: string) => void
+  onChangeTechnique: (technique: Technique) => void
 }
-const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCancel, onSave, onChangeTreatment }) => {
-  const [activeTreatment, setActiveTreatment] = useState(activeRow.treatment as Treatment)
+const TechniqueOption: FC<TechniqueOptionProps> = ({ activeRow, openInfo, onCancel, onSave, onChangeTechnique }) => {
+  const [activeTechnique, setActiveTechnique] = useState(activeRow.technique as Technique)
   const [hashOptions, setHashOptions] = useState<Hash>()
   const [salt, setSalt] = useState("")
   const [displaySalt, setDisplaySalt] = useState(true)
@@ -47,13 +47,13 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
 
   // update active row from parent
   useEffect(() => {
-    setActiveTreatment(activeRow.treatment)
+    setActiveTechnique(activeRow.technique)
   }, [activeRow])
 
   // Default options
   useEffect(() => {
-    switch (activeTreatment) {
-      case Treatment.Hash:
+    switch (activeTechnique) {
+      case Technique.Hash:
         // Hash
         const newSalt = uuidv4()
         setHashOptions({
@@ -63,14 +63,14 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
         setSalt(newSalt)
         setTreated("")
         break
-      case Treatment.Aggregate:
+      case Technique.Aggregate:
         // Aggregate
-        if (activeRow.format === Format.Date) {
+        if (activeRow.type === DataType.Date) {
           setAggregationOptions({
             aggregation_type: AggregationType.Round,
             precision: PrecisionType.Minute,
           })
-        } else if (activeRow.format === Format.Float || activeRow.format === Format.Integer) {
+        } else if (activeRow.type === DataType.Float || activeRow.type === DataType.Integer) {
           setAggregationOptions({
             aggregation_type: AggregationType.Round,
             precision: 1,
@@ -78,15 +78,15 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
         }
         setTreated("")
         break
-      case Treatment.AddNoise:
+      case Technique.AddNoise:
         // AddNoise
-        if (activeRow.format === Format.Date) {
+        if (activeRow.type === DataType.Date) {
           setAddnoiseOptions({
             noise_type: NoiseType.Gaussian,
             standard_deviation: 10,
             precision_type: PrecisionType.Year,
           })
-        } else if (activeRow.format === Format.Float || activeRow.format === Format.Integer) {
+        } else if (activeRow.type === DataType.Float || activeRow.type === DataType.Integer) {
           setAddnoiseOptions({
             noise_type: NoiseType.Gaussian,
             standard_deviation: 1,
@@ -94,7 +94,7 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
         }
         setTreated("")
         break
-      case Treatment.BlockWords:
+      case Technique.BlockWords:
         // Block words
         setBlockwordsOptions({
           block_type: BlockType.Mask,
@@ -102,15 +102,15 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
         })
         setTreated("")
         break
-      case Treatment.None:
+      case Technique.None:
         setHashOptions(undefined)
     }
-  }, [activeTreatment, activeRow])
+  }, [activeTechnique, activeRow])
 
   // Output example
   useEffect(() => {
-    switch (activeTreatment) {
-      case Treatment.Hash:
+    switch (activeTechnique) {
+      case Technique.Hash:
         // Hash
         if (hashOptions != null && hashOptions.hash_function != null) {
           if (hashOptions.hash_function === HashFunction.SHA256) {
@@ -127,23 +127,23 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
           }
         }
         break
-      case Treatment.Aggregate:
+      case Technique.Aggregate:
         // Aggregate (round)
         if (aggregationOptions != null && aggregationOptions.aggregation_type != null) {
-          if (activeRow.format === Format.Integer || activeRow.format === Format.Float) {
+          if (activeRow.type === DataType.Integer || activeRow.type === DataType.Float) {
             const output = roundNumber(Number(activeRow.example), Number(aggregationOptions.precision))
             setTreated(output.toString())
           }
-          if (activeRow.format === Format.Date) {
+          if (activeRow.type === DataType.Date) {
             const output = roundDate(activeRow.example, aggregationOptions.precision as PrecisionType)
             setTreated(output.toUTCString())
           }
         }
         break
-      case Treatment.AddNoise:
+      case Technique.AddNoise:
         // AddNoise
         if (addnoiseOptions != null && addnoiseOptions.standard_deviation != null) {
-          if (activeRow.format === Format.Integer || activeRow.format === Format.Float) {
+          if (activeRow.type === DataType.Integer || activeRow.type === DataType.Float) {
             const before = Number(activeRow.example)
             const stdDeviation = Number(addnoiseOptions.standard_deviation)
             let noise: number
@@ -152,14 +152,14 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
             } else {
               noise = laplace(before, stdDeviation)
             }
-            if (activeRow.format === Format.Integer) {
+            if (activeRow.type === DataType.Integer) {
               noise = Math.round(noise)
               setTreated(noise.toString())
             } else {
               noise = round(noise, 2)
               setTreated(noise.toString())
             }
-          } else if (activeRow.format === Format.Date) {
+          } else if (activeRow.type === DataType.Date) {
             const date = new Date(activeRow.example)
             const output = addNoiseToDate(
               date,
@@ -171,7 +171,7 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
           }
         }
         break
-      case Treatment.BlockWords:
+      case Technique.BlockWords:
         // Block words
         if (blocwordsOptions != null && blocwordsOptions.word_list != null) {
           let result: string
@@ -184,15 +184,15 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
         }
         break
       default:
-        // No treatment
+        // No technique
         setTreated("")
     }
   }, [hashOptions, aggregationOptions, addnoiseOptions, blocwordsOptions])
 
   // Form handlers
-  const handleOnChangeTreatment = (value: Treatment): void => {
-    setActiveTreatment(value)
-    onChangeTreatment(value as Treatment)
+  const handleOnChangeTechnique = (value: Technique): void => {
+    setActiveTechnique(value)
+    onChangeTechnique(value as Technique)
   }
   const updateHashOptions = (): void => {
     const values = form.getFieldsValue()
@@ -260,30 +260,30 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
 
   // Set value for output > after
   const outputAfterValue = (): string => {
-    if (activeTreatment === Treatment.None && activeRow.format === Format.Date) {
+    if (activeTechnique === Technique.None && activeRow.type === DataType.Date) {
       return prettyDate(activeRow.example)
-    } else if (activeTreatment === Treatment.None && activeRow.format !== Format.Date) {
+    } else if (activeTechnique === Technique.None && activeRow.type !== DataType.Date) {
       return activeRow.example
     } else return treated
   }
 
   // Handle [Cancel] and [Save] buttons
-  const handleSaveTreatment = async (): Promise<void> => {
+  const handleSaveTechnique = async (): Promise<void> => {
     try {
       await form.validateFields()
-      switch (activeTreatment) {
-        case Treatment.Hash:
-          return onSave(activeRow.key, activeTreatment, hashOptions as Hash, treated)
-        case Treatment.Aggregate:
-          return onSave(activeRow.key, activeTreatment, aggregationOptions as Aggregate, treated)
-        case Treatment.AddNoise:
-          return onSave(activeRow.key, activeTreatment, addnoiseOptions as AddNoise, treated)
-        case Treatment.BlockWords:
-          return onSave(activeRow.key, activeTreatment, blocwordsOptions as BlockWords, treated)
-        case Treatment.None:
-          return onSave(activeRow.key, activeTreatment)
+      switch (activeTechnique) {
+        case Technique.Hash:
+          return onSave(activeRow.key, activeTechnique, hashOptions as Hash, treated)
+        case Technique.Aggregate:
+          return onSave(activeRow.key, activeTechnique, aggregationOptions as Aggregate, treated)
+        case Technique.AddNoise:
+          return onSave(activeRow.key, activeTechnique, addnoiseOptions as AddNoise, treated)
+        case Technique.BlockWords:
+          return onSave(activeRow.key, activeTechnique, blocwordsOptions as BlockWords, treated)
+        case Technique.None:
+          return onSave(activeRow.key, activeTechnique)
         default:
-          return onSave(activeRow.key, Treatment.None)
+          return onSave(activeRow.key, Technique.None)
       }
     } catch {
       form.scrollToField("salt")
@@ -298,7 +298,7 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
     hashOptions == null &&
     addnoiseOptions == null &&
     blocwordsOptions == null &&
-    activeTreatment !== Treatment.None
+    activeTechnique !== Technique.None
   ) {
     return <Skeleton />
   }
@@ -306,51 +306,51 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
   return (
     <OptionPanel>
       <OptionPanel.Title>{activeRow.name}</OptionPanel.Title>
-      <OptionPanel.Treatment>
-        <Select style={{ width: "100%" }} value={activeTreatment} onChange={(value) => handleOnChangeTreatment(value)}>
-          <Select.Option value={Treatment.None} disabled={disableTreatment(activeRow.format, Treatment.None)}>
-            {Treatment.None}
+      <OptionPanel.Technique>
+        <Select style={{ width: "100%" }} value={activeTechnique} onChange={(value) => handleOnChangeTechnique(value)}>
+          <Select.Option value={Technique.None} disabled={disableTechnique(activeRow.type, Technique.None)}>
+            {Technique.None}
           </Select.Option>
-          <Select.Option value={Treatment.Hash} disabled={disableTreatment(activeRow.format, Treatment.Hash)}>
-            {Treatment.Hash}
+          <Select.Option value={Technique.Hash} disabled={disableTechnique(activeRow.type, Technique.Hash)}>
+            {Technique.Hash}
           </Select.Option>
-          <Select.Option value={Treatment.Aggregate} disabled={disableTreatment(activeRow.format, Treatment.Aggregate)}>
-            {Treatment.Aggregate}
+          <Select.Option value={Technique.Aggregate} disabled={disableTechnique(activeRow.type, Technique.Aggregate)}>
+            {Technique.Aggregate}
           </Select.Option>
-          <Select.Option value={Treatment.AddNoise} disabled={disableTreatment(activeRow.format, Treatment.AddNoise)}>
-            {Treatment.AddNoise}
+          <Select.Option value={Technique.AddNoise} disabled={disableTechnique(activeRow.type, Technique.AddNoise)}>
+            {Technique.AddNoise}
           </Select.Option>
-          <Select.Option value={Treatment.BlockWords} disabled={disableTreatment(activeRow.format, Treatment.BlockWords)}>
-            {Treatment.BlockWords}
+          <Select.Option value={Technique.BlockWords} disabled={disableTechnique(activeRow.type, Technique.BlockWords)}>
+            {Technique.BlockWords}
           </Select.Option>
         </Select>
-      </OptionPanel.Treatment>
-      <OptionPanel.MoreInfo onClick={() => openInfo(activeTreatment)}>
-        {activeTreatment !== Treatment.None && (
+      </OptionPanel.Technique>
+      <OptionPanel.MoreInfo onClick={() => openInfo(activeTechnique)}>
+        {activeTechnique !== Technique.None && (
           <>
             <QuestionCircleFilled style={{ fontSize: 20 }} />
             <p>
-              Give me more information about <span className="strong">{activeTreatment}</span> treatment.
+              Give me more information about <span className="strong">{activeTechnique}</span> technique.
             </p>
           </>
         )}
       </OptionPanel.MoreInfo>
       <OptionPanel.Parameters>
         {(() => {
-          switch (activeTreatment) {
-            case Treatment.None:
+          switch (activeTechnique) {
+            case Technique.None:
               return (
                 <>
                   <p>No parameter</p>
                 </>
               )
-            case Treatment.Hash:
+            case Technique.Hash:
               if (hashOptions == null) {
                 return <Skeleton />
               } else {
                 return (
                   <>
-                    <Form form={form} name="hash_treatment">
+                    <Form form={form} name="hash_technique">
                       <Form.Item name="hash_function" initialValue={hashOptions.hash_function}>
                         <Select style={{ width: "100%" }} onChange={updateHashOptions}>
                           <Select.Option value={HashFunction.SHA256}>{HashFunction.SHA256}</Select.Option>
@@ -394,13 +394,13 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
                   </>
                 )
               }
-            case Treatment.Aggregate:
+            case Technique.Aggregate:
               if (aggregationOptions == null) {
                 return <Skeleton />
               } else {
                 return (
                   <>
-                    <Form form={form} name="aggregate_treatment">
+                    <Form form={form} name="aggregate_technique">
                       <Form.Item name="aggregation_type" initialValue={aggregationOptions.aggregation_type}>
                         <Select style={{ width: "100%" }} onChange={updateAggregationOptions}>
                           <Select.Option value={AggregationType.Round}>{AggregationType.Round}</Select.Option>
@@ -409,7 +409,7 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
                           </Select.Option>
                         </Select>
                       </Form.Item>
-                      {activeRow.format === Format.Date && (
+                      {activeRow.type === DataType.Date && (
                         <Space style={{ alignItems: "center" }}>
                           <p style={{ marginBottom: 24 }}>Precision: </p>
                           <Form.Item name="precision" initialValue={aggregationOptions.precision}>
@@ -423,7 +423,7 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
                           </Form.Item>
                         </Space>
                       )}
-                      {(activeRow.format === Format.Integer || activeRow.format === Format.Float) && (
+                      {(activeRow.type === DataType.Integer || activeRow.type === DataType.Float) && (
                         <Space style={{ alignItems: "center" }}>
                           <p style={{ marginBottom: 24 }}>Precision: </p>
                           <Form.Item name="precision" initialValue={aggregationOptions.precision}>
@@ -435,20 +435,20 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
                   </>
                 )
               }
-            case Treatment.AddNoise:
+            case Technique.AddNoise:
               if (addnoiseOptions == null) {
                 return <Skeleton />
               } else {
                 return (
                   <>
-                    <Form form={form} name="addnoise_treatment">
+                    <Form form={form} name="addnoise_technique">
                       <Form.Item name="noise_type" initialValue={addnoiseOptions.noise_type}>
                         <Select style={{ width: "100%" }} onChange={updateAddNoiseOptions}>
                           <Select.Option value={NoiseType.Gaussian}>{NoiseType.Gaussian}</Select.Option>
                           <Select.Option value={NoiseType.Laplace}>{NoiseType.Laplace}</Select.Option>
                         </Select>
                       </Form.Item>
-                      {(activeRow.format === Format.Integer || activeRow.format === Format.Float) && (
+                      {(activeRow.type === DataType.Integer || activeRow.type === DataType.Float) && (
                         <Space style={{ alignItems: "center" }}>
                           <p style={{ marginBottom: 24 }}>Standard deviation: </p>
                           <Form.Item name="standard_deviation" initialValue={addnoiseOptions.standard_deviation}>
@@ -456,7 +456,7 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
                           </Form.Item>
                         </Space>
                       )}
-                      {activeRow.format === Format.Date && (
+                      {activeRow.type === DataType.Date && (
                         <>
                           <p>Standard deviation: </p>
                           <Form.Item name="precision_type" initialValue={addnoiseOptions.precision_type}>
@@ -478,20 +478,20 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
                   </>
                 )
               }
-            case Treatment.BlockWords:
+            case Technique.BlockWords:
               if (blocwordsOptions == null) {
                 return <Skeleton />
               } else {
                 return (
                   <>
-                    <Form form={form} name="blocknoise_treatment">
+                    <Form form={form} name="blocknoise_technique">
                       <Form.Item name="block_type" initialValue={blocwordsOptions.block_type}>
                         <Select style={{ width: "100%" }} onChange={updateBlocWordsOptions}>
                           <Select.Option value={BlockType.Mask}>{BlockType.Mask}</Select.Option>
                           <Select.Option value={BlockType.Tokenize}>{BlockType.Tokenize}</Select.Option>
                         </Select>
                       </Form.Item>
-                      {activeRow.format === Format.Text && (
+                      {activeRow.type === DataType.Text && (
                         <>
                           <p style={{ marginBottom: ".5em" }}>Word list: </p>
                           <Form.Item name="word_list" initialValue={blocwordsOptions.word_list}>
@@ -517,7 +517,7 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
           <div>Before</div>
           <div>
             <Input
-              value={activeRow.format === Format.Date ? new Date(activeRow.example).toUTCString() : activeRow.example}
+              value={activeRow.type === DataType.Date ? new Date(activeRow.example).toUTCString() : activeRow.example}
               id="before_output"
             />
           </div>
@@ -533,7 +533,7 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
         <Button size="large" type="default" onClick={handleOnCancel}>
           Cancel
         </Button>
-        <Button size="large" type="primary" onClick={handleSaveTreatment}>
+        <Button size="large" type="primary" onClick={handleSaveTechnique}>
           Save
         </Button>
       </OptionPanel.Buttons>
@@ -541,4 +541,4 @@ const TreatmentOption: FC<TreatmentOptionProps> = ({ activeRow, openInfo, onCanc
   )
 }
 
-export default TreatmentOption
+export default TechniqueOption

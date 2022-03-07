@@ -4,7 +4,7 @@ import "./option-panel.less"
 
 interface OptionSubComponents extends React.FC<{ children: React.ReactNode }> {
   Title: typeof Title
-  Treatment: typeof Treatment
+  Technique: typeof Technique
   MoreInfo: typeof MoreInfo
   Parameters: typeof Parameters
   Outputs: typeof Outputs
@@ -14,18 +14,18 @@ interface OptionSubComponents extends React.FC<{ children: React.ReactNode }> {
 // TODO: find a type for { children }
 const OptionPanel: OptionSubComponents = ({ children }) => {
   const title = React.Children.map(children as React.ReactElement, (child: JSX.Element) => (child?.type === Title ? child : null))
-  const treatment = React.Children.map(children as React.ReactElement, (child) => (child?.type === Treatment ? child : null))
+  const technique = React.Children.map(children as React.ReactElement, (child) => (child?.type === Technique ? child : null))
   const moreInfo = React.Children.map(children as React.ReactElement, (child) => (child?.type === MoreInfo ? child : null))
   const parameters = React.Children.map(children as React.ReactElement, (child) => (child?.type === Parameters ? child : null))
   const outputs = React.Children.map(children as React.ReactElement, (child) => (child?.type === Outputs ? child : null))
   const buttons = React.Children.map(children as React.ReactElement, (child) => (child?.type === Buttons ? child : null))
 
   return (
-    <div className="treatment-option">
+    <div className="technique-option">
       <div className="column">{title}</div>
       <Row className="details" gutter={[0, 10]}>
-        <Col className="treatment" xs={24} md={12} lg={8}>
-          {treatment}
+        <Col className="technique" xs={24} md={12} lg={8}>
+          {technique}
           <div className="more-info">{moreInfo}</div>
         </Col>
         <Col className="parameters" xs={24} md={12} lg={8}>
@@ -50,16 +50,16 @@ const Title: FC = ({ children }) => {
 Title.displayName = "Title"
 OptionPanel.Title = Title
 
-const Treatment: FC = ({ children }) => {
+const Technique: FC = ({ children }) => {
   return (
     <>
-      <h5>Treatment</h5>
+      <h5>Technique</h5>
       {children}
     </>
   )
 }
-Treatment.displayName = "Treatment"
-OptionPanel.Treatment = Treatment
+Technique.displayName = "Technique"
+OptionPanel.Technique = Technique
 
 const MoreInfo: FC<MoreInfoProps> = ({ children, onClick }) => {
   return <div onClick={onClick}>{children}</div>

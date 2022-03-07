@@ -25,33 +25,33 @@ const blockWordsOptions = Joi.object({
   word_list: Joi.array().items(Joi.string()),
 })
 
-const datasetSchema = Joi.object({
+const datasetMetadata = Joi.object({
   key: Joi.number().required(),
   name: Joi.string().required(),
-  format: Joi.string().valid("Integer", "Text", "Float", "Date", "Boolean").required(),
+  type: Joi.string().valid("Integer", "Text", "Float", "Date", "Boolean").required(),
   example: Joi.string().required(),
-  treatment: Joi.string().valid("None", "Hash", "Aggregate", "AddNoise", "BlockWords").required(),
+  technique: Joi.string().valid("None", "Hash", "Aggregate", "AddNoise", "BlockWords").required(),
   // not required
-  treatment_options: Joi.alternatives().try(hashOptions, aggregateOptions, addNoiseOptions, blockWordsOptions),
+  technique_options: Joi.alternatives().try(hashOptions, aggregateOptions, addNoiseOptions, blockWordsOptions),
   treated_example: Joi.string(),
 })
 
-const inputDatasetSchema = Joi.object({
+const inputDatasetMetadata = Joi.object({
   file_info: {
     last_modified: Joi.date().timestamp().required(),
     name: Joi.string().required(),
     size: Joi.number().required(),
     type: Joi.string().valid("text/csv").required(),
   },
-  dataset_schema: Joi.array().items(datasetSchema),
+  dataset_metadata: Joi.array().items(datasetMetadata),
 })
 
-const configSchema = Joi.object({
+const configMetadata = Joi.object({
   uuid: Joi.string().required(),
   name: Joi.string().required(),
   description: Joi.string(),
   created_at: Joi.string().required(),
-  input_dataset: inputDatasetSchema,
+  input_dataset: inputDatasetMetadata,
 })
 
 const jsonValidation = async (parsedJSON: unknown): Promise<any> => {
@@ -60,7 +60,7 @@ const jsonValidation = async (parsedJSON: unknown): Promise<any> => {
     error: null as string | null,
   }
   try {
-    result.data = await configSchema.validateAsync(parsedJSON)
+    result.data = await configMetadata.validateAsync(parsedJSON)
     return result
   } catch (error: any) {
     let errorMessage = ""

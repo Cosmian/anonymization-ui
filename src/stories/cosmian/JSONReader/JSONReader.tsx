@@ -5,7 +5,7 @@ import FileTextOutlined from "@ant-design/icons/lib/icons/FileTextOutlined"
 import LoadingOutlined from "@ant-design/icons/lib/icons/LoadingOutlined"
 import { message, notification } from "antd"
 import React, { FC, useState } from "react"
-import jsonValidation from "../../../actions/anonymizations/schemaValidation"
+import jsonValidation from "../../../actions/anonymizations/metadataValidation"
 import "../CSVReader/csv-reader.less"
 
 const APP_JSON = "application/json"
@@ -90,46 +90,49 @@ const JSONReader: FC<JSONReaderProps> = ({ getResult, getFileInfo }): JSX.Elemen
   }
 
   return (
-    <div
-      className={`csv-dropzone ${hightLighted ? "hover" : ""} ${wrongFile ? "error" : ""}`}
-      onDragEnter={() => setHightLigted(true)}
-      onDragLeave={() => setHightLigted(false)}
-      onDragOver={(e) => {
-        handleOnDragOver(e)
-        handleOnDragOver(e)
-      }}
-      onDrop={(e) => handleOnDrop(e)}
-    >
-      {/* Default */}
-      {!onProcess && !wrongFile && fileInfos.name == null && (
-        <>
-          {hightLighted ? <FileAddOutlined /> : <FileTextOutlined />}
-          <p>
-            Drag and drop your JSON configuration file here <br />
-            or <label htmlFor="file_input">click here</label> to import file <br />
-            <input id="file_input" type="file" onInput={(event) => handleSelect(event)} accept={APP_JSON} />
-          </p>
-        </>
-      )}
-      {/* Loading (on process) */}
-      {onProcess && !wrongFile && <LoadingOutlined spin />}
+    <>
+      <div
+        className={`csv-dropzone ${hightLighted ? "hover" : ""} ${wrongFile ? "error" : ""}`}
+        onDragEnter={() => setHightLigted(true)}
+        onDragLeave={() => setHightLigted(false)}
+        onDragOver={(e) => {
+          handleOnDragOver(e)
+          handleOnDragOver(e)
+        }}
+        onDrop={(e) => handleOnDrop(e)}
+      >
+        {/* Default */}
+        {!onProcess && !wrongFile && fileInfos.name == null && (
+          <>
+            {hightLighted ? <FileAddOutlined /> : <FileTextOutlined />}
+            <p>
+              Drag and drop your JSON configuration file here <br />
+              or <label htmlFor="file_input">click here</label> to import a file <br />
+              <input id="file_input" type="file" onInput={(event) => handleSelect(event)} accept={APP_JSON} />
+            </p>
+          </>
+        )}
+        {/* Loading (on process) */}
+        {onProcess && !wrongFile && <LoadingOutlined spin />}
 
-      {/* Valid */}
-      {fileInfos.name != null && !wrongFile && (
-        <>
-          <FileDoneOutlined style={{ color: "#219653" }} />
-          <p>{fileInfos.name}</p>
-        </>
-      )}
+        {/* Valid */}
+        {fileInfos.name != null && !wrongFile && (
+          <>
+            <FileDoneOutlined style={{ color: "#219653" }} />
+            <p>{fileInfos.name}</p>
+          </>
+        )}
 
-      {/* Error */}
-      {wrongFile && (
-        <>
-          <ExceptionOutlined style={{ fontSize: 34 }} />
-          <p>Only support .json file. Please check your file type</p>
-        </>
-      )}
-    </div>
+        {/* Error */}
+        {wrongFile && (
+          <>
+            <ExceptionOutlined style={{ fontSize: 34 }} />
+            <p>Only support .json file. Please check your file type</p>
+          </>
+        )}
+      </div>
+      <div style={{ marginTop: ".25em" }}>Your file must have a .json extension.</div>
+    </>
   )
 }
 

@@ -1,6 +1,6 @@
 import { roundNumber } from "../../../src/actions/anonymizations/aggregate"
 
-describe("Unit test treatment functions", () => {})
+describe("Unit test technique functions", () => {})
 
 describe("actions", () => {
   context("roundNumber", () => {

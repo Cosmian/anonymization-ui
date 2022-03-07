@@ -8,16 +8,16 @@ import { useNavigate, useParams } from "react-router-dom"
 import { errorMessage } from "../../../actions/messages/messages"
 import { link_config } from "../../../configs/paths"
 import { cleanAnonymizationDetails, getOneAnonymization, updateAnonymization } from "../../../redux/actions/ciphercompute/anonymization"
-import { Format, Schema, Treatment, TreatmentOptions } from "../../../redux/reducers/ciphercompute/anonymization/types"
+import { DataType, Metadata, Technique, TechniqueOptions } from "../../../redux/reducers/ciphercompute/anonymization/types"
 import { RootState } from "../../../redux/reducers/RootReducer"
 import BackArrow from "../../../stories/cosmian/BackArrow/BackArrow"
 import PageTitle from "../../../stories/cosmian/PageTitle/PageTitle"
 import { Content } from "../layout/LayoutItems"
 import AnonymizationDrawer from "./components/AnonymizationDrawer"
-import TreatmentOption from "./components/TreatmentOptions"
-import "./edit-treatment.less"
+import TechniqueOption from "./components/TechniqueOptions"
+import "./edit-technique.less"
 
-const EditableContext = React.createContext<FormInstance<{ treatments: Treatment[] }> | null>(null)
+const EditableContext = React.createContext<FormInstance<{ techniques: Technique[] }> | null>(null)
 
 const mapDispatchToProps = {
   getOneAnonymization,
@@ -33,7 +33,7 @@ const mapStateToProps = (state: RootState) => {
 }
 
 const connector = connect(mapStateToProps, mapDispatchToProps)
-type EditTreatmentProps = ConnectedProps<typeof connector>
+type EditTechniqueProps = ConnectedProps<typeof connector>
 
 type EditableTableProps = Parameters<typeof Table>[0]
 type ColumnTypes = Exclude<EditableTableProps["columns"], undefined>
@@ -44,17 +44,17 @@ const initialTableColumns = [
     dataIndex: "name",
   },
   {
-    title: "Format",
-    dataIndex: "format",
+    title: "Type",
+    dataIndex: "type",
     width: 150,
-    render: (format: Format) => <Tag>{format}</Tag>,
+    render: (type: DataType) => <Tag>{type}</Tag>,
   },
   {
     title: "Example",
     dataIndex: "example",
     key: "example",
-    render: (example: string, dataset_schema: Schema) => {
-      if (dataset_schema.format === Format.Date) {
+    render: (example: string, dataset_metadata: Metadata) => {
+      if (dataset_metadata.type === DataType.Date) {
         const date = new Date(example)
         return <span>{date.toUTCString()}</span>
       } else {
@@ -63,12 +63,12 @@ const initialTableColumns = [
     },
   },
   {
-    title: "Treatment",
-    dataIndex: "treatment",
+    title: "Technique",
+    dataIndex: "technique",
     editable: true,
-    render: (treatment: Treatment) => (
-      <span className={treatment === Treatment.None ? "editable" : "editable strong"}>
-        {treatment}
+    render: (technique: Technique) => (
+      <span className={technique === Technique.None ? "editable" : "editable strong"}>
+        {technique}
         <EditOutlined style={{ marginLeft: 15 }} />
       </span>
     ),
@@ -79,18 +79,18 @@ const initialTableColumns = [
   },
 ] as ColumnTypes
 
-const EditTreatment: FC<EditTreatmentProps> = ({
+const EditTechnique: FC<EditTechniqueProps> = ({
   getOneAnonymization,
   updateAnonymization,
   cleanAnonymizationDetails,
   anonymizationDetails,
 }) => {
   const { anonymization_uuid } = useParams<{ anonymization_uuid: string }>()
-  const [datasetShema, setDatasetSchema] = useState([] as Schema[])
-  const [activeRow, setActiveRow] = useState<Schema | undefined>()
+  const [datasetShema, setDatasetMetadata] = useState([] as Metadata[])
+  const [activeRow, setActiveRow] = useState<Metadata | undefined>()
   const [displayDrawer, setDisplayDrawer] = useState(false)
   const [displayOption, setDisplayOption] = useState(false)
-  const [activeTreatment, setActiveTreatment] = useState<Treatment | undefined>()
+  const [activeTechnique, setActiveTechnique] = useState<Technique | undefined>()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -108,13 +108,13 @@ const EditTreatment: FC<EditTreatmentProps> = ({
 
   useEffect(() => {
     if (anonymizationDetails != null && !isEmpty(anonymizationDetails)) {
-      setDatasetSchema(anonymizationDetails.input_dataset.dataset_schema)
+      setDatasetMetadata(anonymizationDetails.input_dataset.dataset_metadata)
     }
   }, [anonymizationDetails])
 
-  const handleChange = (row: Schema): void => {
+  const handleChange = (row: Metadata): void => {
     setActiveRow(row)
-    setActiveTreatment(row.treatment)
+    setActiveTechnique(row.technique)
     setDisplayOption(true)
     window.scrollTo({
       top: 210,
@@ -122,29 +122,29 @@ const EditTreatment: FC<EditTreatmentProps> = ({
     })
   }
 
-  const handleSaveTreatment = (
+  const handleSaveTechnique = (
     rowKey: number,
-    treatment: Treatment,
-    treatment_options?: TreatmentOptions,
+    technique: Technique,
+    technique_options?: TechniqueOptions,
     treated_example?: string
   ): void => {
-    const updatedSchema = { ...datasetShema[rowKey] }
-    updatedSchema.treatment = treatment
-    if (treatment_options) {
-      updatedSchema.treatment_options = treatment_options
+    const updatedMetadata = { ...datasetShema[rowKey] }
+    updatedMetadata.technique = technique
+    if (technique_options) {
+      updatedMetadata.technique_options = technique_options
     }
     if (treated_example) {
-      updatedSchema.treated_example = treated_example
+      updatedMetadata.treated_example = treated_example
     }
-    if (treatment === Treatment.None) {
-      delete updatedSchema.treatment_options
-      delete updatedSchema.treated_example
+    if (technique === Technique.None) {
+      delete updatedMetadata.technique_options
+      delete updatedMetadata.treated_example
     }
     const newData = [...datasetShema]
-    newData[rowKey] = updatedSchema
-    setDatasetSchema(newData)
+    newData[rowKey] = updatedMetadata
+    setDatasetMetadata(newData)
     const anonymizationToUpdate = { ...anonymizationDetails }
-    anonymizationToUpdate.input_dataset.dataset_schema = newData
+    anonymizationToUpdate.input_dataset.dataset_metadata = newData
     updateAnonymization(anonymizationToUpdate)
     setDisplayOption(false)
   }
@@ -168,7 +168,7 @@ const EditTreatment: FC<EditTreatmentProps> = ({
     }
     return {
       ...col,
-      onCell: (record: Schema) => ({
+      onCell: (record: Metadata) => ({
         record,
         editable: col.editable,
         dataIndex: col.dataIndex,
@@ -197,18 +197,18 @@ const EditTreatment: FC<EditTreatmentProps> = ({
 
   return (
     <>
-      <PageTitle title="Anonymization" subtitle={`Provide privacy treatments.`}></PageTitle>
+      <PageTitle title="Anonymization" subtitle={`Provide privacy techniques.`}></PageTitle>
       <BackArrow text="Back to anonymizations list" url={link_config.anonymizations} />
       <Content>
         <div className="edit-dataset">
           <h2>{anonymizationDetails.name}</h2>
           {activeRow != null && displayOption && (
-            <TreatmentOption
+            <TechniqueOption
               activeRow={activeRow}
               openInfo={() => setDisplayDrawer(true)}
               onCancel={handleOnCancel}
-              onSave={handleSaveTreatment}
-              onChangeTreatment={setActiveTreatment}
+              onSave={handleSaveTechnique}
+              onChangeTechnique={setActiveTechnique}
             />
           )}
           <Table
@@ -222,7 +222,7 @@ const EditTreatment: FC<EditTreatmentProps> = ({
             pagination={false}
           />
         </div>
-        <AnonymizationDrawer visible={displayDrawer} treatment={activeTreatment} closeDrawer={() => setDisplayDrawer(false)} />
+        <AnonymizationDrawer visible={displayDrawer} technique={activeTechnique} closeDrawer={() => setDisplayDrawer(false)} />
         <Space style={{ marginTop: 30, width: "100%", justifyContent: "flex-end" }}>
           <Button size="large" type="primary" onClick={downloadFile}>
             Download configuration file
@@ -233,14 +233,14 @@ const EditTreatment: FC<EditTreatmentProps> = ({
   )
 }
 
-export default connector(EditTreatment)
+export default connector(EditTechnique)
 
 interface EditableRowProps {
   index: number
   children?: React.ReactNode
 }
 const EditableRow: React.FC<EditableRowProps> = ({ ...props }) => {
-  const [form] = Form.useForm<{ treatments: Treatment[] }>()
+  const [form] = Form.useForm<{ techniques: Technique[] }>()
   return (
     <Form form={form} component={false}>
       <EditableContext.Provider value={form}>
@@ -254,9 +254,9 @@ interface EditableCellProps {
   title: React.ReactNode
   editable: boolean
   children: React.ReactNode
-  dataIndex: keyof Schema
-  record: Schema
-  handleChange: (record: Schema) => void
+  dataIndex: keyof Metadata
+  record: Metadata
+  handleChange: (record: Metadata) => void
 }
 const EditableCell: React.FC<EditableCellProps> = ({ title, editable, children, dataIndex, record, handleChange, ...restProps }) => {
   const [editing, setEditing] = useState(false)
@@ -265,7 +265,7 @@ const EditableCell: React.FC<EditableCellProps> = ({ title, editable, children, 
 
   useEffect(() => {
     if (editing) {
-      inputRef.current?.focus() // Focus on selected treatment
+      inputRef.current?.focus() // Focus on selected technique
     }
   }, [editing])
 
@@ -300,24 +300,20 @@ const EditableCell: React.FC<EditableCellProps> = ({ title, editable, children, 
           ]}
         >
           <Select onSelect={onChange} onBlur={onChange}>
-            <Select.Option value={Treatment.None} disabled={disableTreatment(record.format, Treatment.None)} data-cy={record.key}>
-              {Treatment.None}
+            <Select.Option value={Technique.None} disabled={disableTechnique(record.type, Technique.None)} data-cy={record.key}>
+              {Technique.None}
             </Select.Option>
-            <Select.Option value={Treatment.Hash} disabled={disableTreatment(record.format, Treatment.Hash)} data-cy={record.key}>
-              {Treatment.Hash}
+            <Select.Option value={Technique.Hash} disabled={disableTechnique(record.type, Technique.Hash)} data-cy={record.key}>
+              {Technique.Hash}
             </Select.Option>
-            <Select.Option value={Treatment.Aggregate} disabled={disableTreatment(record.format, Treatment.Aggregate)} data-cy={record.key}>
-              {Treatment.Aggregate}
+            <Select.Option value={Technique.Aggregate} disabled={disableTechnique(record.type, Technique.Aggregate)} data-cy={record.key}>
+              {Technique.Aggregate}
             </Select.Option>
-            <Select.Option value={Treatment.AddNoise} disabled={disableTreatment(record.format, Treatment.AddNoise)} data-cy={record.key}>
-              {Treatment.AddNoise}
+            <Select.Option value={Technique.AddNoise} disabled={disableTechnique(record.type, Technique.AddNoise)} data-cy={record.key}>
+              {Technique.AddNoise}
             </Select.Option>
-            <Select.Option
-              value={Treatment.BlockWords}
-              disabled={disableTreatment(record.format, Treatment.BlockWords)}
-              data-cy={record.key}
-            >
-              {Treatment.BlockWords}
+            <Select.Option value={Technique.BlockWords} disabled={disableTechnique(record.type, Technique.BlockWords)} data-cy={record.key}>
+              {Technique.BlockWords}
             </Select.Option>
           </Select>
         </Form.Item>
@@ -334,17 +330,17 @@ const EditableCell: React.FC<EditableCellProps> = ({ title, editable, children, 
   return <td {...restProps}>{childNode}</td>
 }
 
-// function to disable options in treatment list
-export const disableTreatment = (format: Format, treatment: Treatment): boolean => {
-  switch (treatment) {
-    case Treatment.Hash:
-      return !(format === Format.Integer || format === Format.Float || format === Format.Text)
-    case Treatment.Aggregate:
-    case Treatment.AddNoise:
-      return !(format === Format.Date || format === Format.Integer || format === Format.Float)
-    case Treatment.BlockWords:
-      return !(format === Format.Text)
-    case Treatment.None:
+// function to disable options in technique list
+export const disableTechnique = (type: DataType, technique: Technique): boolean => {
+  switch (technique) {
+    case Technique.Hash:
+      return !(type === DataType.Integer || type === DataType.Float || type === DataType.Text)
+    case Technique.Aggregate:
+    case Technique.AddNoise:
+      return !(type === DataType.Date || type === DataType.Integer || type === DataType.Float)
+    case Technique.BlockWords:
+      return !(type === DataType.Text)
+    case Technique.None:
       return false
     default:
       return true

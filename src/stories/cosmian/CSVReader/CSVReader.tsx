@@ -99,46 +99,49 @@ const CSVReader: FC<CSVReaderProps> = ({ getResult, getFileInfo, updateFile }): 
   }
 
   return (
-    <div
-      className={`csv-dropzone ${hightLighted ? "hover" : ""} ${wrongFile ? "error" : ""}`}
-      onDragEnter={() => setHightLigted(true)}
-      onDragLeave={() => setHightLigted(false)}
-      onDragOver={(e) => {
-        handleOnDragOver(e)
-        handleOnDragOver(e)
-      }}
-      onDrop={(e) => handleOnDrop(e)}
-    >
-      {/* Default */}
-      {!onProcess && !wrongFile && fileInfos.name == null && (
-        <>
-          {hightLighted ? <FileAddOutlined /> : <FileTextOutlined />}
-          <p>
-            Drag and drop your .csv file here <br />
-            or <label htmlFor="file_input">click here</label> to import file <br />
-            <input id="file_input" type="file" onInput={(e) => handleSelect(e)} accept={TEXT_CSV} />
-          </p>
-        </>
-      )}
-      {/* Loading (on process) */}
-      {onProcess && !wrongFile && <LoadingOutlined spin />}
+    <>
+      <div
+        className={`csv-dropzone ${hightLighted ? "hover" : ""} ${wrongFile ? "error" : ""}`}
+        onDragEnter={() => setHightLigted(true)}
+        onDragLeave={() => setHightLigted(false)}
+        onDragOver={(e) => {
+          handleOnDragOver(e)
+          handleOnDragOver(e)
+        }}
+        onDrop={(e) => handleOnDrop(e)}
+      >
+        {/* Default */}
+        {!onProcess && !wrongFile && fileInfos.name == null && (
+          <>
+            {hightLighted ? <FileAddOutlined /> : <FileTextOutlined />}
+            <p>
+              Drag and drop your .csv file here <br />
+              or <label htmlFor="file_input">click here</label> to import a file <br />
+              <input id="file_input" type="file" onInput={(e) => handleSelect(e)} accept={TEXT_CSV} />
+            </p>
+          </>
+        )}
+        {/* Loading (on process) */}
+        {onProcess && !wrongFile && <LoadingOutlined spin />}
 
-      {/* Valid */}
-      {fileInfos.name != null && !wrongFile && (
-        <>
-          <FileDoneOutlined style={{ fontSize: 34, color: "#219653", marginBottom: 10 }} />
-          <p>{fileInfos.name}</p>
-        </>
-      )}
+        {/* Valid */}
+        {fileInfos.name != null && !wrongFile && (
+          <>
+            <FileDoneOutlined style={{ fontSize: 34, color: "#219653", marginBottom: 10 }} />
+            <p>{fileInfos.name}</p>
+          </>
+        )}
 
-      {/* Error */}
-      {wrongFile && (
-        <>
-          <ExceptionOutlined />
-          <p>Only support .csv file. Please check your file type</p>
-        </>
-      )}
-    </div>
+        {/* Error */}
+        {wrongFile && (
+          <>
+            <ExceptionOutlined />
+            <p>Only support .csv file. Please check your file type.</p>
+          </>
+        )}
+      </div>
+      <div style={{ marginTop: ".25em" }}>Your file must have a .csv extension. The delimiter can be a comma or a semicolon.</div>
+    </>
   )
 }
 

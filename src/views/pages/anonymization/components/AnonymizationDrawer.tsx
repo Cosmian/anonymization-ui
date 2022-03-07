@@ -1,16 +1,16 @@
 import { Drawer } from "antd"
 import React, { FC, useEffect, useState } from "react"
 import ActiveOptions from "../../../../assets/img/illustrations/active-options.svg"
-import { Treatment } from "../../../../redux/reducers/ciphercompute/anonymization/types"
+import { Technique } from "../../../../redux/reducers/ciphercompute/anonymization/types"
 import "./anonymization-drawer.less"
 
 type AnonymizationDrawerProps = {
   visible: boolean
-  treatment: Treatment | undefined
+  technique: Technique | undefined
   closeDrawer: () => void
 }
 
-const AnonymizationDrawer: FC<AnonymizationDrawerProps> = ({ visible, treatment, closeDrawer }) => {
+const AnonymizationDrawer: FC<AnonymizationDrawerProps> = ({ visible, technique, closeDrawer }) => {
   const [drawerVisible, setDrawerVisible] = useState(false)
 
   useEffect(() => {
@@ -21,8 +21,8 @@ const AnonymizationDrawer: FC<AnonymizationDrawerProps> = ({ visible, treatment,
     <Drawer placement="right" width={380} onClose={closeDrawer} visible={drawerVisible} className="anonym-drawer">
       <img src={ActiveOptions} />
       {(() => {
-        switch (treatment) {
-          case Treatment.Hash:
+        switch (technique) {
+          case Technique.Hash:
             return (
               <>
                 <h3>Hash function</h3>
@@ -41,7 +41,7 @@ const AnonymizationDrawer: FC<AnonymizationDrawerProps> = ({ visible, treatment,
                 </p>
               </>
             )
-          case Treatment.Aggregate:
+          case Technique.Aggregate:
             return (
               <>
                 <h3>Aggregation and K-anonymity</h3>
@@ -60,7 +60,7 @@ const AnonymizationDrawer: FC<AnonymizationDrawerProps> = ({ visible, treatment,
                 </p>
               </>
             )
-          case Treatment.AddNoise:
+          case Technique.AddNoise:
             return (
               <>
                 <h3>Noise addition</h3>
@@ -81,12 +81,12 @@ const AnonymizationDrawer: FC<AnonymizationDrawerProps> = ({ visible, treatment,
                 </p>
               </>
             )
-          case Treatment.BlockWords:
+          case Technique.BlockWords:
             return (
               <>
                 <h3>Block words</h3>
                 <p>
-                  This treatment can be used to hide certain sensitive words from your dataset. These words can be either masked, i.e.
+                  This technique can be used to hide certain sensitive words from your dataset. These words can be either masked, i.e.
                   replaced with XXXX, or tokenized, i.e. replace with a non-deterministic UID. During the anonymization, every occurrence of
                   a word that is in the word list will be tokenized by the same UID. But if you create new anonymization, a new UID will be
                   generated, even if the word is the same. Also, please note that this system does not provide any way to decipher the token
