@@ -2,22 +2,17 @@ import { NoiseType, PrecisionType } from "../../redux/reducers/ciphercompute/ano
 
 // GAUSSIAN
 export const gaussian = (mean: number, stdev: number): number => {
-  let y1: number
-  const result = (): number => {
-    let x1, x2, w
-    do {
-      x1 = 2.0 * Math.random() - 1.0
-      x2 = 2.0 * Math.random() - 1.0
-      w = x1 * x1 + x2 * x2
-    } while (w >= 1.0)
-    w = Math.sqrt((-2.0 * Math.log(w)) / w)
-    y1 = x1 * w
+  let x1, x2, w
+  do {
+    x1 = 2.0 * Math.random() - 1.0
+    x2 = 2.0 * Math.random() - 1.0
+    w = x1 * x1 + x2 * x2
+  } while (w >= 1.0)
+  w = Math.sqrt((-2.0 * Math.log(w)) / w)
+  const y1 = x1 * w
 
-    const retval = mean + stdev * y1
-    if (retval > 0) return retval
-    return -retval
-  }
-  return result()
+  const retval = mean + stdev * y1
+  return retval
 }
 
 // LAPLACE

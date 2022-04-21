@@ -82,94 +82,97 @@ const HelpPage = (): JSX.Element => {
           or see the structure below:
         </p>
         <table>
-          <tr>
-            <th>column_name</th>
-            <th>type</th>
-            <th>example_value</th>
-          </tr>
-          <tr>
-            <td>Site ID</td>
-            <td>integer</td>
-            <td>23578901</td>
-          </tr>
-          <tr>
-            <td>Brand ID</td>
-            <td>integer</td>
-            <td>26419574</td>
-          </tr>
-          <tr>
-            <td>Product ID</td>
-            <td>integer</td>
-            <td>167836</td>
-          </tr>
-          <tr>
-            <td>Price</td>
-            <td>float</td>
-            <td>189.25</td>
-          </tr>
-          <tr>
-            <td>Stock</td>
-            <td>integer</td>
-            <td>200</td>
-          </tr>
-          <tr>
-            <td>Promotion</td>
-            <td>float</td>
-            <td>18.75</td>
-          </tr>
-          <tr>
-            <td>Product release</td>
-            <td>date</td>
-            <td>02/16/2022</td>
-          </tr>
-          <tr>
-            <td>Product expiration</td>
-            <td>date</td>
-            <td>Monday 1 January 2029 00:00:00</td>
-          </tr>
-          <tr>
-            <td>Discount expiration</td>
-            <td>date</td>
-            <td>Thursday 14 July 2022 00:00:00</td>
-          </tr>
-          <tr>
-            <td>Product name</td>
-            <td>text</td>
-            <td>Techilog Wireless Keyboard</td>
-          </tr>
-          <tr>
-            <td>Brand</td>
-            <td>text</td>
-            <td>Techilog</td>
-          </tr>
-          <tr>
-            <td>Tags</td>
-            <td>text</td>
-            <td>techilog, keyboard, wireless</td>
-          </tr>
-          <tr>
-            <td>Category</td>
-            <td>text</td>
-            <td>keyboard</td>
-          </tr>
-          <tr>
-            <td>Description</td>
-            <td>text</td>
-            <td>
-              Techilog advanced 2.4 GHz wireless connectivity gives you the reliability of a cord plus wireless convenience and freedom—fast
-              data transmission, virtually no delays or dropouts, and wireless encryption.
-            </td>
-          </tr>
-          <tr>
-            <td>Comments</td>
-            <td>text</td>
-            <td>
-              Quantity paddle on both Techilog vertical integration work flows. Quarterly sales are at an all-time low rehydrate the team
-              exposing new ways to evolve our design language 4-blocker and conversational banana, show pony sorry i was triple muted. Pull
-              in ten extra bodies to help roll the tortoise. Copy and paste from stack overflow we don't need to boil the ocean here prairie
-              dogging, for waste of resources, or on this journey for incentivize adoption. Tribal knowledge window of opportunity.
-            </td>
-          </tr>
+          <tbody>
+            <tr>
+              <th>column_name</th>
+              <th>type</th>
+              <th>example_value</th>
+            </tr>
+            <tr>
+              <td>Site ID</td>
+              <td>integer</td>
+              <td>23578901</td>
+            </tr>
+            <tr>
+              <td>Brand ID</td>
+              <td>integer</td>
+              <td>26419574</td>
+            </tr>
+            <tr>
+              <td>Product ID</td>
+              <td>integer</td>
+              <td>167836</td>
+            </tr>
+            <tr>
+              <td>Price</td>
+              <td>float</td>
+              <td>189.25</td>
+            </tr>
+            <tr>
+              <td>Stock</td>
+              <td>integer</td>
+              <td>200</td>
+            </tr>
+            <tr>
+              <td>Promotion</td>
+              <td>float</td>
+              <td>18.75</td>
+            </tr>
+            <tr>
+              <td>Product release</td>
+              <td>date</td>
+              <td>02/16/2022</td>
+            </tr>
+            <tr>
+              <td>Product expiration</td>
+              <td>date</td>
+              <td>Monday 1 January 2029 00:00:00</td>
+            </tr>
+            <tr>
+              <td>Discount expiration</td>
+              <td>date</td>
+              <td>Thursday 14 July 2022 00:00:00</td>
+            </tr>
+            <tr>
+              <td>Product name</td>
+              <td>text</td>
+              <td>Techilog Wireless Keyboard</td>
+            </tr>
+            <tr>
+              <td>Brand</td>
+              <td>text</td>
+              <td>Techilog</td>
+            </tr>
+            <tr>
+              <td>Tags</td>
+              <td>text</td>
+              <td>techilog, keyboard, wireless</td>
+            </tr>
+            <tr>
+              <td>Category</td>
+              <td>text</td>
+              <td>keyboard</td>
+            </tr>
+            <tr>
+              <td>Description</td>
+              <td>text</td>
+              <td>
+                Techilog advanced 2.4 GHz wireless connectivity gives you the reliability of a cord plus wireless convenience and
+                freedom—fast data transmission, virtually no delays or dropouts, and wireless encryption.
+              </td>
+            </tr>
+            <tr>
+              <td>Comments</td>
+              <td>text</td>
+              <td>
+                Quantity paddle on both Techilog vertical integration work flows. Quarterly sales are at an all-time low rehydrate the team
+                exposing new ways to evolve our design language 4-blocker and conversational banana, show pony sorry i was triple muted.
+                Pull in ten extra bodies to help roll the tortoise. Copy and paste from stack overflow we don't need to boil the ocean here
+                prairie dogging, for waste of resources, or on this journey for incentivize adoption. Tribal knowledge window of
+                opportunity.
+              </td>
+            </tr>
+          </tbody>
         </table>
         <Title level={2} id="step2">
           2. Configure anonymization techniques
