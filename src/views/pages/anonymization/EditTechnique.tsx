@@ -8,7 +8,16 @@ import { useNavigate, useParams } from "react-router-dom"
 import { errorMessage } from "../../../actions/messages/messages"
 import { link_config } from "../../../configs/paths"
 import { cleanAnonymizationDetails, getOneAnonymization, updateAnonymization } from "../../../redux/actions/ciphercompute/anonymization"
-import { DataType, Metadata, Technique, TechniqueOptions } from "../../../redux/reducers/ciphercompute/anonymization/types"
+import {
+  AddNoise,
+  Aggregate,
+  BlockWords,
+  DataType,
+  Hash,
+  Metadata,
+  Technique,
+  TechniqueOptions,
+} from "../../../redux/reducers/ciphercompute/anonymization/types"
 import { RootState } from "../../../redux/reducers/RootReducer"
 import BackArrow from "../../../stories/cosmian/BackArrow/BackArrow"
 import PageTitle from "../../../stories/cosmian/PageTitle/PageTitle"
@@ -74,10 +83,78 @@ const initialTableColumns = [
     ),
   },
   {
+    title: "Technique details",
+    render: (anonymization: Metadata) => getDetails(anonymization),
+  },
+  {
     title: "Treated example",
     dataIndex: "treated_example",
   },
 ] as ColumnTypes
+
+const getDetails = (anonymizationdata: Metadata): JSX.Element => {
+  if (anonymizationdata.technique_options == null) {
+    return <span>{"–"}</span>
+  } else if (anonymizationdata.technique === Technique.Hash) {
+    return (
+      <>
+        <div>
+          <span className="strong">Hash:</span> {(anonymizationdata.technique_options as Hash).hash_function}
+        </div>
+        <div>
+          <span className="strong">Salt:</span>{" "}
+          {(anonymizationdata.technique_options as Hash).salt ? (anonymizationdata.technique_options as Hash).salt : "no"}
+        </div>
+      </>
+    )
+  } else if (anonymizationdata.technique === Technique.AddNoise) {
+    return (
+      <>
+        <div>
+          <span className="strong">Noise type:</span> {(anonymizationdata.technique_options as AddNoise).noise_type}
+        </div>
+        <div>
+          <span className="strong">Standard deviation:</span> {(anonymizationdata.technique_options as AddNoise).standard_deviation}
+        </div>
+        {anonymizationdata.type === DataType.Date && (
+          <div>
+            <span className="strong">Precision:</span> {(anonymizationdata.technique_options as AddNoise).precision_type}
+          </div>
+        )}
+      </>
+    )
+  } else if (anonymizationdata.technique === Technique.Aggregate) {
+    return (
+      <>
+        <div>
+          <span className="strong">Aggregation type:</span> {(anonymizationdata.technique_options as Aggregate).aggregation_type}
+        </div>
+        <div>
+          <span className="strong">Precision:</span> {(anonymizationdata.technique_options as Aggregate).precision}
+        </div>
+      </>
+    )
+  } else if (anonymizationdata.technique === Technique.BlockWords) {
+    return (
+      <>
+        <div>
+          <span className="strong">Block type:</span> {(anonymizationdata.technique_options as BlockWords).block_type}
+        </div>
+        <div>
+          <span className="strong">Word list:</span>{" "}
+          {(anonymizationdata.technique_options as BlockWords).word_list.map((word, index) => (
+            <>
+              {word}
+              {index < (anonymizationdata.technique_options as BlockWords).word_list.length - 1 ? ", " : ""}
+            </>
+          ))}
+        </div>
+      </>
+    )
+  } else {
+    return <>-</>
+  }
+}
 
 const EditTechnique: FC<EditTechniqueProps> = ({
   getOneAnonymization,

@@ -57,50 +57,70 @@ const TechniqueOption: FC<TechniqueOptionProps> = ({ activeRow, openInfo, onCanc
         // Hash
         const newSalt = uuidv4()
         setHashOptions({
-          hash_function: HashFunction.SHA256,
-          salt: newSalt,
+          hash_function: (activeRow.technique_options as Hash)?.hash_function
+            ? (activeRow.technique_options as Hash).hash_function
+            : HashFunction.SHA256,
+          salt: (activeRow.technique_options as Hash)?.salt ? (activeRow.technique_options as Hash).salt : newSalt,
         })
-        setSalt(newSalt)
-        setTreated("")
+        setSalt((activeRow.technique_options as Hash)?.salt ? ((activeRow.technique_options as Hash).salt as string) : newSalt)
+        setTreated(activeRow.treated_example ? activeRow.treated_example : "")
         break
       case Technique.Aggregate:
         // Aggregate
         if (activeRow.type === DataType.Date) {
           setAggregationOptions({
-            aggregation_type: AggregationType.Round,
-            precision: PrecisionType.Minute,
+            aggregation_type: (activeRow.technique_options as Aggregate)?.aggregation_type
+              ? (activeRow.technique_options as Aggregate).aggregation_type
+              : AggregationType.Round,
+            precision: (activeRow.technique_options as Aggregate)?.precision
+              ? (activeRow.technique_options as Aggregate)?.precision
+              : PrecisionType.Minute,
           })
         } else if (activeRow.type === DataType.Float || activeRow.type === DataType.Integer) {
           setAggregationOptions({
-            aggregation_type: AggregationType.Round,
-            precision: 1,
+            aggregation_type: (activeRow.technique_options as Aggregate)?.aggregation_type
+              ? (activeRow.technique_options as Aggregate)?.aggregation_type
+              : AggregationType.Round,
+            precision: (activeRow.technique_options as Aggregate)?.precision ? (activeRow.technique_options as Aggregate)?.precision : 1,
           })
         }
-        setTreated("")
+        setTreated(activeRow.treated_example ? activeRow.treated_example : "")
         break
       case Technique.AddNoise:
         // AddNoise
         if (activeRow.type === DataType.Date) {
           setAddnoiseOptions({
-            noise_type: NoiseType.Gaussian,
-            standard_deviation: 10,
-            precision_type: PrecisionType.Year,
+            noise_type: (activeRow.technique_options as AddNoise)?.noise_type
+              ? (activeRow.technique_options as AddNoise).noise_type
+              : NoiseType.Gaussian,
+            standard_deviation: (activeRow.technique_options as AddNoise)?.standard_deviation
+              ? (activeRow.technique_options as AddNoise).standard_deviation
+              : 10,
+            precision_type: (activeRow.technique_options as AddNoise)?.precision_type
+              ? (activeRow.technique_options as AddNoise).precision_type
+              : PrecisionType.Year,
           })
         } else if (activeRow.type === DataType.Float || activeRow.type === DataType.Integer) {
           setAddnoiseOptions({
-            noise_type: NoiseType.Gaussian,
-            standard_deviation: 1,
+            noise_type: (activeRow.technique_options as AddNoise)?.noise_type
+              ? (activeRow.technique_options as AddNoise).noise_type
+              : NoiseType.Gaussian,
+            standard_deviation: (activeRow.technique_options as AddNoise)?.standard_deviation
+              ? (activeRow.technique_options as AddNoise).standard_deviation
+              : 1,
           })
         }
-        setTreated("")
+        setTreated(activeRow.treated_example ? activeRow.treated_example : "")
         break
       case Technique.BlockWords:
         // Block words
         setBlockwordsOptions({
-          block_type: BlockType.Mask,
-          word_list: [],
+          block_type: (activeRow.technique_options as BlockWords)?.block_type
+            ? (activeRow.technique_options as BlockWords).block_type
+            : BlockType.Mask,
+          word_list: (activeRow.technique_options as BlockWords)?.word_list ? (activeRow.technique_options as BlockWords).word_list : [],
         })
-        setTreated("")
+        setTreated(activeRow.treated_example ? activeRow.treated_example : "")
         break
       case Technique.None:
         setHashOptions(undefined)
