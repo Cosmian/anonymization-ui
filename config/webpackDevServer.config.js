@@ -62,7 +62,7 @@ module.exports = function (proxy, allowedHosts) {
     // in the webpack development configuration. Note that only changes
     // to CSS are currently hot reloaded. JS changes will refresh the browser.
     hot: true,
-    port: 3000,
+    port: 3001,
     // Use 'ws' instead of 'sockjs-node' on server since we're using native
     // websockets in `webpackHotDevClient`.
     // transportMode: "ws",

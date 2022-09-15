@@ -68,7 +68,6 @@ const CSVReader: FC<CSVReaderProps> = ({ getResult, getFileInfo, updateFile }): 
         .forEach(async (file) => {
           const text = await file.text()
           const result = parse(text, { header: true })
-          console.log(result)
           // verify
           const validation = await csvValidation(result)
           if (validation.error) {

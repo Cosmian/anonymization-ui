@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "lint": "eslint '*/**/*.{ts,tsx}' --fix",
-    "start": "node ./scripts/start.js",
+    "start": "PORT=3001 node ./scripts/start.js",
     "build": "npx webpack build --mode production --config ./config/webpack.config.js",
     "cypress:open": "cypress open",
-    "test:e2e": "wait-on -t 200000 http://localhost:3000 && cypress run --headless --browser chrome",
+    "test:e2e": "wait-on -t 200000 http://localhost:3001 && cypress run --headless --browser chrome",
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public"
   },
@@ -28,7 +28,6 @@
     "case-sensitive-paths-webpack-plugin": "2.4.0",
     "classnames": "^2.3.1",
     "codemirror": "^5.63.3",
-    "cosmian_jslib": "^0.2.10",
     "crypto-js": "^4.1.1",
     "css-loader": "^4.3.0",
     "cypress": "~8.5.0",

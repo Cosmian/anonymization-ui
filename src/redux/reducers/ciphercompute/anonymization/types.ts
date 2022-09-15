@@ -60,6 +60,7 @@ export interface Anonymization {
 export interface InputDataset {
   dataset_metadata: Metadata[]
   file_info: FileInfo
+  delimiter?: string
 }
 export interface FileInfo {
   last_modified: number
