@@ -44,6 +44,7 @@ const inputDatasetMetadata = Joi.object({
     type: Joi.string().valid("text/csv").required(),
   },
   dataset_metadata: Joi.array().items(datasetMetadata),
+  delimiter: Joi.string(),
 })
 
 const configMetadata = Joi.object({

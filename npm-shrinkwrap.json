@@ -24,7 +24,6 @@
         "case-sensitive-paths-webpack-plugin": "2.4.0",
         "classnames": "^2.3.1",
         "codemirror": "^5.63.3",
-        "cosmian_jslib": "^0.2.10",
         "crypto-js": "^4.1.1",
         "css-loader": "^4.3.0",
         "cypress": "~8.5.0",
@@ -3892,14 +3891,6 @@
       },
       "engines": {
         "node": ">=8"
-      }
-    },
-    "node_modules/@mattiasbuelens/web-streams-adapter": {
-      "version": "0.1.0",
-      "resolved": "https://registry.npmjs.org/@mattiasbuelens/web-streams-adapter/-/web-streams-adapter-0.1.0.tgz",
-      "integrity": "sha512-oV4PyZfwJNtmFWhvlJLqYIX1Nn22ML8FZpS16ZUKv0hg7414xV1fjsGqxQzLT2dyK92TKxsJSwMOd7VNHAtPmA==",
-      "engines": {
-        "node": ">= 12"
       }
     },
     "node_modules/@mattiasbuelens/web-streams-polyfill": {
@@ -16195,43 +16186,6 @@
       "version": "1.0.2",
       "resolved": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz",
       "integrity": "sha1-tf1UIgqivFq1eqtxQMlAdUUDwac="
-    },
-    "node_modules/cosmian_jslib": {
-      "version": "0.2.10",
-      "resolved": "https://registry.npmjs.org/cosmian_jslib/-/cosmian_jslib-0.2.10.tgz",
-      "integrity": "sha512-aGhOM9QlTvxu1pw8fbIhhVW0obNKho6aIFojSEQu9FkIC3Hnnn32hI5yiVhtlSkjpqfXbhLcCvg6qxUy3khFnQ==",
-      "dependencies": {
-        "@mattiasbuelens/web-streams-adapter": "^0.1.0",
-        "@peculiar/x509": "^1.5.2",
-        "axios": "0.21.4",
-        "web-streams-polyfill": "^3.0.3"
-      }
-    },
-    "node_modules/cosmian_jslib/node_modules/@peculiar/x509": {
-      "version": "1.6.1",
-      "resolved": "https://registry.npmjs.org/@peculiar/x509/-/x509-1.6.1.tgz",
-      "integrity": "sha512-C4oxpCuYasfjuhy6QRFJhs0R6gyeQSRsB7MsT6JkO3qaFi4b75mm8hNEKa+sIJPtTjXCC94tW9rHx1hw5dOvnQ==",
-      "dependencies": {
-        "@peculiar/asn1-cms": "^2.0.44",
-        "@peculiar/asn1-csr": "^2.0.44",
-        "@peculiar/asn1-ecc": "^2.0.44",
-        "@peculiar/asn1-pkcs9": "^2.0.44",
-        "@peculiar/asn1-rsa": "^2.0.44",
-        "@peculiar/asn1-schema": "^2.0.44",
-        "@peculiar/asn1-x509": "^2.0.44",
-        "pvtsutils": "^1.2.1",
-        "reflect-metadata": "^0.1.13",
-        "tslib": "^2.3.1",
-        "tsyringe": "^4.6.0"
-      }
-    },
-    "node_modules/cosmian_jslib/node_modules/axios": {
-      "version": "0.21.4",
-      "resolved": "https://registry.npmjs.org/axios/-/axios-0.21.4.tgz",
-      "integrity": "sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==",
-      "dependencies": {
-        "follow-redirects": "^1.14.0"
-      }
     },
     "node_modules/cosmiconfig": {
       "version": "7.0.1",
@@ -40990,14 +40944,6 @@
         "url": "https://github.com/sponsors/wooorm"
       }
     },
-    "node_modules/web-streams-polyfill": {
-      "version": "3.2.0",
-      "resolved": "https://registry.npmjs.org/web-streams-polyfill/-/web-streams-polyfill-3.2.0.tgz",
-      "integrity": "sha512-EqPmREeOzttaLRm5HS7io98goBgZ7IVz79aDvqjD0kYXLtFZTc0T/U6wHTPKyIjb+MdN7DFIIX6hgdBEpWmfPA==",
-      "engines": {
-        "node": ">= 8"
-      }
-    },
     "node_modules/webidl-conversions": {
       "version": "6.1.0",
       "resolved": "https://registry.npmjs.org/webidl-conversions/-/webidl-conversions-6.1.0.tgz",
@@ -44845,11 +44791,6 @@
           }
         }
       }
-    },
-    "@mattiasbuelens/web-streams-adapter": {
-      "version": "0.1.0",
-      "resolved": "https://registry.npmjs.org/@mattiasbuelens/web-streams-adapter/-/web-streams-adapter-0.1.0.tgz",
-      "integrity": "sha512-oV4PyZfwJNtmFWhvlJLqYIX1Nn22ML8FZpS16ZUKv0hg7414xV1fjsGqxQzLT2dyK92TKxsJSwMOd7VNHAtPmA=="
     },
     "@mattiasbuelens/web-streams-polyfill": {
       "version": "0.2.1",
@@ -54473,45 +54414,6 @@
       "version": "1.0.2",
       "resolved": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz",
       "integrity": "sha1-tf1UIgqivFq1eqtxQMlAdUUDwac="
-    },
-    "cosmian_jslib": {
-      "version": "0.2.10",
-      "resolved": "https://registry.npmjs.org/cosmian_jslib/-/cosmian_jslib-0.2.10.tgz",
-      "integrity": "sha512-aGhOM9QlTvxu1pw8fbIhhVW0obNKho6aIFojSEQu9FkIC3Hnnn32hI5yiVhtlSkjpqfXbhLcCvg6qxUy3khFnQ==",
-      "requires": {
-        "@mattiasbuelens/web-streams-adapter": "^0.1.0",
-        "@peculiar/x509": "^1.5.2",
-        "axios": "0.21.4",
-        "web-streams-polyfill": "^3.0.3"
-      },
-      "dependencies": {
-        "@peculiar/x509": {
-          "version": "1.6.1",
-          "resolved": "https://registry.npmjs.org/@peculiar/x509/-/x509-1.6.1.tgz",
-          "integrity": "sha512-C4oxpCuYasfjuhy6QRFJhs0R6gyeQSRsB7MsT6JkO3qaFi4b75mm8hNEKa+sIJPtTjXCC94tW9rHx1hw5dOvnQ==",
-          "requires": {
-            "@peculiar/asn1-cms": "^2.0.44",
-            "@peculiar/asn1-csr": "^2.0.44",
-            "@peculiar/asn1-ecc": "^2.0.44",
-            "@peculiar/asn1-pkcs9": "^2.0.44",
-            "@peculiar/asn1-rsa": "^2.0.44",
-            "@peculiar/asn1-schema": "^2.0.44",
-            "@peculiar/asn1-x509": "^2.0.44",
-            "pvtsutils": "^1.2.1",
-            "reflect-metadata": "^0.1.13",
-            "tslib": "^2.3.1",
-            "tsyringe": "^4.6.0"
-          }
-        },
-        "axios": {
-          "version": "0.21.4",
-          "resolved": "https://registry.npmjs.org/axios/-/axios-0.21.4.tgz",
-          "integrity": "sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==",
-          "requires": {
-            "follow-redirects": "^1.14.0"
-          }
-        }
-      }
     },
     "cosmiconfig": {
       "version": "7.0.1",
@@ -72932,11 +72834,6 @@
       "resolved": "https://registry.npmjs.org/web-namespaces/-/web-namespaces-1.1.4.tgz",
       "integrity": "sha512-wYxSGajtmoP4WxfejAPIr4l0fVh+jeMXZb08wNc0tMg6xsfZXj3cECqIK0G7ZAqUq0PP8WlMDtaOGVBTAWztNw==",
       "dev": true
-    },
-    "web-streams-polyfill": {
-      "version": "3.2.0",
-      "resolved": "https://registry.npmjs.org/web-streams-polyfill/-/web-streams-polyfill-3.2.0.tgz",
-      "integrity": "sha512-EqPmREeOzttaLRm5HS7io98goBgZ7IVz79aDvqjD0kYXLtFZTc0T/U6wHTPKyIjb+MdN7DFIIX6hgdBEpWmfPA=="
     },
     "webidl-conversions": {
       "version": "6.1.0",

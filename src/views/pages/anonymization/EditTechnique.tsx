@@ -257,6 +257,7 @@ const EditTechnique: FC<EditTechniqueProps> = ({
 
   const downloadFile = async (): Promise<void> => {
     const fileName = "config-" + anonymizationDetails.name
+    anonymizationDetails.input_dataset.delimiter = ";"
     const json = JSON.stringify(anonymizationDetails)
     const blob = new Blob([json], { type: "application/json" })
     const href = await URL.createObjectURL(blob)
