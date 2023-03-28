@@ -1,10 +1,12 @@
-import "antd/dist/antd.css"
-import React from "react"
-import "./app.less"
 import AppRouter from "./Router"
+import Layout from "./components/Layout"
 
 function App(): JSX.Element {
-  return <AppRouter />
+  return (
+    <Layout>
+      <AppRouter />
+    </Layout>
+  )
 }
 
 export default App
