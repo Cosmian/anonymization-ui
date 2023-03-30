@@ -1,5 +1,7 @@
 export const paths_config = {
   home: "/",
-  create: "/create",
+  upload: "/upload",
+  edit: "/edit",
+  import: "/import",
   notFound: "/404",
 }
