@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Fpe } from "cloudproof_js"
 
 import { DefaultOptionType } from "antd/lib/select"
 
@@ -46,4 +47,24 @@ export const getCommonTechniques = (types: DataType[]): DefaultOptionType[] => {
     return commonObjects.filter(technique => typeObjects.every(typeSet => typeSet.has(technique.value)))
   }
   return []
+}
+
+const FPE = await Fpe()
+const key = crypto.getRandomValues(new Uint8Array(32))
+const tweak = crypto.getRandomValues(new Uint8Array(1024))
+
+export const applyTechnique = async (plainText: string | number, technique: TechniqueType, techniqueOptions: any): Promise<any> => {
+  switch (technique) {
+    case "Fpe_string":
+    case "Fpe_float":
+    case "Fpe_integer": {
+      let result: string | number
+      try {
+        result = await FPE.encrypt(key, tweak, plainText, techniqueOptions)
+      } catch {
+        result = "Error - invalid options"
+      }
+      return result
+    }
+  }
 }

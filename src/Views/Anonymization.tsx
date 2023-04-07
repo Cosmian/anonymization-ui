@@ -1,9 +1,10 @@
-import { Table } from "antd"
+import { Dropdown, Table } from "antd"
 import { Button, RoundedFrame } from "cosmian_ui"
 import { useEffect, useState } from "react"
-import { IoDownloadOutline, IoOptionsOutline, IoTrashOutline } from "react-icons/io5"
+import { IoEllipsisVertical, IoTrashOutline } from "react-icons/io5"
 import { useNavigate } from "react-router-dom"
 import { paths_config } from "../config/paths"
+
 
 import { ConfigurationInfo } from "../utils/utils"
 import "./style.less"
@@ -46,54 +47,39 @@ const Anonymization = (): JSX.Element => {
     key: "file",
   },
   {
-    title: "Options",
+    title: "",
     key: "options",
-    width: 50,
+    width: 100,
     render: (configuration: ConfigurationInfo) => {
-
-      const handleDelete = (e: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
+      const handleSelect = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
         e.stopPropagation()
+        navigate(paths_config.edit, { state: { name: configuration.name }})
+      }
+
+      const handleDelete = (): void => {
         const updatedConfigList = [...configList].splice(configList.indexOf(configuration.name), 1)
         setConfigList(updatedConfigList)
         sessionStorage.removeItem(configuration.name)
       }
 
-      const handleSelect = (e: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
-        e.stopPropagation()
-        navigate(paths_config.edit, { state: { name: configuration.name }})
-      }
-
-      const handleDownload = (e: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
-        e.stopPropagation()
+      const handleDownload = (): void => {
         console.log("download")
       }
 
+      const items = [
+        { label: "Copy configuration", key: "copy" },
+        { label: "Download configuration", key: "download", onClick: handleDownload },
+        { label: "Delete configuration", key: "delete", danger: true, onClick: handleDelete, icon: <IoTrashOutline /> },
+      ]
+
       return (
         <div className="icons">
-          <div
-            className="icon"
-            onClick={(e) => {
-              handleSelect(e)
-            }}
-            >
-            <IoOptionsOutline />
-          </div>
-          <div
-            className="icon"
-            onClick={(e) => {
-              handleDownload(e)
-            }}
-            >
-            <IoDownloadOutline />
-          </div>
-          <div
-          className="icon"
-          onClick={(e) => {
-            handleDelete(e)
-          }}
-          >
-            <IoTrashOutline />
-          </div>
+          <Button type="dark" onClick={(e) => handleSelect(e)}>Edit</Button>
+          <Dropdown menu={{ items }} placement="bottomRight" trigger={["hover"]}>
+            <div className="icon">
+              <IoEllipsisVertical />
+            </div>
+          </Dropdown>
         </div>
       )
     },
@@ -106,6 +92,7 @@ const Anonymization = (): JSX.Element => {
       <p>Secure you datasets using various anonymization techniques.</p>
       <div className="buttons">
         <Button
+          type="outline"
           onClick={() => {navigate(paths_config.import)}}>
           Import configuration
         </Button>

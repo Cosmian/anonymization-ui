@@ -54,7 +54,7 @@ const Upload = (): JSX.Element => {
   const saveFile = (): void => {
     if (name && fileMetadata) {
       const fileName = fileInfo?.name
-      sessionStorage.setItem(name, JSON.stringify({ metadata: fileMetadata, fileInfo: { name, created_at: new Date(), file: fileName } }))
+      sessionStorage.setItem(name, JSON.stringify({ metadata: fileMetadata, configurationInfo: { name, created_at: new Date(), file: fileName } }))
       navigate(paths_config.edit, { state: { name } })
     }
   }
