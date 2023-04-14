@@ -4,7 +4,7 @@ import FileDoneOutlined from "@ant-design/icons/lib/icons/FileDoneOutlined"
 import FileTextOutlined from "@ant-design/icons/lib/icons/FileTextOutlined"
 import LoadingOutlined from "@ant-design/icons/lib/icons/LoadingOutlined"
 import { message, notification } from "antd"
-import React, { FC, useState } from "react"
+import React, { FC, useEffect, useState } from "react"
 // import jsonValidation from "../../../actions/anonymizations/metadataValidation"
 import "./csv-reader.less"
 
@@ -19,13 +19,22 @@ export type JSONReaderProps = {
    * Get parsed result
    */
   getResult: (result: unknown) => void
+  updateFile?: any
 }
 
-const JSONReader: FC<JSONReaderProps> = ({ getResult, getFileInfo }): JSX.Element => {
+const JSONReader: FC<JSONReaderProps> = ({ getResult, getFileInfo, updateFile }): JSX.Element => {
   const [hightLighted, setHightLigted] = useState(false)
   const [wrongFile, setWrongfile] = useState(false)
   const [onProcess, setOnProcess] = useState(false)
   const [fileInfos, setFileInfo] = useState({} as File)
+
+  useEffect(() => {
+    if (updateFile != null) {
+      setFileInfo({ ...fileInfos, name: updateFile.name })
+    } else {
+      setFileInfo({} as File)
+    }
+  }, [updateFile])
 
   // Drag n drop file
   const handleOnDrop = (e: React.DragEvent): void => {

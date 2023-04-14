@@ -1,18 +1,21 @@
+import { notification } from "antd"
+import { Metadata } from "cloudproof_js"
 import { BackArrow, Button, RoundedFrame } from "cosmian_ui"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import JSONReader from "../components/JSONReader"
 import { paths_config } from "../config/paths"
+import { ConfigurationInfo, FileInfo } from "../utils/utils"
 import "./style.less"
 
 const Import = (): JSX.Element => {
   const navigate = useNavigate()
-  const [configurationInfo, setConfigurationInfo] = useState<any | undefined>()
-  const [fileConfig, setFileConfig] = useState<any | undefined>()
-  const [fileMetadata, setFileMetadata] = useState<any | undefined>()
+  const [configurationInfo, setConfigurationInfo] = useState<ConfigurationInfo | undefined>()
+  const [fileInfo, setFileInfo] = useState<FileInfo | undefined>()
+  const [fileMetadata, setFileMetadata] = useState<Metadata[] | undefined>()
 
   const getFileInfo = (file: File): void => {
-    setConfigurationInfo({
+    setFileInfo({
       last_modified: file.lastModified,
       name: file.name,
       size: file.size,
@@ -21,23 +24,33 @@ const Import = (): JSX.Element => {
   }
 
   const getFileResult = (result: any): void => {
-    setFileConfig(result as any)
-    const configurationList: any[] = []
-    const existing = configurationList.find((el) => el.uuid === result.uuid)
-    if (existing != null) {
-      setFileMetadata(existing)
-    } else {
-      setFileMetadata(undefined)
-    }
+    setFileMetadata(result.metadata)
+    setConfigurationInfo(result.configurationInfo)
   }
 
-
   const resetFile = (): void => {
-
+    setFileInfo(undefined)
+    setConfigurationInfo(undefined)
+    setFileMetadata(undefined)
   }
 
   const saveFile = (): void => {
-    navigate(paths_config.home)
+    const configurationName = configurationInfo?.name
+    const configurationList: any[] = Object.keys(sessionStorage)
+    const existing = configurationList.find((element) => element === configurationName)
+    if (existing != null) {
+      notification.error({
+        duration: 3,
+        message: "Import",
+        description: "A configuration already exists with this name.",
+      })
+      resetFile()
+    } else {
+      if (configurationName && fileMetadata) {
+        sessionStorage.setItem(configurationName, JSON.stringify({ metadata: fileMetadata, configurationInfo }))
+        navigate(paths_config.edit, { state: { name: configurationName } })
+      }
+    }
   }
 
   return (
@@ -49,7 +62,7 @@ const Import = (): JSX.Element => {
       <h1>Import configuration file</h1>
       <RoundedFrame>
       <h2 className="h4">Upload your JSON file</h2>
-      <JSONReader getFileInfo={(file) => getFileInfo(file)} getResult={(result) => getFileResult(result as any)} />
+      <JSONReader getFileInfo={(file) => getFileInfo(file)} getResult={(result) => getFileResult(result as any)} updateFile={fileInfo} />
       </RoundedFrame><div className="buttons">
         <Button onClick={() => resetFile()} disabled={fileMetadata === undefined}>Cancel</Button>
         <Button onClick={() => {

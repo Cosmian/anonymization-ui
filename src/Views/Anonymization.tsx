@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom"
 import { paths_config } from "../config/paths"
 
 
-import { ConfigurationInfo } from "../utils/utils"
+import { ConfigurationInfo, downloadFile } from "../utils/utils"
 import "./style.less"
 
 const Anonymization = (): JSX.Element => {
@@ -21,14 +21,14 @@ const Anonymization = (): JSX.Element => {
       if (item) {
         const element = JSON.parse(item)
         const info = element.configurationInfo
-        return { key: index, ... info }
+        return { key: index, ...info }
       }
     })
     setConfigList(elements)
     if (data) {
       setDataSource(data)
     }
-  }, [sessionStorage, configList])
+  }, [sessionStorage])
 
   const columns = [
   {
@@ -57,13 +57,16 @@ const Anonymization = (): JSX.Element => {
       }
 
       const handleDelete = (): void => {
-        const updatedConfigList = [...configList].splice(configList.indexOf(configuration.name), 1)
-        setConfigList(updatedConfigList)
+        if (dataSource) {
+          const data = [...dataSource]
+          const updatedDataSource = data.filter(data => console.log(data.name !== configuration.name))
+          setDataSource(updatedDataSource)
+        }
         sessionStorage.removeItem(configuration.name)
       }
 
       const handleDownload = (): void => {
-        console.log("download")
+        downloadFile(configuration.name)
       }
 
       const items = [

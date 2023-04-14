@@ -6,7 +6,7 @@ import { IoPencil } from "react-icons/io5"
 import { useLocation, useNavigate } from "react-router-dom"
 import TechniqueOptions from "../components/TechniqueOptions"
 import { paths_config } from "../config/paths"
-import { ConfigurationInfo, DataType, MetaData, TechniqueType, applyTechnique, dataTypesSelect, getCommonTechniques, techniquesForTypes } from "../utils/utils"
+import { ConfigurationInfo, DataType, MetaData, TechniqueType, applyTechnique, dataTypesSelect, downloadFile, getCommonTechniques, techniquesForTypes } from "../utils/utils"
 import "./style.less"
 
 const Edit = (): JSX.Element => {
@@ -22,14 +22,24 @@ const Edit = (): JSX.Element => {
   const selectedType: DataType = Form.useWatch("selectType", form)
   const selectedTechnique: TechniqueType = Form.useWatch("selectTechnique", form)
   const selectedTechniqueOptions = Form.useWatch("techniqueOptions", form)
+  // const [edit, setEdit] = useState<boolean>(false)
+  const [initialType, setInitialType] = useState<DataType | undefined>(undefined)
+  const [initialTechnique, setInitialTechnique] = useState<TechniqueType | undefined>(undefined)
 
   useEffect(() => {
-    const item = sessionStorage.getItem(name)
-    if (item) {
-      setConfigurationInfo(JSON.parse(item).configurationInfo)
-      setFileMetadata(JSON.parse(item).metadata)
+    const configuration = sessionStorage.getItem(name)
+    if (configuration) {
+      setConfigurationInfo(JSON.parse(configuration).configurationInfo)
+      setFileMetadata(JSON.parse(configuration).metadata)
     }
   }, [])
+
+  useEffect(() => {
+    if (selectedType !== initialType || selectedTechnique !== initialTechnique) {
+      form.setFieldValue("techniqueOptions", undefined)
+      console.log("reset")
+    }
+  }, [selectedTechnique, selectedType])
 
   useEffect(() => {
     if (example && selectedTechnique) {
@@ -110,6 +120,7 @@ const Edit = (): JSX.Element => {
       const updatedFileMetaData = [...fileMetadata]
       await Promise.all(selectedRowKeys.map(async (key) => {
         if (selectedTechnique) {
+          console.log("OK", form.getFieldValue("techniqueOptions"))
           const result = await applyTechnique(updatedFileMetaData[Number(key)].example, selectedTechnique, selectedTechniqueOptions)
           updatedFileMetaData[Number(key)] = {
             ...updatedFileMetaData[Number(key)],
@@ -166,17 +177,23 @@ const Edit = (): JSX.Element => {
     const selectedTechniqueOptions: Set<string> = new Set()
     for (const key of newSelectedRowKeys) {
       if (fileMetadata) {
-        selectedTypes.add(fileMetadata[Number(key)].type as DataType)
-        selectedTechniques.add(fileMetadata[Number(key)].technique as string)
-        selectedTechniqueOptions.add(JSON.stringify(fileMetadata[Number(key)].techniqueOptions) as string)
+        const metaData = fileMetadata[Number(key)]
+        selectedTypes.add(metaData.type as DataType)
+        selectedTechniques.add(metaData.technique as string)
+        selectedTechniqueOptions.add(JSON.stringify(metaData.techniqueOptions) as string)
       }
     }
-    selectedTypes.size === 1 ?
-      form.setFieldValue("selectType", [...selectedTypes][0]) :
-      form.setFieldValue("selectType", undefined)
-    selectedTechniques.size === 1 ?
-      form.setFieldValue("selectTechnique", [...selectedTechniques][0]) :
-      form.setFieldValue("selectTechnique", undefined)
+
+    let type: DataType | undefined
+    type = selectedTypes.size === 1 ? [...selectedTypes][0] : undefined
+    form.setFieldValue("selectType", type)
+    setInitialType(type)
+
+    let technique: TechniqueType | undefined
+    technique = selectedTechniques.size === 1 ? [...selectedTechniques][0] as TechniqueType : undefined
+    form.setFieldValue("selectTechnique", technique)
+    setInitialTechnique(technique)
+
     selectedTechniques.size === 1 && selectedTechniqueOptions.size === 1 && [...selectedTechniqueOptions][0] ?
       form.setFieldValue("techniqueOptions", JSON.parse([...selectedTechniqueOptions][0])) :
       form.setFieldValue("techniqueOptions", undefined)
@@ -186,6 +203,11 @@ const Edit = (): JSX.Element => {
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
+  }
+
+  const downloadConfiguration = (configurationName: string | undefined) => {
+    downloadFile(configurationName)
+    navigate(paths_config.home)
   }
 
   return (
@@ -223,7 +245,7 @@ const Edit = (): JSX.Element => {
                   />
                 </Form.Item>
                 <Form.Item>
-                  <TechniqueOptions selected={selectedTechnique}/>
+                  <TechniqueOptions selected={selectedTechnique} form={form} />
                 </Form.Item>
               </div>
               <div className="element">
@@ -247,7 +269,7 @@ const Edit = (): JSX.Element => {
         />
       </RoundedFrame>
       <div className="buttons">
-        <Button onClick={() => navigate(paths_config.home)}>Download configuration</Button>
+        <Button onClick={() => downloadConfiguration(configurationInfo?.name)}>Download configuration</Button>
       </div>
     </div>
   )
