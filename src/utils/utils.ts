@@ -15,13 +15,10 @@ export enum DataType {
   Text = "Text",
   Float = "Float",
   Date = "Date",
-  Boolean = "Boolean",
 }
 
 export enum TechniqueType {
-  Hash_sha256 = "Hash_sha256",
-  Hash_sha3 = "Hash_sha3",
-  Hash_argon2 = "Hash_argon2",
+  Hash = "Hash",
   Fpe_float = "Fpe_float",
   Fpe_integer = "Fpe_integer",
   Fpe_string = "Fpe_string",
@@ -30,7 +27,8 @@ export enum TechniqueType {
   Regex = "Regex",
   DateAggregation = "Date_aggregation",
   NumberAggregation = "Number_aggregation",
-  Noise = "Noise",
+  DateNoise = "Date_noise",
+  NumberNoise = "Number_noise",
   Rescaling = "Rescaling"
 }
 
@@ -39,15 +37,13 @@ export const dataTypesSelect: { value: string, label: string, example: string | 
   { value: "Integer", label: "Integer", example: 42 },
   { value: "Float", label: "Float", example: 12.5 },
   { value: "Date", label: "Date", example: "12/02/2000" },
-  { value: "Boolean", label: "Boolean", example: "True" },
 ]
 
-export const techniquesForTypes: { Integer: DefaultOptionType[], Float: DefaultOptionType[],Text: DefaultOptionType[], Date: DefaultOptionType[], Boolean: DefaultOptionType[] } = {
-  "Integer": [{ value: "Fpe_integer", label: "FPE" },  { value: "Number_aggregation", label: "Aggregation" }, { value: "Noise", label: "Noise" }, { value: "Rescaling", label: "Rescaling" }],
-  "Float": [{ value: "Fpe_float", label: "FPE" },  { value: "Number_aggregation", label: "Aggregation" }, { value: "Noise", label: "Noise" }, { value: "Rescaling", label: "Rescaling" }],
-  "Text": [{ value: "Hash_sha256", label: "Hash | sha256" }, { value: "Hash_sha3", label: "Hash | sha3" }, { value: "Hash_argon2", label: "Hash | argon2" }, { value: "Fpe_string", label: "FPE" }, { value: "Mask_words", label: "Mask words" }, { value: "Tokenize_words", label: "Tokenize words" }, { value: "Regex", label: "Regex" }],
-  "Date": [{ value: "Date_aggregation", label: "Aggregation" }, { value: "Noise", label: "Noise" }],
-  "Boolean": []
+export const techniquesForTypes: { Integer: DefaultOptionType[], Float: DefaultOptionType[],Text: DefaultOptionType[], Date: DefaultOptionType[] } = {
+  "Integer": [{ value: "Fpe_integer", label: "FPE" },  { value: "Number_aggregation", label: "Aggregation" }, { value: "Number_noise", label: "Noise" }, { value: "Rescaling", label: "Rescaling" }],
+  "Float": [{ value: "Fpe_float", label: "FPE" },  { value: "Number_aggregation", label: "Aggregation" }, { value: "Number_noise", label: "Noise" }, { value: "Rescaling", label: "Rescaling" }],
+  "Text": [{ value: "Hash", label: "Hash" }, { value: "Fpe_string", label: "FPE" }, { value: "Mask_words", label: "Mask words" }, { value: "Tokenize_words", label: "Tokenize words" }, { value: "Regex", label: "Regex" }],
+  "Date": [{ value: "Date_aggregation", label: "Aggregation" }, { value: "Date_noise", label: "Noise" }],
 }
 
 export const getCommonTechniques = (types: DataType[]): DefaultOptionType[] => {
@@ -70,9 +66,10 @@ export const applyTechnique = async (plainText: string | number, technique: Tech
     case "Fpe_integer": {
       let result: string | number
       try {
-        result = await FPE.encrypt(key, tweak, plainText, techniqueOptions)
-      } catch {
-        result = "Error - invalid options"
+        const res = await FPE.encrypt(key, tweak, plainText, techniqueOptions)
+        result = typeof(res) === "bigint" ? Number(res) : res
+      } catch (e: any) {
+        result = "Error - " + e.match(/\(([^)]+)\)/)[1]
       }
       return result
     }

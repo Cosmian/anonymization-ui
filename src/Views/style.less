@@ -68,9 +68,9 @@
         width: 100%;
         margin: 10px 20px;
         flex-grow: 1;
-        .ant-input-affix-wrapper {
-          border: none;
-        }
+        // .ant-input-affix-wrapper {
+        //   border: gray;
+        // }
         .ant-collapse-header {
           padding: 5px 0px;
         }
@@ -78,12 +78,20 @@
           padding-top: 10px;
           margin: 0;
         }
+        .input-inline {
+          .ant-form-item-control-input-content {
+            display: flex;
+          }
+        }
         .ant-radio-group {
           display: flex;
         }
         .ant-radio-button-wrapper {
           flex-grow: 1;
           text-align: center;
+        }
+        .ant-form-item-row .ant-input-number-in-form-item {
+          width: 100%;
         }
       }
       .buttons {

@@ -8,6 +8,8 @@ import { paths_config } from "../config/paths"
 import { ConfigurationInfo, FileInfo } from "../utils/utils"
 import "./style.less"
 
+type fileResult = { metadata: Metadata[], configurationInfo: ConfigurationInfo }
+
 const Import = (): JSX.Element => {
   const navigate = useNavigate()
   const [configurationInfo, setConfigurationInfo] = useState<ConfigurationInfo | undefined>()
@@ -23,7 +25,7 @@ const Import = (): JSX.Element => {
     })
   }
 
-  const getFileResult = (result: any): void => {
+  const getFileResult = (result: fileResult): void => {
     setFileMetadata(result.metadata)
     setConfigurationInfo(result.configurationInfo)
   }
@@ -36,7 +38,7 @@ const Import = (): JSX.Element => {
 
   const saveFile = (): void => {
     const configurationName = configurationInfo?.name
-    const configurationList: any[] = Object.keys(sessionStorage)
+    const configurationList: string[] = Object.keys(sessionStorage)
     const existing = configurationList.find((element) => element === configurationName)
     if (existing != null) {
       notification.error({
@@ -62,7 +64,7 @@ const Import = (): JSX.Element => {
       <h1>Import configuration file</h1>
       <RoundedFrame>
       <h2 className="h4">Upload your JSON file</h2>
-      <JSONReader getFileInfo={(file) => getFileInfo(file)} getResult={(result) => getFileResult(result as any)} updateFile={fileInfo} />
+      <JSONReader getFileInfo={(file) => getFileInfo(file)} getResult={(result) => getFileResult(result as fileResult)} updateFile={fileInfo} />
       </RoundedFrame><div className="buttons">
         <Button onClick={() => resetFile()} disabled={fileMetadata === undefined}>Cancel</Button>
         <Button onClick={() => {

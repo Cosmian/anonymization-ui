@@ -3,16 +3,15 @@ import { Button, RoundedFrame } from "cosmian_ui"
 import { useEffect, useState } from "react"
 import { IoEllipsisVertical, IoTrashOutline } from "react-icons/io5"
 import { useNavigate } from "react-router-dom"
+import { v4 as uuidv4 } from "uuid"
 import { paths_config } from "../config/paths"
-
 
 import { ConfigurationInfo, downloadFile } from "../utils/utils"
 import "./style.less"
 
 const Anonymization = (): JSX.Element => {
   const navigate = useNavigate()
-  const [configList, setConfigList] = useState(Object.keys(sessionStorage))
-  const [dataSource, setDataSource] = useState<{name: string, created_at: string, size: string}[] | undefined>([])
+  const [configList, setConfigList] = useState<ConfigurationInfo[] | undefined>([])
 
   useEffect(() => {
     const elements = Object.keys(sessionStorage)
@@ -24,9 +23,8 @@ const Anonymization = (): JSX.Element => {
         return { key: index, ...info }
       }
     })
-    setConfigList(elements)
     if (data) {
-      setDataSource(data)
+      setConfigList(data)
     }
   }, [sessionStorage])
 
@@ -57,10 +55,9 @@ const Anonymization = (): JSX.Element => {
       }
 
       const handleDelete = (): void => {
-        if (dataSource) {
-          const data = [...dataSource]
-          const updatedDataSource = data.filter(data => console.log(data.name !== configuration.name))
-          setDataSource(updatedDataSource)
+        if (configList) {
+          const updatedDataSource = configList.filter(data => data.name !== configuration.name)
+          setConfigList(updatedDataSource)
         }
         sessionStorage.removeItem(configuration.name)
       }
@@ -69,8 +66,21 @@ const Anonymization = (): JSX.Element => {
         downloadFile(configuration.name)
       }
 
+      const handleCopy = (): void => {
+        const configurationCopy = sessionStorage.getItem(configuration.name)
+        if (configurationCopy && configList) {
+          const uuid = uuidv4().slice(0, 4)
+          const copyName = configuration.name + "_copy_" + uuid
+          sessionStorage.setItem((copyName), configurationCopy)
+          const data: ConfigurationInfo[] = [...configList]
+          const configurationInfoCopy: ConfigurationInfo = { name: copyName, created_at: new Date(), file: configuration.file }
+          data.push(configurationInfoCopy)
+          setConfigList(data)
+        }
+      }
+
       const items = [
-        { label: "Copy configuration", key: "copy" },
+        { label: "Copy configuration", key: "copy", onClick: handleCopy },
         { label: "Download configuration", key: "download", onClick: handleDownload },
         { label: "Delete configuration", key: "delete", danger: true, onClick: handleDelete, icon: <IoTrashOutline /> },
       ]
@@ -108,7 +118,7 @@ const Anonymization = (): JSX.Element => {
         <p className="h4">List of configurations</p>
         <Table
           rowKey={"key"}
-          dataSource={dataSource}
+          dataSource={configList}
           columns={columns}
           pagination={false}
         />

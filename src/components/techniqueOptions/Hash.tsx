@@ -1,5 +1,5 @@
 import ReloadOutlined from "@ant-design/icons/lib/icons/ReloadOutlined"
-import { Checkbox, Form, FormInstance, Input } from "antd"
+import { Checkbox, Form, FormInstance, Input, Select } from "antd"
 import { CheckboxChangeEvent } from "antd/lib/checkbox"
 import { Button } from "cosmian_ui"
 import { useState } from "react"
@@ -9,21 +9,52 @@ interface HashOptionsProps {
   form: FormInstance;
 }
 
-export const HashShaOptions: React.FC<HashOptionsProps> = ({ form }) => {
-  const [isSaltEnabled, setIsSaltEnabled] = useState(form.getFieldValue(["techniqueOptions", "salt_value"]) !== undefined)
+interface HashShaOptionsProps {
+  form: FormInstance;
+  handleSaltChange: () => void
+}
+
+interface HashArgonOptionsProps {
+  handleSaltChange: () => void
+}
+
+export const HashOptions: React.FC<HashOptionsProps> = ({ form }) => {
+  const hashType = form.getFieldValue(["techniqueOptions", "hashType"])
+
+  const handleSaltChange = (): void => {
+    const newSalt = uuidv4()
+    form.setFieldValue(["techniqueOptions", "saltValue"], newSalt)
+  }
+
+  return (
+    <>
+      <Form.Item name={["techniqueOptions", "hashType"]} label="Type"
+        rules={[{ required: true, message: "Please select a type" }]}
+      >
+        <Select
+          options={[
+            { value: "Sha_256", label: "SHA 256" },
+            { value: "Sha_3", label: "SHA 3" },
+            { value: "Argon_2", label: "Argon 2" },
+          ]}
+        />
+      </Form.Item>
+      {(hashType === "Sha_256" || hashType === "Sha_3") && <HashShaOptions form={form} handleSaltChange={handleSaltChange} />}
+      {(hashType === "Argon_2") && <HashArgonOptions handleSaltChange={handleSaltChange} />}
+    </>
+  )
+}
+
+const HashShaOptions: React.FC<HashShaOptionsProps> = ({ form, handleSaltChange }) => {
+  const [isSaltEnabled, setIsSaltEnabled] = useState(form.getFieldValue(["techniqueOptions", "saltValue"]) !== undefined)
 
   const handleSaltCheck = (event : CheckboxChangeEvent): void => {
     setIsSaltEnabled(event.target.checked)
     if (event.target.checked) {
       handleSaltChange()
     } else {
-      form.setFieldValue(["techniqueOptions", "salt_value"], undefined)
+      form.setFieldValue(["techniqueOptions", "saltValue"], undefined)
     }
-  }
-
-  const handleSaltChange = (): void => {
-    const newSalt = uuidv4()
-    form.setFieldValue(["techniqueOptions", "salt_value"], newSalt)
   }
 
   return (
@@ -32,25 +63,18 @@ export const HashShaOptions: React.FC<HashOptionsProps> = ({ form }) => {
         <Checkbox onChange={(event) => handleSaltCheck(event)}>Add salt</Checkbox>
       </Form.Item>
       <div className="line">
-        <Form.Item
-          name={["techniqueOptions", "salt_value"]}
-        >
+        <Form.Item name={["techniqueOptions", "saltValue"]}>
           <Input disabled={!isSaltEnabled} />
         </Form.Item>
         <Button type="primary" onClick={() => handleSaltChange()} disabled={!isSaltEnabled} className="button">
           <ReloadOutlined />
-          </Button>
+        </Button>
       </div>
     </>
   )
 }
 
-export const HashArgonOptions: React.FC<HashOptionsProps> = ({ form }) => {
-  const handleSaltChange = (): void => {
-    const newSalt = uuidv4()
-    form.setFieldValue(["techniqueOptions", "salt_value"], newSalt)
-  }
-
+const HashArgonOptions: React.FC<HashArgonOptionsProps> = ({ handleSaltChange }) => {
   return (
     <>
       <Form.Item name="is_salt" valuePropName="checked" initialValue={true} style={{ marginBottom: 0 }}>
@@ -58,7 +82,7 @@ export const HashArgonOptions: React.FC<HashOptionsProps> = ({ form }) => {
       </Form.Item>
       <div className="line">
         <Form.Item
-          name={["techniqueOptions", "salt_value"]}
+          name={["techniqueOptions", "saltValue"]}
           initialValue={uuidv4()}
           rules={[{ required: true, message: "Salt is mandatory" }]}
         >
@@ -66,7 +90,7 @@ export const HashArgonOptions: React.FC<HashOptionsProps> = ({ form }) => {
         </Form.Item>
         <Button type="primary" onClick={() => handleSaltChange()} className="button">
           <ReloadOutlined />
-          </Button>
+        </Button>
       </div>
     </>
   )

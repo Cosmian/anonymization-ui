@@ -1,22 +1,20 @@
-import { Form, Select } from "antd"
+import { Form, InputNumber } from "antd"
 
 const FpeIntegerOptions: React.FC = () => {
   return (
     <>
-      <Form.Item name={["techniqueOptions", "radix"]} label="Radix">
-        <Select
-          options={[
-            { value: "2", label: "2" },
-            { value: "5", label: "20" },
-          ]}
+      <Form.Item name={["techniqueOptions", "radix"]} label="Radix" initialValue={10}>
+        <InputNumber
+          disabled
         />
       </Form.Item>
-      <Form.Item name={["techniqueOptions", "digit"]} label="Digit">
-        <Select
-          options={[
-            { value: "2", label: "2" },
-            { value: "20", label: "20" },
-          ]}
+      <Form.Item name={["techniqueOptions", "digit"]} label="Digit" initialValue={9}
+        rules={[{ required: true, message: "Please provide a value" }]}
+      >
+        <InputNumber
+          min={0}
+          step={1}
+          precision={0}
         />
       </Form.Item>
     </>

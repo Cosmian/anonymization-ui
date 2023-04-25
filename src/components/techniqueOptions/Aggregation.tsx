@@ -2,7 +2,7 @@ import { Form, InputNumber, Select } from "antd"
 
 export const DateAggregationOptions: React.FC= () => {
   return (
-    <Form.Item name={["techniqueOptions", "time_unit"]} label="Precision"         initialValue="Minute">
+    <Form.Item name={["techniqueOptions", "timeUnit"]} label="Precision" initialValue="Minute">
       <Select
         options={[
           { value: "Minute", label: "Minute" },
@@ -18,13 +18,14 @@ export const DateAggregationOptions: React.FC= () => {
 
 export const NumberAggregationOptions: React.FC= () => {
   return (
-    <Form.Item name={["techniqueOptions", "power_of_ten"]} label="Precision" initialValue="1">
+    <Form.Item name={["techniqueOptions", "powerOfTen"]} label="Precision" initialValue="1">
       <InputNumber
         min={0}
-        max={99}
-        defaultValue={0}
+        defaultValue={1}
         step={1}
         precision={0}
+        formatter={(precision) => precision ? Math.pow(10, precision).toString() : ""}
+        parser={(value) => value ? Math.log10(Number(value)) : 0}
       />
     </Form.Item>
   )

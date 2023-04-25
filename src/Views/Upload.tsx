@@ -25,8 +25,6 @@ const Upload = (): JSX.Element => {
         } else {
           type = DataType.Float
         }
-      } else if (value === "False" || value === "True") {
-        type = DataType.Boolean
       } else if (Date.parse(value as string)) {
         type = DataType.Date
       } else {
