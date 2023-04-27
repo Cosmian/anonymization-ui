@@ -1,8 +1,7 @@
 import { Form, Input } from "antd"
-import { BackArrow, Button, RoundedFrame } from "cosmian_ui"
+import { BackArrow, Button, FileDrop, RoundedFrame } from "cosmian_ui"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import CSVReader from "../components/CSVReader"
 import { paths_config } from "../config/paths"
 import { DataType, FileInfo, MetaData } from "../utils/utils"
 import "./style.less"
@@ -88,7 +87,8 @@ const Upload = (): JSX.Element => {
         </Form>
       </div>
       <h2 className="h4">Upload your CSV sample</h2>
-      <CSVReader
+      <FileDrop
+        fileType="csv"
         getFileInfo={(file) => getFileInfo(file)}
         getResult={(result) => parseFile(result.data[0])}
         updateFile={fileInfo} />
