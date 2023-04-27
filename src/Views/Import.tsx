@@ -1,9 +1,8 @@
 import { notification } from "antd"
 import { Metadata } from "cloudproof_js"
-import { BackArrow, Button, RoundedFrame } from "cosmian_ui"
+import { BackArrow, Button, FileDrop, RoundedFrame } from "cosmian_ui"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import JSONReader from "../components/JSONReader"
 import { paths_config } from "../config/paths"
 import { ConfigurationInfo, FileInfo } from "../utils/utils"
 import "./style.less"
@@ -64,7 +63,7 @@ const Import = (): JSX.Element => {
       <h1>Import configuration file</h1>
       <RoundedFrame>
       <h2 className="h4">Upload your JSON file</h2>
-      <JSONReader getFileInfo={(file) => getFileInfo(file)} getResult={(result) => getFileResult(result as fileResult)} updateFile={fileInfo} />
+      <FileDrop fileType="json" getFileInfo={(file) => getFileInfo(file)} getResult={(result) => getFileResult(result as fileResult)} updateFile={fileInfo} />
       </RoundedFrame><div className="buttons">
         <Button onClick={() => resetFile()} disabled={fileMetadata === undefined}>Cancel</Button>
         <Button onClick={() => {
