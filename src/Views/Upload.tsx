@@ -1,5 +1,6 @@
 import { Form, Input } from "antd"
 import { BackArrow, Button, FileDrop, RoundedFrame } from "cosmian_ui"
+import localForage from "localforage"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { paths_config } from "../config/paths"
@@ -48,10 +49,10 @@ const Upload = (): JSX.Element => {
     setFileMetadata(undefined)
   }
 
-  const saveFile = (): void => {
+  const saveFile = async (): Promise<void> => {
     if (name && fileMetadata) {
       const fileName = fileInfo?.name
-      sessionStorage.setItem(name, JSON.stringify({ metadata: fileMetadata, configurationInfo: { name, created_at: new Date(), file: fileName } }))
+      await localForage.setItem(name, { metadata: fileMetadata, configurationInfo: { name, created_at: new Date(), file: fileName } })
       navigate(paths_config.edit, { state: { name } })
     }
   }
@@ -72,9 +73,9 @@ const Upload = (): JSX.Element => {
               rules={[
                 { required: true, message: "Please provide a name." },
                 { min: 3, message: "Name must be at least 3 characters long." },
-                { pattern: /^[^\s]*$/, message: "Name should contain visible characters." },
+                { pattern: /[^\p{Zs}]/u, message: "Name should contain visible characters."},
                 { validator: async (_rule, name) => {
-                    const existName = Object.keys(sessionStorage).find((key) => key === name.trim())
+                    const existName = Object.keys(localForage).find((key) => key === name.trim())
                     if (existName) {
                       return Promise.reject(new Error("This configuration name already exists"))
                     }
@@ -93,7 +94,7 @@ const Upload = (): JSX.Element => {
         getResult={(result) => parseFile(result.data[0])}
         updateFile={fileInfo} />
       </RoundedFrame><div className="buttons">
-        <Button onClick={() => resetFile()} disabled={fileMetadata === undefined || name === undefined}>Cancel</Button>
+        <Button type="outline" onClick={() => resetFile()} disabled={fileMetadata === undefined || name === undefined}>Cancel</Button>
         <Button onClick={() => {
           saveFile()
         }} disabled={fileMetadata === undefined || name === undefined}>Create configuration</Button>

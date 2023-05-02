@@ -1,6 +1,7 @@
 import { Form, Input, Select, Table, Tag } from "antd"
 import { DefaultOptionType } from "antd/lib/select"
 import { BackArrow, Button, RoundedFrame } from "cosmian_ui"
+import localForage from "localforage"
 import { Key, useCallback, useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import TechniqueOptions from "../components/TechniqueOptions"
@@ -61,11 +62,14 @@ const Edit = (): JSX.Element => {
   const selectedTechniqueOptions = Form.useWatch("techniqueOptions", form)
 
   useEffect(() => {
-    const configuration = sessionStorage.getItem(configName)
-    if (configuration) {
-      setConfigurationInfo(JSON.parse(configuration).configurationInfo)
-      setFileMetadata(JSON.parse(configuration).metadata)
+    const fetchConfig = async (): Promise<void> => {
+      const configuration: { configurationInfo: ConfigurationInfo, metadata: MetaData[] } | null = await localForage.getItem(configName)
+      if (configuration) {
+        setConfigurationInfo(configuration.configurationInfo)
+        setFileMetadata(configuration.metadata)
+      }
     }
+    fetchConfig()
   }, [])
 
   useEffect(() => {
@@ -139,12 +143,12 @@ const Edit = (): JSX.Element => {
         }
       }))
       setFileMetadata(updatedFileMetaData)
-      sessionStorage.setItem(configName, JSON.stringify({ metadata: updatedFileMetaData, configurationInfo }))
+      await localForage.setItem(configName, { metadata: updatedFileMetaData, configurationInfo })
     }
     resetForm()
   }
 
-  const clearTechnique = (): void => {
+  const clearTechnique = async (): Promise<void> => {
     if (fileMetadata) {
       const updatedFileMetaData = [...fileMetadata]
       selectedRowKeys.map((key) => {
@@ -157,7 +161,7 @@ const Edit = (): JSX.Element => {
       })
       setResult(undefined)
       setFileMetadata(updatedFileMetaData)
-      sessionStorage.setItem(configName, JSON.stringify({ metadata: updatedFileMetaData,  configurationInfo }))
+      await localForage.setItem(configName, { metadata: updatedFileMetaData,  configurationInfo })
     }
     resetForm()
   }
@@ -206,14 +210,14 @@ const Edit = (): JSX.Element => {
   }
 
   return (
-    <div className="create">
+    <div className="edit">
       <BackArrow
         onClick={() => navigate(paths_config.home)}
         text="Back to configurations list"
       />
       <h1>Edit techniques</h1>
       <RoundedFrame className="editBox">
-        <h2 className="h4">Apply technique</h2>
+        <h2 className="h4">{`Apply technique on ${selectedRowKeys.length} column${selectedRowKeys.length > 1 ? "s" : ""}`}</h2>
         <div className="rowEdit">
           <div className="header">
             <div className="element">Type</div>
@@ -249,12 +253,15 @@ const Edit = (): JSX.Element => {
               </div>
             </div>
             <div className="buttons">
-              <Button type="outline" onClick={() => cancelEdit()} disabled={selectedRowKeys.length === 0}>Cancel</Button>
-              <Button htmlType="submit" disabled={selectedRowKeys.length === 0}>Save</Button>
+              <Button className="button" type="dark" onClick={() => clearTechnique()} disabled={selectedRowKeys.length === 0}>Clear selected column(s) technique</Button>
+              <div>
+                <Button type="outline" onClick={() => cancelEdit()} disabled={selectedRowKeys.length === 0}>Cancel</Button>
+                <Button htmlType="submit" disabled={selectedRowKeys.length === 0}>Save</Button>
+              </div>
             </div>
           </Form>
         </div>
-        <Button className="button" type="outline" onClick={() => clearTechnique()} disabled={selectedRowKeys.length === 0}>Clear technique</Button>
+        <h2 className="h4">{configName} anonymization columns</h2>
         <Table
           rowKey={"key"}
           dataSource={fileMetadata}

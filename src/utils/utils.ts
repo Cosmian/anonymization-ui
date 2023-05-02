@@ -3,10 +3,11 @@ import { Fpe } from "cloudproof_js"
 
 import { notification } from "antd"
 import { DefaultOptionType } from "antd/lib/select"
+import localForage from "localforage"
 
 export type MetaData = { key: string, name: string, type: string, example: string, technique: undefined | string, techniqueOptions: undefined | string, result: undefined | string }
 
-export type ConfigurationInfo = { name: string, created_at: string, file: string }
+export type ConfigurationInfo = { key?: number, name: string, created_at: string, file: string }
 
 export type FileInfo = { last_modified: number, name: string, size: number, type: string }
 
@@ -79,9 +80,8 @@ export const applyTechnique = async (plainText: string | number, technique: Tech
 
 export const downloadFile = async (name: string | undefined): Promise<void> => {
   if (name) {
-    const item = sessionStorage.getItem(name)
-    if (item) {
-      const configuration: { metadata: MetaData[], configurationInfo: ConfigurationInfo } = JSON.parse(item)
+    const configuration: { configurationInfo: ConfigurationInfo, metadata: MetaData[] } | null = await localForage.getItem(name)
+    if (configuration) {
       const fileName = "config-" + name
       // configuration.input_dataset.delimiter = ";"
       const json = JSON.stringify(configuration)

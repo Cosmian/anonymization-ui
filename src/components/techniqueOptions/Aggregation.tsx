@@ -18,7 +18,7 @@ export const DateAggregationOptions: React.FC= () => {
 
 export const NumberAggregationOptions: React.FC= () => {
   return (
-    <Form.Item name={["techniqueOptions", "powerOfTen"]} label="Precision" initialValue="1">
+    <Form.Item name={["techniqueOptions", "powerOfTen"]} label="Precision (power of 10)" initialValue="1">
       <InputNumber
         min={0}
         defaultValue={1}

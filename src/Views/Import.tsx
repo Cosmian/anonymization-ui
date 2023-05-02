@@ -1,6 +1,7 @@
 import { notification } from "antd"
 import { Metadata } from "cloudproof_js"
 import { BackArrow, Button, FileDrop, RoundedFrame } from "cosmian_ui"
+import localForage from "localforage"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { paths_config } from "../config/paths"
@@ -35,9 +36,9 @@ const Import = (): JSX.Element => {
     setFileMetadata(undefined)
   }
 
-  const saveFile = (): void => {
+  const saveFile = async (): Promise<void> => {
     const configurationName = configurationInfo?.name
-    const configurationList: string[] = Object.keys(sessionStorage)
+    const configurationList: string[] = Object.keys(localForage)
     const existing = configurationList.find((element) => element === configurationName)
     if (existing != null) {
       notification.error({
@@ -48,7 +49,7 @@ const Import = (): JSX.Element => {
       resetFile()
     } else {
       if (configurationName && fileMetadata) {
-        sessionStorage.setItem(configurationName, JSON.stringify({ metadata: fileMetadata, configurationInfo }))
+        await localForage.setItem(configurationName, { metadata: fileMetadata, configurationInfo })
         navigate(paths_config.edit, { state: { name: configurationName } })
       }
     }
@@ -65,7 +66,7 @@ const Import = (): JSX.Element => {
       <h2 className="h4">Upload your JSON file</h2>
       <FileDrop fileType="json" getFileInfo={(file) => getFileInfo(file)} getResult={(result) => getFileResult(result as fileResult)} updateFile={fileInfo} />
       </RoundedFrame><div className="buttons">
-        <Button onClick={() => resetFile()} disabled={fileMetadata === undefined}>Cancel</Button>
+        <Button type="outline" onClick={() => resetFile()} disabled={fileMetadata === undefined}>Cancel</Button>
         <Button onClick={() => {
           saveFile()
         }} disabled={fileMetadata === undefined}>Import configuration</Button>

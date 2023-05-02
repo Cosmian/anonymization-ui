@@ -5,7 +5,7 @@ import "./layout.less"
 const Layout = ({ children }: { children: ReactNode }): JSX.Element => {
   const logo = <CosmianLogo link={window.location.origin} />
   const header = (
-    <Header mainLogo={logo} title="Anonymization" />
+    <Header mainLogo={logo} title="Anonymization configuration tool" />
   )
 
   return <MainLayout header={header}>{children}</MainLayout>

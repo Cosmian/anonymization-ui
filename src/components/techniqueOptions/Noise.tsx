@@ -54,20 +54,6 @@ export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form }) => {
     return <DatePicker picker={type} onChange={onChange} defaultValue={moment(defaultValue)} />
   }
 
-  const BoundaryNumber = ({ label, name, initialValue }: { label: string, name: string, initialValue: string }): JSX.Element => {
-    return (
-      <Form.Item name={["techniqueOptions", name]} label={label} className="radio-content" initialValue={initialValue}
-        rules={[{ required: true, message: "Please provide a boundary" }]}
-      >
-        <InputNumber
-          min={0}
-          step={1}
-          precision={1}
-        />
-      </Form.Item>
-    )
-  }
-
   const BoundaryDate = ({ label, name, initialValue }: { label: string, name: string, initialValue: string }): JSX.Element => {
     return (
       <Form.Item label={label}>
@@ -165,8 +151,24 @@ export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form }) => {
       }
       {optionType === "boundaries" && (dataType === "Integer" || dataType === "Float") &&
         <>
-          <BoundaryNumber label="Minimum" name="minBound" initialValue={minBound} />
-          <BoundaryNumber label="Maximum" name="maxBound" initialValue={maxBound} />
+          <Form.Item name={["techniqueOptions", "minBound"]} label="Minimum" className="radio-content" initialValue={minBound}
+            rules={[{ required: true, message: "Please provide a boundary" }]}
+          >
+            <InputNumber
+              min={0}
+              step={1}
+              precision={1}
+            />
+          </Form.Item>
+          <Form.Item name={["techniqueOptions", "maxBound"]} label="Maximum" className="radio-content" initialValue={maxBound}
+            rules={[{ required: true, message: "Please provide a boundary" }]}
+          >
+            <InputNumber
+              min={0}
+              step={1}
+              precision={1}
+            />
+          </Form.Item>
         </>
 
       }
