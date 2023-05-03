@@ -56,11 +56,10 @@ export const getCommonTechniques = (types: DataType[]): DefaultOptionType[] => {
   return []
 }
 
-const FPE = await Fpe()
-const key = crypto.getRandomValues(new Uint8Array(32))
-const tweak = crypto.getRandomValues(new Uint8Array(1024))
-
 export const applyTechnique = async (plainText: string | number, technique: TechniqueType, techniqueOptions: any): Promise<any> => {
+  const FPE = await Fpe()
+  const key = crypto.getRandomValues(new Uint8Array(32))
+  const tweak = crypto.getRandomValues(new Uint8Array(1024))
   switch (technique) {
     case "Fpe_string":
     case "Fpe_float":

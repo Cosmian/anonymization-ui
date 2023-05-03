@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "lint": "eslint '*/**/*.{ts,tsx}' --fix"
+    "lint": "eslint '*/**/*.{ts,tsx}' --fix",
+    "test:e2e": "wait-on -t 200000 http://localhost:3001 && cypress run --headless --browser chrome"
   },
   "dependencies": {
     "antd": "^4.24.7",
@@ -22,7 +23,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.9.0",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "wait-on": "^7.0.1"
   },
   "devDependencies": {
     "@types/react": "^18.0.26",

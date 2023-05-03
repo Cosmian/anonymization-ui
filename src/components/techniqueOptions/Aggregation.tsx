@@ -25,6 +25,7 @@ export const NumberAggregationOptions: React.FC= () => {
         step={1}
         precision={0}
         formatter={(precision) => precision ? Math.pow(10, precision).toString() : ""}
+        // @ts-ignore
         parser={(value) => value ? Math.log10(Number(value)) : 0}
       />
     </Form.Item>

@@ -1,7 +1,7 @@
-import { Checkbox, DatePicker, DatePickerProps, Form, FormInstance, InputNumber, Radio, Select, Space, Tag } from "antd";
-import moment from "moment";
-import { useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
+import { Checkbox, DatePicker, DatePickerProps, Form, FormInstance, InputNumber, Radio, Select, Space, Tag } from "antd"
+import moment from "moment"
+import { useEffect, useState } from "react"
+import { v4 as uuidv4 } from "uuid"
 
 interface NoiseOptionsProps {
   form: FormInstance;

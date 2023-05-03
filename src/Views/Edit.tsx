@@ -216,6 +216,7 @@ const Edit = (): JSX.Element => {
   const getCorrelatedColumns = (uuid: string): string[] => {
     if (fileMetadata) {
       return fileMetadata.reduce((acc: string[], column: MetaData) => {
+        // @ts-ignore
         if (column.techniqueOptions && column.techniqueOptions?.correlation === uuid) {
           return [...acc, column.name]
         }
