@@ -49,6 +49,7 @@ const Edit = (): JSX.Element => {
   const [form] = Form.useForm()
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([])
+  const [selectedColumns, setSelectedColumns] = useState<string[]>([])
   const [configurationInfo, setConfigurationInfo] = useState<ConfigurationInfo>()
   const [fileMetadata, setFileMetadata] = useState<MetaData[] | undefined>(undefined)
   const [selectTechniqueList, setSelectTechniqueList] = useState<undefined | DefaultOptionType[]>(undefined)
@@ -173,17 +174,20 @@ const Edit = (): JSX.Element => {
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]): void => {
     setSelectedRowKeys(newSelectedRowKeys)
+    const columns: string[] = []
     const selectedTypes: Set<DataType> = new Set()
     const selectedTechniques: Set<string> = new Set()
     const selectedTechniqueOptions: Set<string> = new Set()
     for (const key of newSelectedRowKeys) {
       if (fileMetadata) {
         const metaData = fileMetadata[Number(key)]
+        columns.push(metaData.name)
         selectedTypes.add(metaData.type as DataType)
         selectedTechniques.add(metaData.technique as string)
         selectedTechniqueOptions.add(JSON.stringify(metaData.techniqueOptions) as string)
       }
     }
+    setSelectedColumns(columns)
 
     const type: DataType | undefined =  selectedTypes.size === 1 ? [...selectedTypes][0] : undefined
     form.setFieldValue("columnType", type)
@@ -209,6 +213,18 @@ const Edit = (): JSX.Element => {
     navigate(paths_config.home)
   }
 
+  const getCorrelatedColumns = (uuid: string): string[] => {
+    if (fileMetadata) {
+      return fileMetadata.reduce((acc: string[], column: MetaData) => {
+        if (column.techniqueOptions && column.techniqueOptions?.correlation === uuid) {
+          return [...acc, column.name]
+        }
+        return acc
+      }, [] as string[])
+    }
+    return []
+  }
+
   return (
     <div className="edit">
       <BackArrow
@@ -216,7 +232,10 @@ const Edit = (): JSX.Element => {
         text="Back to configurations list"
       />
       <h1>Edit techniques</h1>
-      <RoundedFrame className="editBox">
+      <div className="buttons">
+        <Button onClick={() => downloadConfiguration(configurationInfo?.name)}>Download configuration</Button>
+      </div>
+      {selectedRowKeys.length > 0 && <RoundedFrame className="editBox">
         <h2 className="h4">{`Apply technique on ${selectedRowKeys.length} column${selectedRowKeys.length > 1 ? "s" : ""}`}</h2>
         <div className="rowEdit">
           <div className="header">
@@ -244,23 +263,25 @@ const Edit = (): JSX.Element => {
                   />
                 </Form.Item>
                 <Form.Item>
-                  <TechniqueOptions selected={selectedTechnique} form={form} />
+                  <TechniqueOptions selected={selectedTechnique} form={form} columns={selectedColumns} getCorrelatedColumns={getCorrelatedColumns} />
                 </Form.Item>
               </div>
               <div className="element">
                 {result !== undefined && result.toString().substring(0, 5) === "Error" && <div style={{ color: "#e34319", fontStyle: "italic" }}>{result as string}</div>}
-                {(result === undefined || result.toString().substring(0,5) !== "Error") && <div>{result?.toString()}</div>}
+                {(result === undefined || result.toString().substring(0, 5) !== "Error") && <div>{result?.toString()}</div>}
               </div>
             </div>
             <div className="buttons">
-              <Button className="button" type="dark" onClick={() => clearTechnique()} disabled={selectedRowKeys.length === 0}>Clear selected column(s) technique</Button>
               <div>
                 <Button type="outline" onClick={() => cancelEdit()} disabled={selectedRowKeys.length === 0}>Cancel</Button>
+                <Button className="button" type="dark" onClick={() => clearTechnique()} disabled={selectedRowKeys.length === 0}>Clear selected column(s) technique</Button>
                 <Button htmlType="submit" disabled={selectedRowKeys.length === 0}>Save</Button>
               </div>
             </div>
           </Form>
         </div>
+      </RoundedFrame>}
+      <RoundedFrame>
         <h2 className="h4">{configName} anonymization columns</h2>
         <Table
           rowKey={"key"}
@@ -270,9 +291,6 @@ const Edit = (): JSX.Element => {
           rowSelection={rowSelection}
         />
       </RoundedFrame>
-      <div className="buttons">
-        <Button onClick={() => downloadConfiguration(configurationInfo?.name)}>Download configuration</Button>
-      </div>
     </div>
   )
 }

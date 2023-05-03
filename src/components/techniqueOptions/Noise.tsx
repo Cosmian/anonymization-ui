@@ -1,20 +1,25 @@
-import { DatePicker, DatePickerProps, Form, FormInstance, InputNumber, Radio, Select, Space } from "antd"
-import moment from "moment"
-import { useEffect, useState } from "react"
+import { Checkbox, DatePicker, DatePickerProps, Form, FormInstance, InputNumber, Radio, Select, Space, Tag } from "antd";
+import moment from "moment";
+import { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 interface NoiseOptionsProps {
   form: FormInstance;
+  columns: string[];
+  getCorrelatedColumns: (uuid: string) => string[]
 }
 
 type PickerType = "date";
 
-export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form }) => {
+export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form, columns, getCorrelatedColumns }) => {
   const [pickerType, setPickerType] = useState<PickerType>(form.getFieldValue(["techniqueOptions", "pickerType"]) || "date")
+  const [correlatedColumns, setCorrelatedColumns] = useState<string[]>([])
   const dataType = form.getFieldValue("columnType")
   const method = form.getFieldValue(["techniqueOptions", "method"])
   const optionType = form.getFieldValue(["techniqueOptions", "optionType"])
   const minBound: string = form.getFieldValue(["techniqueOptions", "minBound"])
   const maxBound: string = form.getFieldValue(["techniqueOptions", "maxBound"])
+  const correlationId: string = form.getFieldValue(["techniqueOptions", "correlation"])
 
   const options = [
     { label: "Parameters", value: "params", disabled: method === "Uniform" },
@@ -28,6 +33,10 @@ export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form }) => {
   }, [method])
 
   useEffect(() => {
+    setCorrelatedColumns(getCorrelatedColumns(correlationId))
+  }, [correlationId])
+
+  useEffect(() => {
     if (!form.getFieldValue(["techniqueOptions", "optionType"])) {
       form.setFieldValue(["techniqueOptions", "optionType"], "params")
     }
@@ -39,6 +48,11 @@ export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form }) => {
       form.setFieldValue(["techniqueOptions", "stdDev"], undefined)
     }
   }, [optionType])
+
+  const setUuidCorrelation= (): void => {
+    const uuid = uuidv4()
+    form.setFieldValue(["techniqueOptions", "correlation"], uuid)
+  }
 
   const PickerWithType = ({
     type,
@@ -86,92 +100,108 @@ export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form }) => {
           ]}
         />
       </Form.Item>
-      <Form.Item name={["techniqueOptions", "optionType"]} initialValue="params">
-        <Radio.Group
-          options={options}
-          value={optionType}
-          optionType="button"
-          buttonStyle="solid"
-        />
-      </Form.Item>
-      {optionType === "params" &&
-        <>
-        <Form.Item name={["techniqueOptions", "mean"]} label="Mean" className="radio-content" initialValue={0}
-          rules={[{ required: true, message: "Please provide a value" }]}
-        >
-            <InputNumber
-              min={0}
-              step={1}
-              precision={1}
-            />
+      <div className="box">
+        <Form.Item name={["techniqueOptions", "optionType"]} initialValue="params">
+          <Radio.Group
+            options={options}
+            value={optionType}
+            optionType="button"
+            buttonStyle="solid"
+          />
         </Form.Item>
-        <Form.Item label="Standard deviation" className="radio-content input-inline">
-          {dataType !== "Date" &&
-            <Form.Item name={["techniqueOptions", "stdDev"]} initialValue={1}
-              rules={[{ required: true, message: "Please provide a value" }]}
+        {optionType === "params" &&
+          <>
+          <Form.Item name={["techniqueOptions", "mean"]} label="Mean" className="radio-content" initialValue={0}
+            rules={[{ required: true, message: "Please provide a value" }]}
+          >
+              <InputNumber
+                min={0}
+                step={1}
+                precision={1}
+              />
+          </Form.Item>
+          <Form.Item label="Standard deviation" className="radio-content input-inline">
+            {dataType !== "Date" &&
+              <Form.Item name={["techniqueOptions", "stdDev"]} initialValue={1}
+                rules={[{ required: true, message: "Please provide a value" }]}
+              >
+                <InputNumber
+                  min={0}
+                  step={1}
+                  precision={1}
+                />
+              </Form.Item>}
+            {dataType === "Date" &&
+              <>
+              <Form.Item name={["techniqueOptions", "stdDev", "precision"]} initialValue={1}
+                rules={[{ required: true, message: "Please provide a value" }]}
+              >
+                  <InputNumber
+                    min={0}
+                    step={1}
+                    precision={1}
+                  />
+                </Form.Item>
+                <Form.Item  name={["techniqueOptions", "stdDev", "unit"]} initialValue="Minute">
+                  <Select
+                    options={[
+                      { value: "Minute", label: "Minute" },
+                      { value: "Hour", label: "Hour" },
+                      { value: "Day", label: "Day" },
+                      { value: "Month", label: "Month" },
+                      { value: "Year", label: "Year" },
+                    ]}
+                  />
+                </Form.Item>
+              </>
+            }
+          </Form.Item>
+          </>
+        }
+        {optionType === "boundaries" && dataType === "Date" &&
+          <>
+            <BoundaryDate label="Minimum" name="minBound" initialValue={minBound} />
+            <BoundaryDate label="Maximum" name="maxBound" initialValue={maxBound} />
+          </>
+        }
+        {optionType === "boundaries" && (dataType === "Integer" || dataType === "Float") &&
+          <>
+            <Form.Item name={["techniqueOptions", "minBound"]} label="Minimum" className="radio-content" initialValue={minBound}
+              rules={[{ required: true, message: "Please provide a boundary" }]}
             >
               <InputNumber
                 min={0}
                 step={1}
                 precision={1}
               />
-            </Form.Item>}
-          {dataType === "Date" &&
-            <>
-            <Form.Item name={["techniqueOptions", "stdDev", "precision"]} initialValue={1}
-              rules={[{ required: true, message: "Please provide a value" }]}
+            </Form.Item>
+            <Form.Item name={["techniqueOptions", "maxBound"]} label="Maximum" className="radio-content" initialValue={maxBound}
+              rules={[{ required: true, message: "Please provide a boundary" }]}
             >
-                <InputNumber
-                  min={0}
-                  step={1}
-                  precision={1}
-                />
-              </Form.Item>
-              <Form.Item  name={["techniqueOptions", "stdDev", "unit"]} initialValue="Minute">
-                <Select
-                  options={[
-                    { value: "Minute", label: "Minute" },
-                    { value: "Hour", label: "Hour" },
-                    { value: "Day", label: "Day" },
-                    { value: "Month", label: "Month" },
-                    { value: "Year", label: "Year" },
-                  ]}
-                />
-              </Form.Item>
-            </>
-          }
-        </Form.Item>
-        </>
-      }
-      {optionType === "boundaries" && dataType === "Date" &&
+              <InputNumber
+                min={0}
+                step={1}
+                precision={1}
+              />
+            </Form.Item>
+          </>
+        }
+      </div>
+      {form.getFieldValue(["techniqueOptions", "correlation"]) === undefined && <Form.Item name="is_correlated" valuePropName="checked" initialValue={undefined} style={{ marginBottom: 0 }} className="tags-list">
+        <Checkbox onChange={() => setUuidCorrelation()} disabled={columns.length < 2}>Apply correlated noise for columns:</Checkbox>
         <>
-          <BoundaryDate label="Minimum" name="minBound" initialValue={minBound} />
-          <BoundaryDate label="Maximum" name="maxBound" initialValue={maxBound} />
+          {columns.map((name, index) => (
+            <Tag key={index}>{name}</Tag>
+          ))}
         </>
-      }
-      {optionType === "boundaries" && (dataType === "Integer" || dataType === "Float") &&
+      </Form.Item>}
+      {form.getFieldValue(["techniqueOptions", "correlation"]) !== undefined && <div className="tags-list">Correlated noise applied between:
         <>
-          <Form.Item name={["techniqueOptions", "minBound"]} label="Minimum" className="radio-content" initialValue={minBound}
-            rules={[{ required: true, message: "Please provide a boundary" }]}
-          >
-            <InputNumber
-              min={0}
-              step={1}
-              precision={1}
-            />
-          </Form.Item>
-          <Form.Item name={["techniqueOptions", "maxBound"]} label="Maximum" className="radio-content" initialValue={maxBound}
-            rules={[{ required: true, message: "Please provide a boundary" }]}
-          >
-            <InputNumber
-              min={0}
-              step={1}
-              precision={1}
-            />
-          </Form.Item>
+          {correlatedColumns.map((name, index) => (
+            <Tag key={index}>{name}</Tag>
+          ))}
         </>
-
-      }
+      </div>}
     </>
   )
 }

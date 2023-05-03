@@ -14,9 +14,11 @@ import { RescalingOptions } from "./techniqueOptions/Rescaling"
 interface TechniqueOptionsProps {
   selected: TechniqueType;
   form: FormInstance;
+  columns: string[];
+  getCorrelatedColumns: (uuid: string) => string[]
 }
 
-const TechniqueOptions: React.FC<TechniqueOptionsProps> = ({ selected, form }) => {
+const TechniqueOptions: React.FC<TechniqueOptionsProps> = ({ selected, form, columns, getCorrelatedColumns }) => {
 
   return (
     <>
@@ -30,7 +32,7 @@ const TechniqueOptions: React.FC<TechniqueOptionsProps> = ({ selected, form }) =
       {selected === "Date_aggregation" && <DateAggregationOptions />}
       {selected === "Number_aggregation" && <NumberAggregationOptions />}
       {selected === "Rescaling" && <RescalingOptions />}
-      {(selected === "Number_noise" || selected === "Date_noise") && <NoiseOptions form={form} />}
+      {(selected === "Number_noise" || selected === "Date_noise") && <NoiseOptions form={form} columns={columns} getCorrelatedColumns={getCorrelatedColumns}/>}
     </>
   )
 }
