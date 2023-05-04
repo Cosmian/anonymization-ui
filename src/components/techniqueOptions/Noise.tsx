@@ -1,7 +1,7 @@
-import { Checkbox, DatePicker, DatePickerProps, Form, FormInstance, InputNumber, Radio, Select, Space, Tag } from "antd";
-import moment from "moment";
-import { useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
+import { Checkbox, DatePicker, DatePickerProps, Form, FormInstance, InputNumber, Radio, Select, Space, Tag } from "antd"
+import moment from "moment"
+import { useEffect, useState } from "react"
+import { v4 as uuidv4 } from "uuid"
 
 interface NoiseOptionsProps {
   form: FormInstance;
@@ -14,6 +14,7 @@ type PickerType = "date";
 export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form, columns, getCorrelatedColumns }) => {
   const [pickerType, setPickerType] = useState<PickerType>(form.getFieldValue(["techniqueOptions", "pickerType"]) || "date")
   const [correlatedColumns, setCorrelatedColumns] = useState<string[]>([])
+  const [minDate, setMinDate] = useState<Moment | undefined>(undefined)
   const dataType = form.getFieldValue("columnType")
   const method = form.getFieldValue(["techniqueOptions", "method"])
   const optionType = form.getFieldValue(["techniqueOptions", "optionType"])
@@ -58,19 +59,22 @@ export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form, columns, getCo
     type,
     defaultValue,
     onChange,
+    max,
   }: {
     type: PickerType
     defaultValue: string,
-    onChange: DatePickerProps["onChange"]
-  }): JSX.Element => {
-    if (type === "date") return <DatePicker onChange={onChange} defaultValue={moment(defaultValue)} />
+    onChange: DatePickerProps["onChange"],
+    max: boolean
+    }): JSX.Element => {
+    if (type === "date") return <DatePicker onChange={onChange} defaultValue={moment(defaultValue)} disabledDate={(date) => max && minDate ? date.isBefore(minDate) : false} />
     form.setFieldValue(["techniqueOptions", "pickerType"], type)
-    return <DatePicker picker={type} onChange={onChange} defaultValue={moment(defaultValue)} />
+    return <DatePicker picker={type} onChange={onChange} defaultValue={moment(defaultValue)} disabledDate={(date) => max && minDate ? date.isBefore(minDate) : false} />
   }
 
   const BoundaryDate = ({ label, name, initialValue }: { label: string, name: string, initialValue: string }): JSX.Element => {
+    const max = name === "maxBound"
     return (
-      <Form.Item label={label}>
+      <Form.Item label={label} className="radio-content">
         <Space>
           <Select value={pickerType} onChange={setPickerType}
             options={[
@@ -80,7 +84,12 @@ export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form, columns, getCo
               { value: "year", label: "Year" },
             ]}
           />
-          <PickerWithType type={pickerType} onChange={value => form.setFieldValue(["techniqueOptions", name], value)} defaultValue={initialValue} />
+          <PickerWithType type={pickerType} onChange={value => {
+            form.setFieldValue(["techniqueOptions", name], value)
+            if (!max && value) {
+              setMinDate(value)
+            }
+          }} defaultValue={initialValue} max={max} />
         </Space>
       </Form.Item>
     )
@@ -179,7 +188,7 @@ export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form, columns, getCo
               rules={[{ required: true, message: "Please provide a boundary" }]}
             >
               <InputNumber
-                min={0}
+                min={minBound}
                 step={1}
                 precision={1}
               />
