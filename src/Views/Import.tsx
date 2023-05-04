@@ -26,8 +26,17 @@ const Import = (): JSX.Element => {
   }
 
   const getFileResult = (result: fileResult): void => {
-    setFileMetadata(result.metadata)
-    setConfigurationInfo(result.configurationInfo)
+    if (result.metadata && result.configurationInfo) {
+      setFileMetadata(result.metadata)
+      setConfigurationInfo(result.configurationInfo)
+    } else {
+      notification.error({
+        duration: 4,
+        message: "Import",
+        description: "Error importing this JSON : is not a configuration.",
+      })
+      resetFile()
+    }
   }
 
   const resetFile = (): void => {
@@ -38,7 +47,7 @@ const Import = (): JSX.Element => {
 
   const saveFile = async (): Promise<void> => {
     const configurationName = configurationInfo?.name
-    const configurationList: string[] = Object.keys(localForage)
+    const configurationList: string[] = await localForage.keys()
     const existing = configurationList.find((element) => element === configurationName)
     if (existing != null) {
       notification.error({

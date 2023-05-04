@@ -235,7 +235,7 @@ const Edit = (): JSX.Element => {
       <div className="buttons">
         <Button onClick={() => downloadConfiguration(configurationInfo?.name)}>Download configuration</Button>
       </div>
-      {selectedRowKeys.length > 0 && <RoundedFrame className="editBox">
+      <RoundedFrame className="editBox">
         <h2 className="h4">{`Apply technique on ${selectedRowKeys.length} column${selectedRowKeys.length > 1 ? "s" : ""}`}</h2>
         <div className="rowEdit">
           <div className="header">
@@ -280,7 +280,7 @@ const Edit = (): JSX.Element => {
             </div>
           </Form>
         </div>
-      </RoundedFrame>}
+      </RoundedFrame>
       <RoundedFrame>
         <h2 className="h4">{configName} anonymization columns</h2>
         <Table

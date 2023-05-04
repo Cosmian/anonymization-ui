@@ -74,8 +74,10 @@ const Upload = (): JSX.Element => {
                 { required: true, message: "Please provide a name." },
                 { min: 3, message: "Name must be at least 3 characters long." },
                 { pattern: /[^\p{Zs}]/u, message: "Name should contain visible characters."},
-                { validator: async (_rule, name) => {
-                    const existName = Object.keys(localForage).find((key) => key === name.trim())
+                {
+                  validator: async (_rule, name) => {
+                    const configurationList = await localForage.keys()
+                    const existName = configurationList.find((key) => key === name.trim())
                     if (existName) {
                       return Promise.reject(new Error("This configuration name already exists"))
                     }
