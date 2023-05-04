@@ -14,7 +14,7 @@ type PickerType = "date";
 export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form, columns, getCorrelatedColumns }) => {
   const [pickerType, setPickerType] = useState<PickerType>(form.getFieldValue(["techniqueOptions", "pickerType"]) || "date")
   const [correlatedColumns, setCorrelatedColumns] = useState<string[]>([])
-  const [minDate, setMinDate] = useState<Moment | undefined>(undefined)
+  const [minDate, setMinDate] = useState<moment.Moment | undefined>(undefined)
   const dataType = form.getFieldValue("columnType")
   const method = form.getFieldValue(["techniqueOptions", "method"])
   const optionType = form.getFieldValue(["techniqueOptions", "optionType"])

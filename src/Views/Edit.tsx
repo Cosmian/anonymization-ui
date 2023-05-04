@@ -262,6 +262,9 @@ const Edit = (): JSX.Element => {
                     options={selectTechniqueList}
                   />
                 </Form.Item>
+                {selectedTechnique && <div className="link">
+                  {`More information about ${selectedTechnique} treatment`}
+                </div>}
                 <Form.Item>
                   <TechniqueOptions selected={selectedTechnique} form={form} columns={selectedColumns} getCorrelatedColumns={getCorrelatedColumns} />
                 </Form.Item>

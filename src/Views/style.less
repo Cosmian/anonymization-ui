@@ -4,9 +4,8 @@
   .buttons {
     display: flex;
     justify-content: flex-end;
-    button {
-      margin: 0px 0px 20px 20px;
-    }
+    gap: 1.5em;
+    margin-bottom: 1.5em;
   }
 }
 
@@ -21,7 +20,7 @@
       margin-left: 30px;
     }
     .icon:hover{
-      color: orangered;
+      color: @primary;
     }
   }
 }
@@ -43,24 +42,24 @@
     flex-direction: column;
     margin: 20px 0px;
     label {
-      font-size: 14px;
+      font-size: .875rem;
     }
     .ant-form-item {
       margin: 0px 0px 10px 0px;
     }
     .box {
-      background: #FAFAFA;
+      background: @light-bg;
       border-radius: 4px;
     }
     .rowEdit {
-      border: 1px solid #D9D9D9;
+      border: 1px solid @grey4;
       border-radius: 4px;
       margin-bottom: 20px;
       .header {
         display: flex;
         width: 100%;
         justify-content: space-around;
-        background: #FAFAFA;
+        background: @light-bg;
         font-weight: 600;
       }
       .form {
@@ -123,6 +122,17 @@
         margin: 10px 0px;
         .ant-tag {
           margin: 5px 5px 5px 0px;
+        }
+      }
+      .link {
+        font-size: 0.9em;
+        cursor: pointer;
+        color: @dark;
+        text-decoration: underline;
+        margin-bottom: 10px;
+
+        &:hover {
+          color: fade(@dark, 80);
         }
       }
     }

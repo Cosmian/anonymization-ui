@@ -13,7 +13,7 @@ import "./style.less"
 
 const Anonymization = (): JSX.Element => {
   const navigate = useNavigate()
-  const [configList, setConfigList] = useState<ConfigurationInfo[] | undefined>([])
+  const [configList, setConfigList] = useState<ConfigurationInfo[]>([])
   const [deleteConfigModalVisible, setDeleteConfigModalVisible] = useState<boolean>(false)
 
   useEffect(() => {
@@ -34,7 +34,7 @@ const Anonymization = (): JSX.Element => {
       }
     }
     fetchConfigurations()
-  }, [localForage])
+  }, [])
 
   const columns = [
     {
@@ -66,12 +66,12 @@ const Anonymization = (): JSX.Element => {
         }
 
         const handleDelete = async (): Promise<void> => {
-        if (configList) {
-          const updatedDataSource = configList.filter(data => data.name !== configuration.name).sort((a: ConfigurationInfo, b: ConfigurationInfo) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
-          setConfigList(updatedDataSource)
-        }
-        await localForage.removeItem(configuration.name)
-        setDeleteConfigModalVisible(false)
+          if (configList) {
+            const updatedDataSource = configList.filter(data => data.name !== configuration.name).sort((a: ConfigurationInfo, b: ConfigurationInfo) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+            setConfigList(updatedDataSource)
+          }
+          await localForage.removeItem(configuration.name)
+          setDeleteConfigModalVisible(false)
       }
 
         const handleDownload = (): void => {
@@ -83,12 +83,10 @@ const Anonymization = (): JSX.Element => {
           if (configurationInitial && configList) {
             const uuid = uuidv4().slice(0, 4)
             const copyName = configuration.name + "_copy_" + uuid
-            const configurationInfoCopy: ConfigurationInfo = { name: copyName, created_at: new Date().toString(), file: configuration.file }
+            const configurationInfoCopy: ConfigurationInfo = { name: copyName, created_at: new Date().toLocaleString(), file: configuration.file }
             const configurationCopy = {...configurationInitial, configurationInfo: configurationInfoCopy}
             await localForage.setItem((copyName), configurationCopy)
-            const data = [...configList]
-            data.push({ ...configurationInfoCopy, key: data.length + 1 })
-            setConfigList(data)
+            setConfigList([...configList, {...configurationInfoCopy, key: configList.length + 1 }])
           }
         }
 

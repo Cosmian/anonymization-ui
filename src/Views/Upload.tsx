@@ -52,7 +52,7 @@ const Upload = (): JSX.Element => {
   const saveFile = async (): Promise<void> => {
     if (name && fileMetadata) {
       const fileName = fileInfo?.name
-      await localForage.setItem(name, { metadata: fileMetadata, configurationInfo: { name, created_at: new Date(), file: fileName } })
+      await localForage.setItem(name, { metadata: fileMetadata, configurationInfo: { name, created_at: new Date().toLocaleString(), file: fileName } })
       navigate(paths_config.edit, { state: { name } })
     }
   }
