@@ -3,6 +3,7 @@ import { BackArrow, Button, FileDrop, RoundedFrame } from "cosmian_ui"
 import localForage from "localforage"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { v4 as uuidv4 } from "uuid"
 import { paths_config } from "../config/paths"
 import { DataType, FileInfo, MetaData } from "../utils/utils"
 import "./style.less"
@@ -51,9 +52,9 @@ const Upload = (): JSX.Element => {
 
   const saveFile = async (): Promise<void> => {
     if (name && fileMetadata) {
-      const fileName = fileInfo?.name
-      await localForage.setItem(name, { metadata: fileMetadata, configurationInfo: { name, created_at: new Date().toLocaleString(), file: fileName } })
-      navigate(paths_config.edit, { state: { name } })
+      const uuid = uuidv4()
+      await localForage.setItem(uuid, { metadata: fileMetadata, configurationInfo: { name, created_at: new Date().toLocaleString(), file: fileInfo?.name, uuid } })
+      navigate(paths_config.edit, { state: { uuid } })
     }
   }
 
@@ -74,15 +75,6 @@ const Upload = (): JSX.Element => {
                 { required: true, message: "Please provide a name." },
                 { min: 3, message: "Name must be at least 3 characters long." },
                 { pattern: /[^\p{Zs}]/u, message: "Name should contain visible characters."},
-                {
-                  validator: async (_rule, name) => {
-                    const configurationList = await localForage.keys()
-                    const existName = configurationList.find((key) => key === name.trim())
-                    if (existName) {
-                      return Promise.reject(new Error("This configuration name already exists"))
-                    }
-                  },
-                },
               ]}
             >
             <Input placeholder="Configuration name" />

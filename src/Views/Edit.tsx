@@ -44,7 +44,7 @@ const columns = [
 ]
 
 const Edit = (): JSX.Element => {
-  const configName: string = useLocation().state?.name
+  const configUuid: string = useLocation().state?.uuid
   const navigate = useNavigate()
   const [form] = Form.useForm()
 
@@ -64,7 +64,7 @@ const Edit = (): JSX.Element => {
 
   useEffect(() => {
     const fetchConfig = async (): Promise<void> => {
-      const configuration: { configurationInfo: ConfigurationInfo, metadata: MetaData[] } | null = await localForage.getItem(configName)
+      const configuration: { configurationInfo: ConfigurationInfo, metadata: MetaData[] } | null = await localForage.getItem(configUuid)
       if (configuration) {
         setConfigurationInfo(configuration.configurationInfo)
         setFileMetadata(configuration.metadata)
@@ -144,7 +144,7 @@ const Edit = (): JSX.Element => {
         }
       }))
       setFileMetadata(updatedFileMetaData)
-      await localForage.setItem(configName, { metadata: updatedFileMetaData, configurationInfo })
+      await localForage.setItem(configUuid, { metadata: updatedFileMetaData, configurationInfo })
     }
     resetForm()
   }
@@ -162,7 +162,7 @@ const Edit = (): JSX.Element => {
       })
       setResult(undefined)
       setFileMetadata(updatedFileMetaData)
-      await localForage.setItem(configName, { metadata: updatedFileMetaData,  configurationInfo })
+      await localForage.setItem(configUuid, { metadata: updatedFileMetaData,  configurationInfo })
     }
     resetForm()
   }
@@ -208,8 +208,8 @@ const Edit = (): JSX.Element => {
     onChange: onSelectChange,
   }
 
-  const downloadConfiguration = (configurationName: string | undefined): void => {
-    downloadFile(configurationName)
+  const downloadConfiguration = (configurationUuid: string | undefined): void => {
+    downloadFile(configurationUuid)
     navigate(paths_config.home)
   }
 
@@ -233,7 +233,7 @@ const Edit = (): JSX.Element => {
       />
       <h1>Edit techniques</h1>
       <div className="buttons">
-        <Button onClick={() => downloadConfiguration(configurationInfo?.name)}>Download configuration</Button>
+        <Button onClick={() => downloadConfiguration(configurationInfo?.uuid)}>Download configuration</Button>
       </div>
       <RoundedFrame className="editBox">
         <h2 className="h4">{`Apply technique on ${selectedRowKeys.length} column${selectedRowKeys.length > 1 ? "s" : ""}`}</h2>
@@ -285,7 +285,7 @@ const Edit = (): JSX.Element => {
         </div>
       </RoundedFrame>
       <RoundedFrame>
-        <h2 className="h4">{configName} anonymization columns</h2>
+        <h2 className="h4">{configurationInfo?.name} anonymization columns</h2>
         <Table
           rowKey={"key"}
           dataSource={fileMetadata}

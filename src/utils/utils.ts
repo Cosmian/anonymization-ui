@@ -7,7 +7,7 @@ import localForage from "localforage"
 
 export type MetaData = { key: string, name: string, type: string, example: string, technique: undefined | string, techniqueOptions: undefined | string, result: undefined | string }
 
-export type ConfigurationInfo = { key?: number, name: string, created_at: string, file: string }
+export type ConfigurationInfo = { uuid: string, name: string, created_at: string, file: string }
 
 export type FileInfo = { last_modified: number, name: string, size: number, type: string }
 
@@ -40,7 +40,7 @@ export const dataTypesSelect: { value: string, label: string, example: string | 
   { value: "Date", label: "Date", example: "12/02/2000" },
 ]
 
-export const techniquesForTypes: { Integer: DefaultOptionType[], Float: DefaultOptionType[],Text: DefaultOptionType[], Date: DefaultOptionType[] } = {
+export const techniquesForTypes: { Integer: DefaultOptionType[], Float: DefaultOptionType[], Text: DefaultOptionType[], Date: DefaultOptionType[] } = {
   "Integer": [{ value: "Fpe_integer", label: "FPE" },  { value: "Number_aggregation", label: "Aggregation" }, { value: "Number_noise", label: "Noise" }, { value: "Rescaling", label: "Rescaling" }],
   "Float": [{ value: "Fpe_float", label: "FPE" },  { value: "Number_aggregation", label: "Aggregation" }, { value: "Number_noise", label: "Noise" }, { value: "Rescaling", label: "Rescaling" }],
   "Text": [{ value: "Hash", label: "Hash" }, { value: "Fpe_string", label: "FPE" }, { value: "Mask_words", label: "Mask words" }, { value: "Tokenize_words", label: "Tokenize words" }, { value: "Regex", label: "Regex" }],
@@ -78,11 +78,11 @@ export const applyTechnique = async (plainText: string | number, technique: Tech
 }
 
 
-export const downloadFile = async (name: string | undefined): Promise<void> => {
-  if (name) {
-    const configuration: { configurationInfo: ConfigurationInfo, metadata: MetaData[] } | null = await localForage.getItem(name)
+export const downloadFile = async (uuid: string | undefined): Promise<void> => {
+  if (uuid) {
+    const configuration: { configurationInfo: ConfigurationInfo, metadata: MetaData[] } | null = await localForage.getItem(uuid)
     if (configuration) {
-      const fileName = "config-" + name
+      const fileName = "config-" + configuration.configurationInfo.name
       // configuration.input_dataset.delimiter = ";"
       const json = JSON.stringify(configuration)
       const blob = new Blob([json], { type: "application/json" })

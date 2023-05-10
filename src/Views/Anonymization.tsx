@@ -19,11 +19,10 @@ const Anonymization = (): JSX.Element => {
   useEffect(() => {
     const fetchConfigurations = async (): Promise<void> => {
       const elements = await localForage.keys()
-      const data = await Promise.all(elements.map(async (name, index): Promise<ConfigurationInfo | undefined> => {
-        const item: { configurationInfo: ConfigurationInfo, metadata: MetaData[] } | null  = await localForage.getItem(name)
+      const data = await Promise.all(elements.map(async (uuid): Promise<ConfigurationInfo | undefined> => {
+        const item: { configurationInfo: ConfigurationInfo, metadata: MetaData[] } | null = await localForage.getItem(uuid)
         if (item) {
-          const info = item.configurationInfo
-          return { key: index, ...info }
+          return item.configurationInfo
         }
         return undefined
       }))
@@ -62,7 +61,7 @@ const Anonymization = (): JSX.Element => {
       render: (configuration: ConfigurationInfo) => {
         const handleSelect = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
           e.stopPropagation()
-          navigate(paths_config.edit, { state: { name: configuration.name }})
+          navigate(paths_config.edit, { state: { uuid: configuration.uuid }})
         }
 
         const handleDelete = async (): Promise<void> => {
@@ -70,23 +69,23 @@ const Anonymization = (): JSX.Element => {
             const updatedDataSource = configList.filter(data => data.name !== configuration.name).sort((a: ConfigurationInfo, b: ConfigurationInfo) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
             setConfigList(updatedDataSource)
           }
-          await localForage.removeItem(configuration.name)
+          await localForage.removeItem(configuration.uuid)
           setDeleteConfigModalVisible(false)
       }
 
         const handleDownload = (): void => {
-          downloadFile(configuration.name)
+          downloadFile(configuration.uuid)
         }
 
         const handleCopy = async (): Promise<void> => {
-          const configurationInitial: { configurationInfo: ConfigurationInfo, metadata: MetaData[] } | null = await localForage.getItem(configuration.name)
+          const configurationInitial: { configurationInfo: ConfigurationInfo, metadata: MetaData[] } | null = await localForage.getItem(configuration.uuid)
           if (configurationInitial && configList) {
-            const uuid = uuidv4().slice(0, 4)
-            const copyName = configuration.name + "_copy_" + uuid
-            const configurationInfoCopy: ConfigurationInfo = { name: copyName, created_at: new Date().toLocaleString(), file: configuration.file }
+            const uuid = uuidv4()
+            const copyName = configuration.name + "_copy_" + uuid.slice(0, 4)
+            const configurationInfoCopy: ConfigurationInfo = { name: copyName, created_at: new Date().toLocaleString(), file: configuration.file, uuid }
             const configurationCopy = {...configurationInitial, configurationInfo: configurationInfoCopy}
-            await localForage.setItem((copyName), configurationCopy)
-            setConfigList([...configList, {...configurationInfoCopy, key: configList.length + 1 }])
+            await localForage.setItem(uuid, configurationCopy)
+            setConfigList([...configList, configurationInfoCopy])
           }
         }
 
@@ -133,7 +132,7 @@ const Anonymization = (): JSX.Element => {
       <RoundedFrame className="search">
         <p className="h4">List of configurations</p>
         <Table
-          rowKey={"key"}
+          rowKey={"uuid"}
           dataSource={configList}
           columns={columns}
           pagination={false}

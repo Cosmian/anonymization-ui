@@ -4,6 +4,7 @@ import { BackArrow, Button, FileDrop, RoundedFrame } from "cosmian_ui"
 import localForage from "localforage"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { v4 as uuidv4 } from "uuid"
 import { paths_config } from "../config/paths"
 import { ConfigurationInfo, FileInfo } from "../utils/utils"
 import "./style.less"
@@ -33,7 +34,7 @@ const Import = (): JSX.Element => {
       notification.error({
         duration: 4,
         message: "Import",
-        description: "Error importing this JSON : is not a configuration.",
+        description: "Error importing this JSON: is not a configuration.",
       })
       resetFile()
     }
@@ -46,21 +47,10 @@ const Import = (): JSX.Element => {
   }
 
   const saveFile = async (): Promise<void> => {
-    const configurationName = configurationInfo?.name
-    const configurationList: string[] = await localForage.keys()
-    const existing = configurationList.find((element) => element === configurationName)
-    if (existing != null) {
-      notification.error({
-        duration: 3,
-        message: "Import",
-        description: "A configuration already exists with this name.",
-      })
-      resetFile()
-    } else {
-      if (configurationName && fileMetadata) {
-        await localForage.setItem(configurationName, { metadata: fileMetadata, configurationInfo })
-        navigate(paths_config.edit, { state: { name: configurationName } })
-      }
+    const uuid = uuidv4()
+    if (fileMetadata) {
+      await localForage.setItem(uuid, { metadata: fileMetadata, configurationInfo: {...configurationInfo, uuid } })
+      navigate(paths_config.edit, { state: { uuid } })
     }
   }
 

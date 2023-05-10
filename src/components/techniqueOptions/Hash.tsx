@@ -2,7 +2,7 @@ import ReloadOutlined from "@ant-design/icons/lib/icons/ReloadOutlined"
 import { Checkbox, Form, FormInstance, Input, Select } from "antd"
 import { CheckboxChangeEvent } from "antd/lib/checkbox"
 import { Button } from "cosmian_ui"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
 
 interface HashOptionsProps {
@@ -20,6 +20,13 @@ interface HashArgonOptionsProps {
 
 export const HashOptions: React.FC<HashOptionsProps> = ({ form }) => {
   const hashType = form.getFieldValue(["techniqueOptions", "hashType"])
+
+  useEffect(() => {
+    if (hashType === "Sha_256" || hashType === "Sha_3") {
+      form.setFieldValue(["techniqueOptions", "saltValue"], undefined)
+      form.setFieldValue(["techniqueOptions", "hasSalt"], false)
+    }
+  }, [hashType])
 
   const handleSaltChange = (): void => {
     const newSalt = uuidv4()
@@ -46,10 +53,10 @@ export const HashOptions: React.FC<HashOptionsProps> = ({ form }) => {
 }
 
 const HashShaOptions: React.FC<HashShaOptionsProps> = ({ form, handleSaltChange }) => {
-  const [isSaltEnabled, setIsSaltEnabled] = useState(form.getFieldValue(["techniqueOptions", "saltValue"]) !== undefined)
+  const [hasSaltEnabled, setHasSaltEnabled] = useState(form.getFieldValue(["techniqueOptions", "isSale"]))
 
   const handleSaltCheck = (event : CheckboxChangeEvent): void => {
-    setIsSaltEnabled(event.target.checked)
+    setHasSaltEnabled(event.target.checked)
     if (event.target.checked) {
       handleSaltChange()
     } else {
@@ -59,14 +66,14 @@ const HashShaOptions: React.FC<HashShaOptionsProps> = ({ form, handleSaltChange 
 
   return (
     <>
-      <Form.Item name="is_salt" valuePropName="checked" initialValue={isSaltEnabled} style={{ marginBottom: 0 }}>
+      <Form.Item name={["techniqueOptions", "hasSalt"]} valuePropName="checked" initialValue={hasSaltEnabled} style={{ marginBottom: 0 }}>
         <Checkbox onChange={(event) => handleSaltCheck(event)}>Add salt</Checkbox>
       </Form.Item>
       <div className="line">
         <Form.Item name={["techniqueOptions", "saltValue"]}>
-          <Input disabled={!isSaltEnabled} />
+          <Input disabled={!hasSaltEnabled} />
         </Form.Item>
-        <Button type="primary" onClick={() => handleSaltChange()} disabled={!isSaltEnabled} className="button">
+        <Button type="primary" onClick={() => handleSaltChange()} disabled={!hasSaltEnabled} className="button">
           <ReloadOutlined />
         </Button>
       </div>
@@ -77,8 +84,8 @@ const HashShaOptions: React.FC<HashShaOptionsProps> = ({ form, handleSaltChange 
 const HashArgonOptions: React.FC<HashArgonOptionsProps> = ({ handleSaltChange }) => {
   return (
     <>
-      <Form.Item name="is_salt" valuePropName="checked" initialValue={true} style={{ marginBottom: 0 }}>
-        <Checkbox disabled>Add salt</Checkbox>
+      <Form.Item initialValue={true} style={{ marginBottom: 0 }}>
+        <Checkbox checked disabled>Add salt</Checkbox>
       </Form.Item>
       <div className="line">
         <Form.Item
