@@ -23,16 +23,16 @@ const TechniqueOptions: React.FC<TechniqueOptionsProps> = ({ selected, form, col
   return (
     <>
       {selected === "Hash" && <HashOptions form={form} />}
-      {selected === "Fpe_string" && <FpeStringOptions />}
-      {selected === "Fpe_float" && <FpeFloatOptions />}
-      {selected === "Fpe_integer" && <FpeIntegerOptions />}
-      {selected === "Mask_words" && <MaskWordsOptions />}
-      {selected === "Tokenize_words" && <TokenizeWordsOptions />}
+      {selected === "FpeString" && <FpeStringOptions />}
+      {selected === "FpeFloat" && <FpeFloatOptions />}
+      {selected === "FpeInteger" && <FpeIntegerOptions />}
+      {selected === "MaskWords" && <MaskWordsOptions />}
+      {selected === "TokenizeWords" && <TokenizeWordsOptions />}
       {selected === "Regex" && <RegexOptions />}
-      {selected === "Date_aggregation" && <DateAggregationOptions />}
-      {selected === "Number_aggregation" && <NumberAggregationOptions />}
-      {selected === "Rescaling" && <RescalingOptions />}
-      {(selected === "Number_noise" || selected === "Date_noise") && <NoiseOptions form={form} columns={columns} getCorrelatedColumns={getCorrelatedColumns}/>}
+      {selected === "AggregationDate" && <DateAggregationOptions />}
+      {(selected === "AggregationInteger" || selected === "AggregationFloat") && <NumberAggregationOptions />}
+      {(selected === "RescalingInteger" || selected === "RescalingFloat") && <RescalingOptions />}
+      {(selected === "NoiseInteger" || selected === "NoiseFloat" || selected === "NoiseDate") && <NoiseOptions form={form} columns={columns} getCorrelatedColumns={getCorrelatedColumns} />}
     </>
   )
 }

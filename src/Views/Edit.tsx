@@ -214,10 +214,14 @@ const Edit = (): JSX.Element => {
   }
 
   const getCorrelatedColumns = (uuid: string): string[] => {
-    if (fileMetadata) {
+    if (fileMetadata && uuid) {
       return fileMetadata.reduce((acc: string[], column: MetaData) => {
-        if (column.techniqueOptions && column.techniqueOptions?.correlation === uuid) {
-          return [...acc, column.name]
+        if (column.techniqueOptions) {
+          const options = JSON.parse(column.techniqueOptions)
+          if (column.techniqueOptions && options?.correlation === uuid) {
+            return [...acc, column.name]
+          }
+          return acc
         }
         return acc
       }, [] as string[])

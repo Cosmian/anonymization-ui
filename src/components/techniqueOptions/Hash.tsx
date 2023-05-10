@@ -22,7 +22,7 @@ export const HashOptions: React.FC<HashOptionsProps> = ({ form }) => {
   const hashType = form.getFieldValue(["techniqueOptions", "hashType"])
 
   useEffect(() => {
-    if (hashType === "Sha_256" || hashType === "Sha_3") {
+    if (hashType === "SHA2" || hashType === "SHA3") {
       form.setFieldValue(["techniqueOptions", "saltValue"], undefined)
       form.setFieldValue(["techniqueOptions", "hasSalt"], false)
     }
@@ -40,14 +40,14 @@ export const HashOptions: React.FC<HashOptionsProps> = ({ form }) => {
       >
         <Select
           options={[
-            { value: "Sha_256", label: "SHA 256" },
-            { value: "Sha_3", label: "SHA 3" },
-            { value: "Argon_2", label: "Argon 2" },
+            { value: "SHA2", label: "SHA 2" },
+            { value: "SHA3", label: "SHA 3" },
+            { value: "Argon2", label: "Argon 2" },
           ]}
         />
       </Form.Item>
-      {(hashType === "Sha_256" || hashType === "Sha_3") && <HashShaOptions form={form} handleSaltChange={handleSaltChange} />}
-      {(hashType === "Argon_2") && <HashArgonOptions handleSaltChange={handleSaltChange} />}
+      {(hashType === "SHA2" || hashType === "SHA3") && <HashShaOptions form={form} handleSaltChange={handleSaltChange} />}
+      {(hashType === "Argon2") && <HashArgonOptions handleSaltChange={handleSaltChange} />}
     </>
   )
 }

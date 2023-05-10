@@ -20,17 +20,20 @@ export enum DataType {
 
 export enum TechniqueType {
   Hash = "Hash",
-  Fpe_float = "Fpe_float",
-  Fpe_integer = "Fpe_integer",
-  Fpe_string = "Fpe_string",
-  Mask_words = "Mask_words",
-  Tokenize_words = "Tokenize_words",
+  FpeFloat = "FpeFloat",
+  FpeInteger = "FpeInteger",
+  FpeString = "FpeString",
+  MaskWords = "MaskWords",
+  TokenizeWords = "TokenizeWords",
   Regex = "Regex",
-  DateAggregation = "Date_aggregation",
-  NumberAggregation = "Number_aggregation",
-  DateNoise = "Date_noise",
-  NumberNoise = "Number_noise",
-  Rescaling = "Rescaling"
+  AggregationDate = "AggregationDate",
+  AggregationInteger = "AggregationInteger",
+  AggregationFloat = "AggregationFloat",
+  NoiseDate = "NoiseDate",
+  NoiseInteger = "NoiseInteger",
+  NoiseFloat = "NoiseFloat",
+  RescalingInteger = "RescalingInteger",
+  RescalingFloat = "RescalingFloat"
 }
 
 export const dataTypesSelect: { value: string, label: string, example: string | number }[] = [
@@ -41,10 +44,10 @@ export const dataTypesSelect: { value: string, label: string, example: string | 
 ]
 
 export const techniquesForTypes: { Integer: DefaultOptionType[], Float: DefaultOptionType[], Text: DefaultOptionType[], Date: DefaultOptionType[] } = {
-  "Integer": [{ value: "Fpe_integer", label: "FPE" },  { value: "Number_aggregation", label: "Aggregation" }, { value: "Number_noise", label: "Noise" }, { value: "Rescaling", label: "Rescaling" }],
-  "Float": [{ value: "Fpe_float", label: "FPE" },  { value: "Number_aggregation", label: "Aggregation" }, { value: "Number_noise", label: "Noise" }, { value: "Rescaling", label: "Rescaling" }],
-  "Text": [{ value: "Hash", label: "Hash" }, { value: "Fpe_string", label: "FPE" }, { value: "Mask_words", label: "Mask words" }, { value: "Tokenize_words", label: "Tokenize words" }, { value: "Regex", label: "Regex" }],
-  "Date": [{ value: "Date_aggregation", label: "Aggregation" }, { value: "Date_noise", label: "Noise" }],
+  "Integer": [{ value: "FpeInteger", label: "FPE" },  { value: "AggregationInteger", label: "Aggregation" }, { value: "NoiseInteger", label: "Noise" }, { value: "RescalingInteger", label: "Rescaling" }],
+  "Float": [{ value: "FpeFloat", label: "FPE" },  { value: "AggregationFloat", label: "AggregationFloat" }, { value: "NoiseFloat", label: "Noise" }, { value: "RescalingFloat", label: "Rescaling" }],
+  "Text": [{ value: "Hash", label: "Hash" }, { value: "FpeString", label: "FPE" }, { value: "MaskWords", label: "Mask words" }, { value: "TokenizeWords", label: "Tokenize words" }, { value: "Regex", label: "Regex" }],
+  "Date": [{ value: "AggregationDate", label: "Aggregation" }, { value: "NoiseDate", label: "Noise" }],
 }
 
 export const getCommonTechniques = (types: DataType[]): DefaultOptionType[] => {
@@ -61,10 +64,11 @@ const key = crypto.getRandomValues(new Uint8Array(32))
 const tweak = crypto.getRandomValues(new Uint8Array(1024))
 
 export const applyTechnique = async (plainText: string | number, technique: TechniqueType, techniqueOptions: any): Promise<any> => {
+  // TODO: Get exported techniques Options
   switch (technique) {
-    case "Fpe_string":
-    case "Fpe_float":
-    case "Fpe_integer": {
+    case "FpeString":
+    case "FpeFloat":
+    case "FpeInteger": {
       let result: string | number
       try {
         const res = await FPE.encrypt(key, tweak, plainText, techniqueOptions)
