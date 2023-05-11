@@ -2,7 +2,7 @@ import { Form, Select } from "antd"
 
 export const MaskWordsOptions: React.FC = () => {
   return (
-    <Form.Item name={["techniqueOptions", "wordsList"]}>
+    <Form.Item name={["methodOptions", "wordsList"]}>
       <Select
         mode="tags"
         style={{ width: "100%" }}
@@ -15,7 +15,7 @@ export const MaskWordsOptions: React.FC = () => {
 
 export const TokenizeWordsOptions: React.FC = () => {
   return (
-    <Form.Item name={["techniqueOptions", "wordsList"]}>
+    <Form.Item name={["methodOptions", "wordsList"]}>
       <Select
         mode="tags"
         style={{ width: "100%" }}

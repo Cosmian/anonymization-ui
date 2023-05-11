@@ -31,7 +31,7 @@ const Upload = (): JSX.Element => {
       } else {
         type = DataType.Text
       }
-      metadata.push({ key: index, name: key, type: type, example: value, technique: undefined, techniqueOptions: undefined, result: undefined })
+      metadata.push({ key: index, name: key, type: type, example: value, method: undefined, methodOptions: undefined, result: undefined })
     }
     setFileMetadata(metadata)
   }

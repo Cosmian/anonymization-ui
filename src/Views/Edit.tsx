@@ -4,9 +4,9 @@ import { BackArrow, Button, RoundedFrame } from "cosmian_ui"
 import localForage from "localforage"
 import { Key, useCallback, useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
-import TechniqueOptions from "../components/TechniqueOptions"
+import MethodOptions from "../components/MethodOptions"
 import { paths_config } from "../config/paths"
-import { ConfigurationInfo, DataType, MetaData, TechniqueType, applyTechnique, dataTypesSelect, downloadFile, getCommonTechniques, techniquesForTypes } from "../utils/utils"
+import { ConfigurationInfo, DataType, MetaData, MethodType, applyMethod, dataTypesSelect, downloadFile, getCommonMethods, methodsForTypes } from "../utils/utils"
 import "./style.less"
 
 const columns = [
@@ -29,9 +29,9 @@ const columns = [
     key: "example",
   },
   {
-    title: "Technique",
-    dataIndex: "technique",
-    key: "technique",
+    title: "Method",
+    dataIndex: "method",
+    key: "method",
   },
   {
     title: "Result",
@@ -52,15 +52,15 @@ const Edit = (): JSX.Element => {
   const [selectedColumns, setSelectedColumns] = useState<string[]>([])
   const [configurationInfo, setConfigurationInfo] = useState<ConfigurationInfo>()
   const [fileMetadata, setFileMetadata] = useState<MetaData[] | undefined>(undefined)
-  const [selectTechniqueList, setSelectTechniqueList] = useState<undefined | DefaultOptionType[]>(undefined)
+  const [selectMethodList, setSelectMethodList] = useState<undefined | DefaultOptionType[]>(undefined)
   const [example, setExample] = useState<undefined | string | number>(undefined)
   const [result, setResult] = useState<string | number | bigint | undefined>(undefined)
   const [initialType, setInitialType] = useState<DataType | undefined>(undefined)
-  const [initialTechnique, setInitialTechnique] = useState<TechniqueType | undefined>(undefined)
+  const [initialMethod, setInitialMethod] = useState<MethodType | undefined>(undefined)
 
   const selectedType: DataType = Form.useWatch("columnType", form)
-  const selectedTechnique: TechniqueType = Form.useWatch("columnTechnique", form)
-  const selectedTechniqueOptions = Form.useWatch("techniqueOptions", form)
+  const selectedMethod: MethodType = Form.useWatch("columnMethod", form)
+  const selectedMethodOptions = Form.useWatch("methodOptions", form)
 
   useEffect(() => {
     const fetchConfig = async (): Promise<void> => {
@@ -74,24 +74,24 @@ const Edit = (): JSX.Element => {
   }, [])
 
   useEffect(() => {
-    if (selectedType !== initialType || selectedTechnique !== initialTechnique) {
-      form.setFieldValue("techniqueOptions", undefined)
+    if (selectedType !== initialType || selectedMethod !== initialMethod) {
+      form.setFieldValue("methodOptions", undefined)
     }
-  }, [selectedTechnique, selectedType])
+  }, [selectedMethod, selectedType])
 
   useEffect(() => {
-    if (example && selectedTechnique) {
-      handleApplyTechnique(example, selectedTechnique, selectedTechniqueOptions)
+    if (example && selectedMethod) {
+      handleApplyMethod(example, selectedMethod, selectedMethodOptions)
     }
-  }, [example, selectedTechnique, selectedTechniqueOptions, applyTechnique])
+  }, [example, selectedMethod, selectedMethodOptions, applyMethod])
 
   useEffect(() => {
     if (selectedType) {
-      const selectTechniqueListElements = techniquesForTypes[selectedType]
-      setSelectTechniqueList(selectTechniqueListElements)
-      if (!selectTechniqueListElements.some((techniqueOption: DefaultOptionType) => techniqueOption.value === selectedTechnique)) {
-        form.setFieldValue("columnTechnique", undefined)
-        form.setFieldValue("techniqueOptions", undefined)
+      const selectMethodListElements = methodsForTypes[selectedType]
+      setSelectMethodList(selectMethodListElements)
+      if (!selectMethodListElements.some((methodOption: DefaultOptionType) => methodOption.value === selectedMethod)) {
+        form.setFieldValue("columnMethod", undefined)
+        form.setFieldValue("methodOptions", undefined)
         setResult(undefined)
       }
       if (selectedRowKeys.length === 1 && fileMetadata) {
@@ -105,15 +105,15 @@ const Edit = (): JSX.Element => {
     }
   }, [selectedType, selectedRowKeys])
 
-  const handleApplyTechnique = useCallback(async (plainText: string | number, selectedTechnique: TechniqueType, selectedTechniqueOptions: unknown) => {
-    const result = await applyTechnique(plainText, selectedTechnique, selectedTechniqueOptions)
+  const handleApplyMethod = useCallback(async (plainText: string | number, selectedMethod: MethodType, selectedMethodOptions: unknown) => {
+    const result = await applyMethod(plainText, selectedMethod, selectedMethodOptions)
     setResult(result)
   }, [])
 
   const resetForm = (): void => {
     form.resetFields()
     setSelectedRowKeys([])
-    setSelectTechniqueList([])
+    setSelectMethodList([])
     setExample(undefined)
     setResult(undefined)
   }
@@ -122,23 +122,23 @@ const Edit = (): JSX.Element => {
     if (fileMetadata) {
       const updatedFileMetaData = [...fileMetadata]
       await Promise.all(selectedRowKeys.map(async (key) => {
-        if (selectedTechnique) {
-          const result = await applyTechnique(updatedFileMetaData[Number(key)].example, selectedTechnique, selectedTechniqueOptions)
+        if (selectedMethod) {
+          const result = await applyMethod(updatedFileMetaData[Number(key)].example, selectedMethod, selectedMethodOptions)
           updatedFileMetaData[Number(key)] = {
             ...updatedFileMetaData[Number(key)],
             ...(form.getFieldValue("columnType") && { type: form.getFieldValue("columnType") }),
-            ...(form.getFieldValue("columnTechnique") && { technique: form.getFieldValue("columnTechnique"), result: result }),
-            ...(form.getFieldValue("techniqueOptions") && { techniqueOptions: form.getFieldValue("techniqueOptions") }),
+            ...(form.getFieldValue("columnMethod") && { method: form.getFieldValue("columnMethod"), result: result }),
+            ...(form.getFieldValue("methodOptions") && { methodOptions: form.getFieldValue("methodOptions") }),
           }
         } else {
-          const techniqueList = techniquesForTypes[selectedType]
-          if (!techniqueList.some((technique: DefaultOptionType) => technique.value === updatedFileMetaData[Number(key)].technique)) {
+          const methodList = methodsForTypes[selectedType]
+          if (!methodList.some((method: DefaultOptionType) => method.value === updatedFileMetaData[Number(key)].method)) {
             updatedFileMetaData[Number(key)] = {
               ...updatedFileMetaData[Number(key)],
               ...(form.getFieldValue("columnType") && { type: form.getFieldValue("columnType") }),
-              technique: undefined,
+              method: undefined,
               result: undefined,
-              techniqueOptions: undefined,
+              methodOptions: undefined,
             }
           }
         }
@@ -149,14 +149,14 @@ const Edit = (): JSX.Element => {
     resetForm()
   }
 
-  const clearTechnique = async (): Promise<void> => {
+  const clearMethod = async (): Promise<void> => {
     if (fileMetadata) {
       const updatedFileMetaData = [...fileMetadata]
       selectedRowKeys.map((key) => {
         updatedFileMetaData[Number(key)] = {
           ...updatedFileMetaData[Number(key)],
-          technique: undefined,
-          techniqueOptions: undefined,
+          method: undefined,
+          methodOptions: undefined,
           result: undefined,
         }
       })
@@ -176,15 +176,15 @@ const Edit = (): JSX.Element => {
     setSelectedRowKeys(newSelectedRowKeys)
     const columns: string[] = []
     const selectedTypes: Set<DataType> = new Set()
-    const selectedTechniques: Set<string> = new Set()
-    const selectedTechniqueOptions: Set<string> = new Set()
+    const selectedMethods: Set<string> = new Set()
+    const selectedMethodOptions: Set<string> = new Set()
     for (const key of newSelectedRowKeys) {
       if (fileMetadata) {
         const metaData = fileMetadata[Number(key)]
         columns.push(metaData.name)
         selectedTypes.add(metaData.type as DataType)
-        selectedTechniques.add(metaData.technique as string)
-        selectedTechniqueOptions.add(JSON.stringify(metaData.techniqueOptions) as string)
+        selectedMethods.add(metaData.method as string)
+        selectedMethodOptions.add(JSON.stringify(metaData.methodOptions) as string)
       }
     }
     setSelectedColumns(columns)
@@ -193,14 +193,14 @@ const Edit = (): JSX.Element => {
     form.setFieldValue("columnType", type)
     setInitialType(type)
 
-    const technique: TechniqueType | undefined = selectedTechniques.size === 1 ? [...selectedTechniques][0] as TechniqueType : undefined
-    form.setFieldValue("columnTechnique", technique)
-    setInitialTechnique(technique)
+    const method: MethodType | undefined = selectedMethods.size === 1 ? [...selectedMethods][0] as MethodType : undefined
+    form.setFieldValue("columnMethod", method)
+    setInitialMethod(method)
 
-    selectedTechniques.size === 1 && selectedTechniqueOptions.size === 1 && [...selectedTechniqueOptions][0] ?
-      form.setFieldValue("techniqueOptions", JSON.parse([...selectedTechniqueOptions][0])) :
-      form.setFieldValue("techniqueOptions", undefined)
-    setSelectTechniqueList(getCommonTechniques([...selectedTypes]))
+    selectedMethods.size === 1 && selectedMethodOptions.size === 1 && [...selectedMethodOptions][0] ?
+      form.setFieldValue("methodOptions", JSON.parse([...selectedMethodOptions][0])) :
+      form.setFieldValue("methodOptions", undefined)
+    setSelectMethodList(getCommonMethods([...selectedTypes]))
   }
 
   const rowSelection = {
@@ -215,16 +215,18 @@ const Edit = (): JSX.Element => {
 
   const getCorrelatedColumns = (uuid: string): string[] => {
     if (fileMetadata && uuid) {
-      return fileMetadata.reduce((acc: string[], column: MetaData) => {
-        if (column.techniqueOptions) {
-          const options = JSON.parse(column.techniqueOptions)
-          if (column.techniqueOptions && options?.correlation === uuid) {
+      const columns = fileMetadata.reduce((acc: string[], column: MetaData) => {
+        if (column.methodOptions) {
+          const options = column.methodOptions
+          if (options?.correlation === uuid) {
             return [...acc, column.name]
           }
           return acc
         }
         return acc
       }, [] as string[])
+      if (columns.length !== 1) return columns
+      else return []
     }
     return []
   }
@@ -235,17 +237,17 @@ const Edit = (): JSX.Element => {
         onClick={() => navigate(paths_config.home)}
         text="Back to configurations list"
       />
-      <h1>Edit techniques</h1>
+      <h1>Edit methods</h1>
       <div className="buttons">
         <Button onClick={() => downloadConfiguration(configurationInfo?.uuid)}>Download configuration</Button>
       </div>
       <RoundedFrame className="editBox">
-        <h2 className="h4">{`Apply technique on ${selectedRowKeys.length} column${selectedRowKeys.length > 1 ? "s" : ""}`}</h2>
+        <h2 className="h4">{`Apply method on ${selectedRowKeys.length} column${selectedRowKeys.length > 1 ? "s" : ""}`}</h2>
         <div className="rowEdit">
           <div className="header">
             <div className="element">Type</div>
             <div className="element">Example</div>
-            <div className="element">Technique</div>
+            <div className="element">Method</div>
             <div className="element">Result</div>
           </div>
           <Form name="edit" className="form" onFinish={saveEdit} form={form}>
@@ -260,17 +262,17 @@ const Edit = (): JSX.Element => {
                 <Input onChange={(e) => setExample(e.target.value)} value={example} />
               </div>
               <div className="element">
-                <Form.Item name="columnTechnique">
+                <Form.Item name="columnMethod">
                   <Select
-                    disabled={!selectTechniqueList?.length}
-                    options={selectTechniqueList}
+                    disabled={!selectMethodList?.length}
+                    options={selectMethodList}
                   />
                 </Form.Item>
-                {selectedTechnique && <div className="link">
-                  {`More information about ${selectedTechnique} treatment`}
+                {selectedMethod && <div className="link">
+                  {`More information about ${selectedMethod} treatment`}
                 </div>}
                 <Form.Item>
-                  <TechniqueOptions selected={selectedTechnique} form={form} columns={selectedColumns} getCorrelatedColumns={getCorrelatedColumns} />
+                  <MethodOptions selected={selectedMethod} form={form} columns={selectedColumns} getCorrelatedColumns={getCorrelatedColumns} />
                 </Form.Item>
               </div>
               <div className="element">
@@ -281,7 +283,7 @@ const Edit = (): JSX.Element => {
             <div className="buttons">
               <div>
                 <Button type="outline" onClick={() => cancelEdit()} disabled={selectedRowKeys.length === 0}>Cancel</Button>
-                <Button className="button" type="dark" onClick={() => clearTechnique()} disabled={selectedRowKeys.length === 0}>Clear selected column(s) technique</Button>
+                <Button className="button" type="dark" onClick={() => clearMethod()} disabled={selectedRowKeys.length === 0}>Clear selected column(s) method</Button>
                 <Button htmlType="submit" disabled={selectedRowKeys.length === 0}>Save</Button>
               </div>
             </div>

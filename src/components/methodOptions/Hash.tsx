@@ -19,23 +19,23 @@ interface HashArgonOptionsProps {
 }
 
 export const HashOptions: React.FC<HashOptionsProps> = ({ form }) => {
-  const hashType = form.getFieldValue(["techniqueOptions", "hashType"])
+  const hashType = form.getFieldValue(["methodOptions", "hashType"])
 
   useEffect(() => {
     if (hashType === "SHA2" || hashType === "SHA3") {
-      form.setFieldValue(["techniqueOptions", "saltValue"], undefined)
-      form.setFieldValue(["techniqueOptions", "hasSalt"], false)
+      form.setFieldValue(["methodOptions", "saltValue"], undefined)
+      form.setFieldValue(["methodOptions", "hasSalt"], false)
     }
   }, [hashType])
 
   const handleSaltChange = (): void => {
     const newSalt = uuidv4()
-    form.setFieldValue(["techniqueOptions", "saltValue"], newSalt)
+    form.setFieldValue(["methodOptions", "saltValue"], newSalt)
   }
 
   return (
     <>
-      <Form.Item name={["techniqueOptions", "hashType"]} label="Type"
+      <Form.Item name={["methodOptions", "hashType"]} label="Type"
         rules={[{ required: true, message: "Please select a type" }]}
       >
         <Select
@@ -53,24 +53,24 @@ export const HashOptions: React.FC<HashOptionsProps> = ({ form }) => {
 }
 
 const HashShaOptions: React.FC<HashShaOptionsProps> = ({ form, handleSaltChange }) => {
-  const [hasSaltEnabled, setHasSaltEnabled] = useState(form.getFieldValue(["techniqueOptions", "isSale"]))
+  const [hasSaltEnabled, setHasSaltEnabled] = useState(form.getFieldValue(["methodOptions", "isSale"]))
 
   const handleSaltCheck = (event : CheckboxChangeEvent): void => {
     setHasSaltEnabled(event.target.checked)
     if (event.target.checked) {
       handleSaltChange()
     } else {
-      form.setFieldValue(["techniqueOptions", "saltValue"], undefined)
+      form.setFieldValue(["methodOptions", "saltValue"], undefined)
     }
   }
 
   return (
     <>
-      <Form.Item name={["techniqueOptions", "hasSalt"]} valuePropName="checked" initialValue={hasSaltEnabled} style={{ marginBottom: 0 }}>
+      <Form.Item name={["methodOptions", "hasSalt"]} valuePropName="checked" initialValue={hasSaltEnabled} style={{ marginBottom: 0 }}>
         <Checkbox onChange={(event) => handleSaltCheck(event)}>Add salt</Checkbox>
       </Form.Item>
       <div className="line">
-        <Form.Item name={["techniqueOptions", "saltValue"]}>
+        <Form.Item name={["methodOptions", "saltValue"]}>
           <Input disabled={!hasSaltEnabled} />
         </Form.Item>
         <Button type="primary" onClick={() => handleSaltChange()} disabled={!hasSaltEnabled} className="button">
@@ -89,7 +89,7 @@ const HashArgonOptions: React.FC<HashArgonOptionsProps> = ({ handleSaltChange })
       </Form.Item>
       <div className="line">
         <Form.Item
-          name={["techniqueOptions", "saltValue"]}
+          name={["methodOptions", "saltValue"]}
           initialValue={uuidv4()}
           rules={[{ required: true, message: "Salt is mandatory" }]}
         >

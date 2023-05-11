@@ -1,24 +1,22 @@
 import { FormInstance } from "antd"
 import React from "react"
-import { TechniqueType } from "../utils/utils"
-import { DateAggregationOptions, NumberAggregationOptions } from "./techniqueOptions/Aggregation"
-import { MaskWordsOptions, TokenizeWordsOptions } from "./techniqueOptions/BlockWords"
-import FpeFloatOptions from "./techniqueOptions/FpeFloat"
-import FpeIntegerOptions from "./techniqueOptions/FpeInteger"
-import FpeStringOptions from "./techniqueOptions/FpeString"
-import { HashOptions } from "./techniqueOptions/Hash"
-import { NoiseOptions } from "./techniqueOptions/Noise"
-import { RegexOptions } from "./techniqueOptions/Regex"
-import { RescalingOptions } from "./techniqueOptions/Rescaling"
+import { MethodType } from "../utils/utils"
+import { DateAggregationOptions, NumberAggregationOptions } from "./methodOptions/Aggregation"
+import { MaskWordsOptions, TokenizeWordsOptions } from "./methodOptions/BlockWords"
+import { FpeFloatOptions, FpeIntegerOptions, FpeStringOptions } from "./methodOptions/Fpe"
+import { HashOptions } from "./methodOptions/Hash"
+import { NoiseOptions } from "./methodOptions/Noise"
+import { RegexOptions } from "./methodOptions/Regex"
+import { RescalingOptions } from "./methodOptions/Rescaling"
 
-interface TechniqueOptionsProps {
-  selected: TechniqueType;
+interface MethodOptionsProps {
+  selected: MethodType;
   form: FormInstance;
   columns: string[];
   getCorrelatedColumns: (uuid: string) => string[]
 }
 
-const TechniqueOptions: React.FC<TechniqueOptionsProps> = ({ selected, form, columns, getCorrelatedColumns }) => {
+const MethodOptions: React.FC<MethodOptionsProps> = ({ selected, form, columns, getCorrelatedColumns }) => {
 
   return (
     <>
@@ -37,4 +35,4 @@ const TechniqueOptions: React.FC<TechniqueOptionsProps> = ({ selected, form, col
   )
 }
 
-export default TechniqueOptions
+export default MethodOptions

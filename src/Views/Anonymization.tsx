@@ -117,7 +117,7 @@ const Anonymization = (): JSX.Element => {
   return (
     <div className="anonymization">
       <h1>Anonymization configuration</h1>
-      <p>Secure you datasets using various anonymization techniques.</p>
+      <p>Secure you datasets using various anonymization methods.</p>
       <div className="buttons">
         <Button
           type="outline"
