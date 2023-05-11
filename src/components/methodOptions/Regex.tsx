@@ -4,7 +4,7 @@ export const RegexOptions: React.FC = () => {
   return (
     <>
       <Form.Item name={["methodOptions", "pattern"]} label="Pattern"
-        rules={[{ required: true, message: "Must match a regex pattern" , pattern: new RegExp(/^(?:(?<!\\)(?:\\\\)*\/(.*?[^\\])(?<!\\)(?:\\\\)*\/[gimy]{0,4})(?![^\/]*\/)/
+        rules={[{ required: true, message: "Must match a regex pattern" , pattern: new RegExp(/^(?:(?<!\\)(?:\\\\)*\/(.*?[^\\])(?<!\\)(?:\\\\)*\/[gimy]{0,4})(?![^\/]*\/)/ // eslint-disable-line
         )}]}
       >
         <Input />

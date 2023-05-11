@@ -15,6 +15,7 @@ const Anonymization = (): JSX.Element => {
   const navigate = useNavigate()
   const [configList, setConfigList] = useState<ConfigurationInfo[]>([])
   const [deleteConfigModalVisible, setDeleteConfigModalVisible] = useState<boolean>(false)
+  const [configToDelete, setConfigToDelete] = useState<string | undefined>(undefined)
 
   useEffect(() => {
     const fetchConfigurations = async (): Promise<void> => {
@@ -34,6 +35,18 @@ const Anonymization = (): JSX.Element => {
     }
     fetchConfigurations()
   }, [])
+
+  const handleDelete = async (): Promise<void> => {
+    if (configToDelete) {
+      if (configList) {
+        const updatedDataSource = configList.filter(data => data.uuid!== configToDelete).sort((a: ConfigurationInfo, b: ConfigurationInfo) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+        setConfigList(updatedDataSource)
+      }
+      await localForage.removeItem(configToDelete)
+      setDeleteConfigModalVisible(false)
+      setConfigToDelete(undefined)
+    }
+  }
 
   const columns = [
     {
@@ -64,15 +77,6 @@ const Anonymization = (): JSX.Element => {
           navigate(paths_config.edit, { state: { uuid: configuration.uuid }})
         }
 
-        const handleDelete = async (): Promise<void> => {
-          if (configList) {
-            const updatedDataSource = configList.filter(data => data.name !== configuration.name).sort((a: ConfigurationInfo, b: ConfigurationInfo) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
-            setConfigList(updatedDataSource)
-          }
-          await localForage.removeItem(configuration.uuid)
-          setDeleteConfigModalVisible(false)
-      }
-
         const handleDownload = (): void => {
           downloadFile(configuration.uuid)
         }
@@ -92,7 +96,12 @@ const Anonymization = (): JSX.Element => {
         const items = [
           { label: "Copy configuration", key: "copy", onClick: handleCopy },
           { label: "Download configuration", key: "download", onClick: handleDownload },
-          { label: "Delete configuration", key: "delete", danger: true, onClick: () => setDeleteConfigModalVisible(true), icon: <IoTrashOutline /> },
+          {
+            label: "Delete configuration", key: "delete", danger: true, onClick: () => {
+              setDeleteConfigModalVisible(true)
+              setConfigToDelete(configuration.uuid)
+            }, icon: <IoTrashOutline />
+            },
         ]
 
         return (

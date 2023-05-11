@@ -59,11 +59,13 @@ export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form, columns, getCo
       </Form.Item>
       {dataType === "Date" ? <NoiseDateOptions form={form} distribution={distribution} /> : <NoiseNumberOptions form={form} distribution={distribution} />}
       {(form.getFieldValue(["methodOptions", "correlation"]) === undefined || correlatedColumns.length === 0) && <Form.Item name="is_correlated" valuePropName="checked" initialValue={undefined} style={{ marginBottom: 0 }} className="tags-list">
-        <Checkbox onChange={() => setUuidCorrelation()} disabled={columns.length < 2}>Apply correlated noise for columns:</Checkbox>
         <>
-          {columns.map((name, index) => (
-            <Tag key={index}>{name}</Tag>
-          ))}
+          <Checkbox onChange={() => setUuidCorrelation()} disabled={columns.length < 2}>Apply correlated noise for columns:</Checkbox>
+          <>
+            {columns.map((name, index) => (
+              <Tag key={index}>{name}</Tag>
+            ))}
+          </>
         </>
       </Form.Item>}
       {form.getFieldValue(["methodOptions", "correlation"]) !== undefined && correlatedColumns.length > 1 && <div className="tags-list">Correlated noise applied between:
@@ -84,7 +86,7 @@ const NoiseNumberOptions: React.FC<NoiseSubOptionsProps> = ({ form, distribution
         {distribution !== "Uniform" ?
           <>
             <div className="subtitle">Distribution's parameters:</div>
-            <Form.Item name={["methodOptions", "mean"]} label="Mean" className="radio-content" initialValue={0}
+            <Form.Item name={["methodOptions", "mean"]} label="Mean" className="option-parameter" initialValue={0}
               rules={[{ required: true, message: "Please provide a value" }]}
             >
               <InputNumber
@@ -93,7 +95,7 @@ const NoiseNumberOptions: React.FC<NoiseSubOptionsProps> = ({ form, distribution
                 precision={1}
               />
             </Form.Item>
-            <Form.Item label="Standard deviation" className="radio-content input-inline">
+            <Form.Item label="Standard deviation" className="option-parameter input-inline">
                 <Form.Item name={["methodOptions", "stdDev"]} initialValue={1}
                   rules={[{ required: true, message: "Please provide a value" }]}
                 >
@@ -108,7 +110,7 @@ const NoiseNumberOptions: React.FC<NoiseSubOptionsProps> = ({ form, distribution
         :
           <>
             <div className="subtitle">Distribution's upperBoundary:</div>
-            <Form.Item name={["methodOptions", "lowerBoundary"]} label="Minimum" className="radio-content"
+            <Form.Item name={["methodOptions", "lowerBoundary"]} label="Minimum" className="option-parameter"
               rules={[{ required: true, message: "Please provide a boundary" }]}
             >
               <InputNumber
@@ -117,7 +119,7 @@ const NoiseNumberOptions: React.FC<NoiseSubOptionsProps> = ({ form, distribution
                 precision={1}
               />
             </Form.Item>
-            <Form.Item name={["methodOptions", "upperBoundary"]} label="Maximum" className="radio-content"
+            <Form.Item name={["methodOptions", "upperBoundary"]} label="Maximum" className="option-parameter"
               rules={[{ required: true, message: "Please provide a boundary" }]}
             >
               <InputNumber
@@ -135,7 +137,7 @@ const NoiseNumberOptions: React.FC<NoiseSubOptionsProps> = ({ form, distribution
 
 const DurationInput: React.FC<DurationInputProps> = ({ label, name }) => {
   return (
-    <Form.Item label={label} className="radio-content input-inline">
+    <Form.Item label={label} className="option-parameter input-inline">
       <>
         <Form.Item name={["methodOptions", name, "precision"]} initialValue={1}
           rules={[{ required: true, message: "Please provide a value" }]}
@@ -164,22 +166,20 @@ const DurationInput: React.FC<DurationInputProps> = ({ label, name }) => {
 
 const NoiseDateOptions: React.FC<NoiseSubOptionsProps> = ({ distribution }) => {
   return (
-    <>
-      <div className="box">
-        {distribution !== "Uniform" ?
-          <>
-            <div className="subtitle">Distribution's parameters:</div>
-            <DurationInput label="Mean" name="mean" />
-            <DurationInput label="Standard deviation" name="stdDev" />
-          </>
-        :
-          <>
-            <div className="subtitle">Distribution's range:</div>
-            <DurationInput label="Lower boundary" name="lowerBoundary" />
-            <DurationInput label="Upper boundary" name="upperBoundary" />
-          </>
-        }
-      </div>
-    </>
+    <div className="box">
+      {distribution !== "Uniform" ?
+        <>
+          <div className="subtitle">Distribution's parameters:</div>
+          <DurationInput label="Mean" name="mean" />
+          <DurationInput label="Standard deviation" name="stdDev" />
+        </>
+      :
+        <>
+          <div className="subtitle">Distribution's range:</div>
+          <DurationInput label="Lower boundary" name="lowerBoundary" />
+          <DurationInput label="Upper boundary" name="upperBoundary" />
+        </>
+      }
+    </div>
   )
 }

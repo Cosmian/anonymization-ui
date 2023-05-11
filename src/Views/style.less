@@ -15,12 +15,8 @@
     justify-content: space-between;
     align-items: center;
     .icon {
-      height: 100%;
       cursor: pointer;
       margin-left: 30px;
-    }
-    .icon:hover{
-      color: @primary;
     }
   }
 }
@@ -31,115 +27,121 @@
   }
 }
 
-.edit {
-  .buttons {
-      display: flex;
-      justify-content: flex-end;
-      margin: 10px;
-    }
-  .editBox {
-    display: flex;
-    flex-direction: column;
-    margin: 20px 0px;
+.editView {
+  .editMain {
+    width: calc(100% - 360px);
+    .head {
+        display: flex;
+        justify-content: space-between;
+        button {
+          margin-bottom: 10px;
+          height: 32px;
+        }
+      }
+  }
+}
+
+.editBox {
+  border-left: 1px solid #d4d4d8;;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  padding: 20px;
+  height: 100%;
+  right: 0px;
+  top: 60px;
+  width: 360px;
+  overflow-y: scroll;
+  .ant-divider-horizontal {
+    margin: 10px 0px;
+  }
+  .ant-form {
+    height: calc(100% - 200px);
+    overflow: scroll;
+  }
+  .ant-form-item {
+    margin: 0px 0px 10px 0px;
     label {
       font-size: .875rem;
     }
-    .ant-form-item {
-      margin: 0px 0px 10px 0px;
+  }
+  .box {
+    background: @light-bg;
+    border-radius: 4px;
+    .subtitle {
+      font-weight: 600;
+      padding: 5px;
+      color: @primary;
     }
-    .box {
-      background: @light-bg;
-      border-radius: 4px;
-      .subtitle {
-        font-weight: 600;
-        padding: 5px;
-        color: @primary;
-      }
+  }
+  .ant-collapse-header {
+    padding: 5px 0px;
+  }
+  .option-parameter {
+    padding-top: 10px;
+    margin: 0px 5px 0px 5px;
+  }
+  .input-inline {
+    .ant-form-item-control-input-content {
+      display: flex;
     }
-    .rowEdit {
-      border: 1px solid @grey4;
-      border-radius: 4px;
-      margin-bottom: 20px;
-      .header {
-        display: flex;
-        width: 100%;
-        justify-content: space-around;
-        background: @light-bg;
-        font-weight: 600;
-      }
-      .form {
-        display: flex;
-        flex-direction: column;
-      }
-      .edition {
-        display: flex;
-        width: 100%;
-        justify-content: space-around;
-      }
-      .element {
-        width: 100%;
-        margin: 10px 20px;
-        flex-grow: 1;
-        // .ant-input-affix-wrapper {
-        //   border: gray;
-        // }
-        .ant-collapse-header {
-          padding: 5px 0px;
-        }
-        .radio-content {
-          padding-top: 10px;
-          margin: 0px 5px 0px 5px;
-        }
-        .input-inline {
-          .ant-form-item-control-input-content {
-            display: flex;
-          }
-        }
-        .ant-radio-group {
-          display: flex;
-        }
-        .ant-radio-button-wrapper {
-          flex-grow: 1;
-          text-align: center;
-        }
-        .ant-form-item-row .ant-input-number-in-form-item {
-          width: 100%;
-        }
-      }
-      button {
-        margin: 10px;
-      }
-      .label {
-        margin-bottom: 10px;
-      }
-      .line {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        .button {
-          margin: 0 0 10px 10px;
-          width: 10px;
-          display: flex;
-          justify-content: center;
-        }
-      }
-      .tags-list {
-        margin: 10px 0px;
-        .ant-tag {
-          margin: 5px 2px 5px 3px;
-        }
-      }
-      .link {
-        font-size: 0.9em;
-        cursor: pointer;
-        color: @dark;
-        text-decoration: underline;
-        margin-bottom: 10px;
+  }
+  .ant-form-item-row .ant-input-number-in-form-item {
+    width: 100%;
+  }
+  .input, .ant-input {
+    border: 1px solid #d9d9d9;
+    border-radius: 2px;
+    font-weight: 400;
+    line-height: 1.5715;
+    padding: 4px 11px;
+    min-height: 31px;
+  }
+  button {
+    margin: 5px;
+  }
+  .buttons {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    bottom: 20px;
+    height: 80px;
+    width: 320px;
+  }
+  .horizontalButtons {
+    display: flex;
+    justify-content: space-between;
+    button {
+      width: 50%;
+    }
+  }
+  .line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .button {
+      margin: 0 0 10px 10px;
+      width: 10px;
+      display: flex;
+      justify-content: center;
+    }
+  }
+  .tags-list {
+    margin: 10px 0px;
+    .ant-tag {
+      margin: 5px 2px 5px 3px;
+    }
+  }
+  .link {
+    font-size: 0.9em;
+    cursor: pointer;
+    color: @dark;
+    text-decoration: underline;
+    margin-bottom: 10px;
 
-        &:hover {
-          color: fade(@dark, 80);
-        }
-      }
+    &:hover {
+      color: fade(@dark, 80);
     }
   }
 }
