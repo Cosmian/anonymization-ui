@@ -50,6 +50,24 @@ export const methodsForTypes: { Integer: DefaultOptionType[], Float: DefaultOpti
   "Date": [{ value: "AggregationDate", label: "Aggregation" }, { value: "NoiseDate", label: "Noise" }],
 }
 
+export const methodsInfo: { [key: string] : string } = {
+  "Hash": "This is the hash function",
+  "FpeFloat": "FPE aims to encrypt plaintext while retaining its format (alphabet). FPE-FF1 is a normalized algorithm that uses symmetric encryption. It provides support for encrypting floats of type f64.",
+  "FpeInteger": "FPE aims to encrypt plaintext while retaining its format (alphabet). FPE-FF1 is a normalized algorithm that uses symmetric encryption. It offers the ability to encrypt integers with a radix of 10 and up to a maximum power of this radix.",
+  "FpeString": "FPE aims to encrypt plaintext while retaining its format (alphabet). FPE-FF1 is a normalized algorithm that uses symmetric encryption. It provides the ability to encrypt a plaintext using an alphabet. Characters of the plaintext that belong to the alphabet are encrypted while the others are left unchanged at their original location in the ciphertext.",
+  "MaskWords": "",
+  "TokenizeWords": "",
+  "Regex": "",
+  "AggregationDate": "",
+  "AggregationInteger": "",
+  "AggregationFloat": "",
+  "NoiseDate": "",
+  "NoiseInteger": "",
+  "NoiseFloat": "",
+  "RescalingInteger": "",
+  "RescalingFloat": ""
+}
+
 export const getCommonMethods = (types: DataType[]): DefaultOptionType[] => {
   if (methodsForTypes[types[0]]) {
     const commonObjects = methodsForTypes[types[0]].map(method => ({ value: method.value, label: method.label }))

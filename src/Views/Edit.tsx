@@ -101,7 +101,7 @@ const Edit = (): JSX.Element => {
           />
         </RoundedFrame>
       </div>
-      <EditMethodBox selectedRowKeys={selectedRowKeys} fileMetadata={fileMetadata} saveConfiguration={saveConfiguration} setSelectedRowKeys={setSelectedRowKeys}/>
+      <EditMethodBox selectedRowKeys={selectedRowKeys} fileMetadata={fileMetadata} saveConfiguration={saveConfiguration} setSelectedRowKeys={setSelectedRowKeys} />
     </div>
   )
 }

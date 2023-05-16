@@ -3,6 +3,7 @@ import { DefaultOptionType } from "antd/lib/select"
 import { Button } from "cosmian_ui"
 import React, { Key, useCallback, useEffect, useState } from "react"
 import { DataType, MetaData, MethodType, applyMethod, dataTypesSelect, getCommonMethods, methodsForTypes } from "../utils/utils"
+import MethodInfoBox from "./MethodInfoBox"
 import MethodOptions from "./MethodOptions"
 
 interface EditMethodBoxProps {
@@ -173,6 +174,8 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
   const customDisabledTextStyle = selectedRowKeys.length ? {} : { color: "#a1a1aa" }
   const customDisabledBackgroundStyle = selectedRowKeys.length ? {} : { backgroundColor: "#f5f5f5" }
 
+  const [open, setOpen] = useState(false)
+
   return (
     <div className="editBox">
       <h2 className="h4" style={customDisabledTextStyle}>{selectedRowKeys.length ? `Apply method on ${selectedRowKeys.length} column(s)` : "Apply method on columns"}</h2>
@@ -198,7 +201,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
             />
           </Form.Item>
           {selectedMethod && <>
-            <div className="link">
+            <div className="link" onClick={() => setOpen(!open)}>
               {`More information about ${selectedMethod} treatment`}
             </div>
             <Form.Item>
@@ -221,6 +224,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
           </div>
         </div>
       </Form>
+      <MethodInfoBox open={open} close={() => setOpen(false)} method={selectedMethod} />
     </div>
   )
 }
