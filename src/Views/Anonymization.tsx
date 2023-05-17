@@ -58,9 +58,6 @@ const Anonymization = (): JSX.Element => {
       title: "Creation date",
       dataIndex: "created_at",
       key: "created_at",
-      render: (date: Date) => {
-        return new Date(date).toLocaleString()
-      }
     },
     {
       title: "File",
@@ -86,7 +83,7 @@ const Anonymization = (): JSX.Element => {
           if (configurationInitial && configList) {
             const uuid = uuidv4()
             const copyName = configuration.name + "_copy_" + uuid.slice(0, 4)
-            const configurationInfoCopy: ConfigurationInfo = { name: copyName, created_at: new Date().toLocaleString(), file: configuration.file, uuid }
+            const configurationInfoCopy: ConfigurationInfo = { name: copyName, created_at: new Date().toLocaleString(), file: configuration.file, uuid, delimiter: configuration.delimiter }
             const configurationCopy = {...configurationInitial, configurationInfo: configurationInfoCopy}
             await localForage.setItem(uuid, configurationCopy)
             setConfigList([...configList, configurationInfoCopy])
@@ -109,7 +106,7 @@ const Anonymization = (): JSX.Element => {
             <Button type="dark" onClick={(e) => handleSelect(e)}>Edit</Button>
             <Dropdown menu={{ items }} placement="bottomRight" trigger={["hover"]}>
               <div className="icon">
-              <OptionButton onClick={() => {}}/>
+                <OptionButton onClick={() => {}}/>
               </div>
             </Dropdown>
             <DeleteConfigModal

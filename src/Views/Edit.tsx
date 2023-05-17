@@ -37,7 +37,8 @@ const columns = [
     dataIndex: "result",
     key: "result",
     render: (result: string | number ) => {
-      if (result && result.toString().substring(0,5) === "Error") return <div style={{ color: "#e34319", fontStyle: "italic" }}>{ result }</div>
+      if (result && result.toString().substring(0, 5) === "Error") return <div style={{ color: "#e34319", fontStyle: "italic" }}>{result}</div>
+      return <div>{result}</div>
     }
   },
 ]
@@ -49,7 +50,6 @@ const Edit = (): JSX.Element => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([])
   const [configurationInfo, setConfigurationInfo] = useState<ConfigurationInfo>()
   const [fileMetadata, setFileMetadata] = useState<MetaData[] | undefined>(undefined)
-
 
   useEffect(() => {
     const fetchConfig = async (): Promise<void> => {
@@ -87,8 +87,10 @@ const Edit = (): JSX.Element => {
           text="Back to configurations list"
         />
         <div className="head">
-          <h1>Edit methods</h1>
-          <Button onClick={() => downloadConfiguration(configurationInfo?.uuid)}>Download configuration</Button>
+          <h1>{selectedRowKeys.length ? "Edit method" : "Select column(s)"}</h1>
+          <Button onClick={() => downloadConfiguration(configurationInfo?.uuid)}>
+            Download configuration
+          </Button>
         </div>
         <RoundedFrame>
           <h2 className="h4">{configurationInfo?.name} anonymization columns</h2>

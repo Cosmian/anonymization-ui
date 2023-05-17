@@ -1,13 +1,5 @@
 import { Form, Input, InputNumber, Select } from "antd"
 
-export const FpeFloatOptions: React.FC = () => {
-  return (
-    <Form.Item name={["methodOptions"]}>
-      <div>No options applying FPE to floats.</div>
-    </Form.Item>
-  )
-}
-
 export const FpeIntegerOptions: React.FC = () => {
   return (
     <>

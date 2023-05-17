@@ -3,7 +3,7 @@ import React from "react"
 import { MethodType } from "../utils/utils"
 import { DateAggregationOptions, NumberAggregationOptions } from "./methodOptions/Aggregation"
 import { MaskWordsOptions, TokenizeWordsOptions } from "./methodOptions/BlockWords"
-import { FpeFloatOptions, FpeIntegerOptions, FpeStringOptions } from "./methodOptions/Fpe"
+import { FpeIntegerOptions, FpeStringOptions } from "./methodOptions/Fpe"
 import { HashOptions } from "./methodOptions/Hash"
 import { NoiseOptions } from "./methodOptions/Noise"
 import { RegexOptions } from "./methodOptions/Regex"
@@ -22,7 +22,6 @@ const MethodOptions: React.FC<MethodOptionsProps> = ({ selected, form, columns, 
     <>
       {selected === "Hash" && <HashOptions form={form} />}
       {selected === "FpeString" && <FpeStringOptions />}
-      {selected === "FpeFloat" && <FpeFloatOptions />}
       {selected === "FpeInteger" && <FpeIntegerOptions />}
       {selected === "MaskWords" && <MaskWordsOptions />}
       {selected === "TokenizeWords" && <TokenizeWordsOptions />}

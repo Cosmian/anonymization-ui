@@ -47,8 +47,8 @@ const Import = (): JSX.Element => {
   }
 
   const saveFile = async (): Promise<void> => {
-    const uuid = uuidv4()
     if (fileMetadata) {
+      const uuid = uuidv4()
       await localForage.setItem(uuid, { metadata: fileMetadata, configurationInfo: {...configurationInfo, uuid } })
       navigate(paths_config.edit, { state: { uuid } })
     }
@@ -62,13 +62,12 @@ const Import = (): JSX.Element => {
       />
       <h1>Import configuration file</h1>
       <RoundedFrame>
-      <h2 className="h4">Upload your JSON file</h2>
-      <FileDrop fileType="json" getFileInfo={(file) => getFileInfo(file)} getResult={(result) => getFileResult(result as fileResult)} updateFile={fileInfo} />
-      </RoundedFrame><div className="buttons">
-        <Button type="outline" onClick={() => resetFile()} disabled={fileMetadata === undefined}>Cancel</Button>
-        <Button onClick={() => {
-          saveFile()
-        }} disabled={fileMetadata === undefined}>Import configuration</Button>
+        <h2 className="h4">Upload your JSON file</h2>
+        <FileDrop fileType="json" getFileInfo={(file) => getFileInfo(file)} getResult={(result) => getFileResult(result as fileResult)} updateFile={fileInfo} />
+      </RoundedFrame>
+      <div className="buttons">
+        <Button type="outline" onClick={() => resetFile()} disabled={!fileMetadata}>Cancel</Button>
+        <Button onClick={() => saveFile()} disabled={!fileMetadata}>Import configuration</Button>
       </div>
     </div>
   )

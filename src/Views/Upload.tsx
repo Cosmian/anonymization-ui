@@ -1,4 +1,4 @@
-import { Form, Input } from "antd"
+import { Form, Input, Select } from "antd"
 import { BackArrow, Button, FileDrop, RoundedFrame } from "cosmian_ui"
 import localForage from "localforage"
 import { useState } from "react"
@@ -9,11 +9,13 @@ import { DataType, FileInfo, MetaData } from "../utils/utils"
 import "./style.less"
 
 const Upload = (): JSX.Element => {
+  const [form] = Form.useForm()
+
   const navigate = useNavigate()
   const [fileInfo, setFileInfo] = useState<FileInfo | undefined>()
-  const [name, setName] = useState<undefined | string>(undefined)
   const [fileMetadata, setFileMetadata] = useState<MetaData[] | undefined>(undefined)
-  const [form] = Form.useForm()
+
+  const name = Form.useWatch("name", form)
 
   const parseFile = (data: { [key: string]: string; }): void => {
     const metadata: MetaData[] = []
@@ -51,9 +53,10 @@ const Upload = (): JSX.Element => {
   }
 
   const saveFile = async (): Promise<void> => {
-    if (name && fileMetadata) {
+    if (fileMetadata) {
       const uuid = uuidv4()
-      await localForage.setItem(uuid, { metadata: fileMetadata, configurationInfo: { name, created_at: new Date().toLocaleString(), file: fileInfo?.name, uuid } })
+      const delimiter = form.getFieldValue("delimiter")
+      await localForage.setItem(uuid, { metadata: fileMetadata, configurationInfo: { name, created_at: new Date().toLocaleString(), file: fileInfo?.name, uuid, delimiter } })
       navigate(paths_config.edit, { state: { uuid } })
     }
   }
@@ -66,21 +69,30 @@ const Upload = (): JSX.Element => {
       />
       <h1>Create configuration file</h1>
       <RoundedFrame>
-      <div className="name">
-          <Form layout="vertical" form={form} onValuesChange={() => setName(form.getFieldValue("name"))}>
-            <Form.Item
-              name="name"
-              label="Name"
-              rules={[
-                { required: true, message: "Please provide a name." },
-                { min: 3, message: "Name must be at least 3 characters long." },
-                { pattern: /[^\p{Zs}]/u, message: "Name should contain visible characters."},
+        <Form form={form} className="header">
+          <Form.Item
+            name="name"
+            label="Name"
+            className="name"
+            rules={[
+              { required: true, message: "Please provide a name." },
+              { min: 3, message: "Name must be at least 3 characters long." },
+              { pattern: /[^\p{Zs}]/u, message: "Name should contain visible characters."},
+            ]}
+          >
+          <Input placeholder="Configuration name" />
+        </Form.Item>
+        <Form.Item name="delimiter" label="Delimiter" initialValue=";">
+            <Select
+              style={{width: "70px", textAlign: "center"}}
+              className="delimiter"
+              options={[
+                { value: ";", label: ";" },
+                { value: ",", label: "," }
               ]}
-            >
-            <Input placeholder="Configuration name" />
-          </Form.Item>
-        </Form>
-      </div>
+            />
+        </Form.Item>
+      </Form>
       <h2 className="h4">Upload your CSV sample</h2>
       <FileDrop
         fileType="csv"
@@ -88,10 +100,10 @@ const Upload = (): JSX.Element => {
         getResult={(result) => parseFile(result.data[0])}
         updateFile={fileInfo} />
       </RoundedFrame><div className="buttons">
-        <Button type="outline" onClick={() => resetFile()} disabled={fileMetadata === undefined || name === undefined}>Cancel</Button>
+        <Button type="outline" onClick={() => resetFile()} disabled={!fileMetadata || !name}>Cancel</Button>
         <Button onClick={() => {
           saveFile()
-        }} disabled={fileMetadata === undefined || name === undefined}>Create configuration</Button>
+        }} disabled={!fileMetadata || !name}>Create configuration</Button>
       </div>
     </div>
   )

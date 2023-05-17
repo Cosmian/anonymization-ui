@@ -5,9 +5,9 @@ import { notification } from "antd"
 import { DefaultOptionType } from "antd/lib/select"
 import localForage from "localforage"
 
-export type MetaData = { key: string, name: string, type: string, example: string, method: undefined | string, methodOptions: undefined | string, result: undefined | string }
+export type MetaData = { key: string, name: string, type: string, example: string, method: undefined | string, methodOptions: undefined | { [key: string]: string }, result: undefined | string }
 
-export type ConfigurationInfo = { uuid: string, name: string, created_at: string, file: string }
+export type ConfigurationInfo = { uuid: string, name: string, created_at: string, file: string, delimiter: string }
 
 export type FileInfo = { last_modified: number, name: string, size: number, type: string }
 
@@ -50,22 +50,22 @@ export const methodsForTypes: { Integer: DefaultOptionType[], Float: DefaultOpti
   "Date": [{ value: "AggregationDate", label: "Aggregation" }, { value: "NoiseDate", label: "Noise" }],
 }
 
-export const methodsInfo: { [key: string] : string } = {
-  "Hash": "This is the hash function",
-  "FpeFloat": "FPE aims to encrypt plaintext while retaining its format (alphabet). FPE-FF1 is a normalized algorithm that uses symmetric encryption. It provides support for encrypting floats of type f64.",
-  "FpeInteger": "FPE aims to encrypt plaintext while retaining its format (alphabet). FPE-FF1 is a normalized algorithm that uses symmetric encryption. It offers the ability to encrypt integers with a radix of 10 and up to a maximum power of this radix.",
-  "FpeString": "FPE aims to encrypt plaintext while retaining its format (alphabet). FPE-FF1 is a normalized algorithm that uses symmetric encryption. It provides the ability to encrypt a plaintext using an alphabet. Characters of the plaintext that belong to the alphabet are encrypted while the others are left unchanged at their original location in the ciphertext.",
-  "MaskWords": "",
-  "TokenizeWords": "",
-  "Regex": "",
-  "AggregationDate": "",
-  "AggregationInteger": "",
-  "AggregationFloat": "",
-  "NoiseDate": "",
-  "NoiseInteger": "",
-  "NoiseFloat": "",
-  "RescalingInteger": "",
-  "RescalingFloat": ""
+export const methodsInfo: { [key: string]: string } = {
+  "Hash": "Transforms data into a fixed-length representation that is difficult to reverse and provides a high level of anonymity.\n\nThree hash methods are available :\n- SHA2  : Fast but vulnerable to brute-force attacks.\n- SHA3 : Resistant to brute- force attacks, but slower than SHA-256 and not as widely supported.\n- Argon2: Highly resistant to brute - force attacks, but can be slower than other hash functions and may require more memory.\nAn optional salt can be provided, required with Argon2.",
+  "FpeFloat": "FPE aims to encrypt plaintext while retaining its format (alphabet). FPE-FF1 is a normalized algorithm that uses symmetric encryption.\nIt provides support for encrypting floats of type f64.",
+  "FpeInteger": "FPE aims to encrypt plaintext while retaining its format (alphabet). FPE-FF1 is a normalized algorithm that uses symmetric encryption.\nIt offers the ability to encrypt integers with a radix of 10 and up to a maximum power of this radix.",
+  "FpeString": "FPE aims to encrypt plaintext while retaining its format (alphabet). FPE-FF1 is a normalized algorithm that uses symmetric encryption. It provides the ability to encrypt a plaintext using an alphabet.\nCharacters of the plaintext that belong to the alphabet are encrypted while the others are left unchanged at their original location in the ciphertext.",
+  "MaskWords": "This method can be used to hide certain sensitive words from your dataset. These words are  masked, i.e. replaced with XXXX.\nAlso, please note that this system does not provide any way to decipher the token and reveal the original data.",
+  "TokenizeWords": "This method can be used to hide certain sensitive words from your dataset. These words are tokenized, i.e. replace with a non-deterministic UID.\nDuring the anonymization, every occurrence of a word that is in the word list will be tokenized by the same UID. But if you create new anonymization, a new UID will be generated, even if the word is the same.\nAlso, please note that this system does not provide any way to decipher the token and reveal the original data.",
+  "Regex": "This method replace what's matching Regex pattern with a provided string.",
+  "AggregationDate": "Round dates based on the specified time unit.",
+  "AggregationInteger": "Round numbers to a desired power of ten.",
+  "AggregationFloat": "Round numbers to a desired power of ten.",
+  "NoiseDate": "The method of noise addition is especially useful when attributes may have an important adverse effect on individuals and consists of modifying attributes in the dataset such that they are less accurate whilst retaining the overall distribution. When processing a dataset, an observer will assume that values are accurate but this will only be true to a certain degree.",
+  "NoiseInteger": "The method of noise addition is especially useful when attributes may have an important adverse effect on individuals and consists of modifying attributes in the dataset such that they are less accurate whilst retaining the overall distribution. When processing a dataset, an observer will assume that values are accurate but this will only be true to a certain degree.",
+  "NoiseFloat": "The method of noise addition is especially useful when attributes may have an important adverse effect on individuals and consists of modifying attributes in the dataset such that they are less accurate whilst retaining the overall distribution. When processing a dataset, an observer will assume that values are accurate but this will only be true to a certain degree.",
+  "RescalingInteger": "Scale and translate integer values.",
+  "RescalingFloat": "Scale and translate floating points."
 }
 
 export const getCommonMethods = (types: DataType[]): DefaultOptionType[] => {
@@ -105,7 +105,6 @@ export const downloadFile = async (uuid: string | undefined): Promise<void> => {
     const configuration: { configurationInfo: ConfigurationInfo, metadata: MetaData[] } | null = await localForage.getItem(uuid)
     if (configuration) {
       const fileName = "config-" + configuration.configurationInfo.name
-      // configuration.input_dataset.delimiter = ";"
       const json = JSON.stringify(configuration)
       const blob = new Blob([json], { type: "application/json" })
       const href = await URL.createObjectURL(blob)
@@ -120,19 +119,12 @@ export const downloadFile = async (uuid: string | undefined): Promise<void> => {
         message: "Download",
         description: "File successfully downloaded.",
       })
+      return
     }
-    else {
-      notification.error({
-        duration: 3,
-        message: "Download",
-        description: "An error occured.",
-      })
-    }
-  } else {
-    notification.error({
-      duration: 3,
-      message: "Download",
-      description: "An error occured.",
-    })
   }
+  notification.error({
+    duration: 3,
+    message: "Download",
+    description: "An error occured.",
+  })
 }

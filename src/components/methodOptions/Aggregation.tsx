@@ -18,10 +18,9 @@ export const DateAggregationOptions: React.FC= () => {
 
 export const NumberAggregationOptions: React.FC= () => {
   return (
-    <Form.Item name={["methodOptions", "powerOfTen"]} label="Precision (power of 10)" initialValue="1">
+    <Form.Item name={["methodOptions", "powerOfTen"]} label="Precision (power of 10)" initialValue={1}>
       <InputNumber
         min={0}
-        defaultValue={1}
         step={1}
         precision={0}
         formatter={(precision) => precision ? Math.pow(10, precision).toString() : ""}

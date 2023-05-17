@@ -22,12 +22,13 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
   const [result, setResult] = useState<string | number | bigint | undefined>(undefined)
   const [initialType, setInitialType] = useState<DataType | undefined>(undefined)
   const [initialMethod, setInitialMethod] = useState<MethodType | undefined>(undefined)
+  const [open, setOpen] = useState(false)
 
   const selectedType: DataType = Form.useWatch("columnType", form)
   const selectedMethod: MethodType = Form.useWatch("columnMethod", form)
   const selectedMethodOptions = Form.useWatch("methodOptions", form)
 
-  // Select the right type and method according to columns selection
+  // Select the right current type and method according to column's selection
   useEffect(() => {
     const columns: string[] = []
     const selectedTypes: Set<DataType> = new Set()
@@ -44,7 +45,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
     }
     setSelectedColumns(columns)
 
-    const type: DataType | undefined =  selectedTypes.size === 1 ? [...selectedTypes][0] : undefined
+    const type: DataType | undefined = selectedTypes.size === 1 ? [...selectedTypes][0] : undefined
     form.setFieldValue("columnType", type)
     setInitialType(type)
 
@@ -58,12 +59,20 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
     setSelectMethodList(getCommonMethods([...selectedTypes]))
   }, [selectedRowKeys])
 
-  // Reset form MethodOptions when changing type or method selection
+  // Reset form columnMethod and methodOptions when changing type selection
   useEffect(() => {
-    if (selectedType !== initialType || selectedMethod !== initialMethod) {
+    if (selectedType !== initialType) {
+      form.setFieldValue("methodOptions", undefined)
+      form.setFieldValue("columnMethod", undefined)
+    }
+  }, [selectedType])
+
+  // Reset form methodOptions when changing method selection
+  useEffect(() => {
+    if (selectedMethod !== initialMethod) {
       form.setFieldValue("methodOptions", undefined)
     }
-  }, [selectedMethod, selectedType])
+  }, [selectedMethod])
 
   // Apply method to current example to set result
   const handleApplyMethod = useCallback(async (plainText: string | number, selectedMethod: MethodType, selectedMethodOptions: unknown) => {
@@ -79,14 +88,9 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
 
   // Set example and result according to selected columns
   useEffect(() => {
-    if (selectedType) {
+    if (form.getFieldValue("columnType")) {
       const selectMethodListElements = methodsForTypes[selectedType]
       setSelectMethodList(selectMethodListElements)
-      if (!selectMethodListElements.some((methodOption: DefaultOptionType) => methodOption.value === selectedMethod)) {
-        form.setFieldValue("columnMethod", undefined)
-        form.setFieldValue("methodOptions", undefined)
-        setResult(undefined)
-      }
       if (selectedRowKeys.length === 1 && fileMetadata) {
         setExample(fileMetadata[Number(selectedRowKeys[0])].example)
       } else {
@@ -101,17 +105,10 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
   const getCorrelatedColumns = (uuid: string): string[] => {
     if (fileMetadata && uuid) {
       const columns = fileMetadata.reduce((acc: string[], column: MetaData) => {
-        if (column.methodOptions) {
-          const options = column.methodOptions
-          if (options?.correlation === uuid) {
-            return [...acc, column.name]
-          }
-          return acc
-        }
+        if (column.methodOptions?.correlation === uuid) return [...acc, column.name]
         return acc
       }, [] as string[])
       if (columns.length !== 1) return columns
-      else return []
     }
     return []
   }
@@ -135,7 +132,6 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
           result: undefined,
         }
       })
-      setResult(undefined)
       saveConfiguration(updatedFileMetaData)
     }
     resetForm()
@@ -160,8 +156,8 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
               ...updatedFileMetaData[Number(key)],
               ...(form.getFieldValue("columnType") && { type: form.getFieldValue("columnType") }),
               method: undefined,
-              result: undefined,
               methodOptions: undefined,
+              result: undefined,
             }
           }
         }
@@ -173,8 +169,6 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
 
   const customDisabledTextStyle = selectedRowKeys.length ? {} : { color: "#a1a1aa" }
   const customDisabledBackgroundStyle = selectedRowKeys.length ? {} : { backgroundColor: "#f5f5f5" }
-
-  const [open, setOpen] = useState(false)
 
   return (
     <div className="editBox">
@@ -217,10 +211,10 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
           </Form.Item>
         </div>
         <div className="buttons">
-          <Button className="button" type="dark" onClick={() => clearMethod()} disabled={selectedRowKeys.length === 0}>Clear selected column(s) method</Button>
+          <Button type="dark" onClick={() => clearMethod()} disabled={!selectedRowKeys.length}>Clear selected column(s) method</Button>
           <div className="horizontalButtons">
-            <Button type="outline" onClick={() => resetForm()} disabled={selectedRowKeys.length === 0}>Cancel</Button>
-            <Button htmlType="submit" disabled={selectedRowKeys.length === 0}>Save</Button>
+            <Button type="outline" onClick={() => resetForm()} disabled={!selectedRowKeys.length}>Cancel</Button>
+            <Button htmlType="submit" disabled={!selectedRowKeys.length}>Save</Button>
           </div>
         </div>
       </Form>

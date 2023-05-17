@@ -1,6 +1,5 @@
 import { CosmianLogo, Header, MainLayout } from "cosmian_ui"
 import { ReactNode } from "react"
-import "./layout.less"
 
 const Layout = ({ children }: { children: ReactNode }): JSX.Element => {
   const logo = <CosmianLogo link={window.location.origin} />
