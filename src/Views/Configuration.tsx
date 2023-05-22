@@ -11,7 +11,7 @@ import { DeleteConfigModal } from "../components/DeleteConfigModal"
 import { ConfigurationInfo, MetaData, downloadFile } from "../utils/utils"
 import "./style.less"
 
-const Anonymization = (): JSX.Element => {
+const Configuration = (): JSX.Element => {
   const navigate = useNavigate()
   const [configList, setConfigList] = useState<ConfigurationInfo[]>([])
   const [deleteConfigModalVisible, setDeleteConfigModalVisible] = useState<boolean>(false)
@@ -152,8 +152,8 @@ const Anonymization = (): JSX.Element => {
 
   return (
     <div className="anonymization">
-      <h1>Anonymization configuration</h1>
-      <p>Secure you datasets using various anonymization methods.</p>
+      <h1>Anonymization configurations</h1>
+      <p>Define your anonymization using various anonymization methods.</p>
       <div className="buttons">
         <Button
           type="outline"
@@ -171,7 +171,7 @@ const Anonymization = (): JSX.Element => {
           Create configuration
         </Button>
       </div>
-      <RoundedFrame className="search">
+      <RoundedFrame>
         <p className="h4">List of configurations</p>
         <Table rowKey={"uuid"} dataSource={configList} columns={columns} pagination={false} />
       </RoundedFrame>
@@ -184,4 +184,4 @@ const Anonymization = (): JSX.Element => {
   )
 }
 
-export default Anonymization
+export default Configuration
