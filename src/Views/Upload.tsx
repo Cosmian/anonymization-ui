@@ -1,4 +1,4 @@
-import { Form, Input, Select } from "antd"
+import { Form, Input, Select, notification } from "antd"
 import { BackArrow, Button, FileDrop, RoundedFrame } from "cosmian_ui"
 import localForage from "localforage"
 import { useState } from "react"
@@ -56,8 +56,17 @@ const Upload = (): JSX.Element => {
     if (fileMetadata) {
       const uuid = uuidv4()
       const delimiter = form.getFieldValue("delimiter")
-      await localForage.setItem(uuid, { metadata: fileMetadata, configurationInfo: { name, created_at: new Date().toLocaleString(), file: fileInfo?.name, uuid, delimiter } })
-      navigate(paths_config.edit, { state: { uuid } })
+      try {
+        await localForage.setItem(uuid, { metadata: fileMetadata, configurationInfo: { name, created_at: new Date().toLocaleString(), file: fileInfo?.name, uuid, delimiter } })
+        navigate(paths_config.edit, { state: { uuid } })
+      } catch (error) {
+        notification.error({
+          duration: 3,
+          message: "Error saving configuration",
+          description: (error as Error).message
+        })
+        throw new Error((error as Error).message)
+      }
     }
   }
 

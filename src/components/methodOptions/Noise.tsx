@@ -10,7 +10,7 @@ interface NoiseOptionsProps {
 
 interface NoiseSubOptionsProps {
   form: FormInstance;
-  distribution: string;
+  distribution: "Gaussian" | "Laplacian" | "Uniform";
   notCorrelated: boolean
 }
 
@@ -61,7 +61,6 @@ export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form, columns, getCo
           ]}
         />
       </Form.Item>
-      {dataType === "Date" ? <NoiseDateOptions form={form} distribution={distribution} notCorrelated={notCorrelated} /> : <NoiseNumberOptions form={form} distribution={distribution} notCorrelated={notCorrelated} />}
       {notCorrelated ?
         <Form.Item valuePropName="checked" initialValue={undefined} style={{ marginBottom: 0 }} className="tags-list">
           <>
@@ -71,11 +70,12 @@ export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form, columns, getCo
             ))}
           </>
         </Form.Item>
-      : <b className="tags-list">Correlated noise applied between:
-        {correlatedColumns.map((name, index) => (
-          <Tag key={index}>{name}</Tag>
-        ))}
-      </b>}
+        : <b className="tags-list">Correlated noise applied between:
+          {correlatedColumns.map((name, index) => (
+            <Tag key={index}>{name}</Tag>
+          ))}
+        </b>}
+      {dataType === "Date" ? <NoiseDateOptions form={form} distribution={distribution} notCorrelated={notCorrelated} /> : <NoiseNumberOptions form={form} distribution={distribution} notCorrelated={notCorrelated} />}
     </>
   )
 }

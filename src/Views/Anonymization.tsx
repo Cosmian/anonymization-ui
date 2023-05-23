@@ -1,4 +1,4 @@
-import { Dropdown, Table } from "antd"
+import { Dropdown, Table, notification } from "antd"
 import { Button, OptionButton, RoundedFrame } from "cosmian_ui"
 import localForage from "localforage"
 import { useEffect, useState } from "react"
@@ -22,10 +22,7 @@ const Anonymization = (): JSX.Element => {
       const elements = await localForage.keys()
       const data = await Promise.all(elements.map(async (uuid): Promise<ConfigurationInfo | undefined> => {
         const item: { configurationInfo: ConfigurationInfo, metadata: MetaData[] } | null = await localForage.getItem(uuid)
-        if (item) {
-          return item.configurationInfo
-        }
-        return undefined
+        return item?.configurationInfo
       }))
       if (data) {
         const filteredData = data.filter((el): el is ConfigurationInfo => !!el)
@@ -33,7 +30,16 @@ const Anonymization = (): JSX.Element => {
         setConfigList(filteredData)
       }
     }
-    fetchConfigurations()
+    try {
+      fetchConfigurations()
+    } catch (error) {
+      notification.error({
+        duration: 3,
+        message: "Error fetching configurations",
+        description: (error as Error).message
+      })
+      throw new Error((error as Error).message)
+    }
   }, [])
 
   const handleDelete = async (): Promise<void> => {
@@ -84,9 +90,18 @@ const Anonymization = (): JSX.Element => {
             const uuid = uuidv4()
             const copyName = configuration.name + "_copy_" + uuid.slice(0, 4)
             const configurationInfoCopy: ConfigurationInfo = { name: copyName, created_at: new Date().toLocaleString(), file: configuration.file, uuid, delimiter: configuration.delimiter }
-            const configurationCopy = {...configurationInitial, configurationInfo: configurationInfoCopy}
-            await localForage.setItem(uuid, configurationCopy)
-            setConfigList([...configList, configurationInfoCopy])
+            const configurationCopy = { ...configurationInitial, configurationInfo: configurationInfoCopy }
+            try {
+              await localForage.setItem(uuid, configurationCopy)
+              setConfigList([...configList, configurationInfoCopy])
+            } catch (error) {
+              notification.error({
+                duration: 3,
+                message: "Error copying configuration",
+                description: (error as Error).message
+              })
+              throw new Error((error as Error).message)
+            }
           }
         }
 
@@ -109,11 +124,6 @@ const Anonymization = (): JSX.Element => {
                 <OptionButton onClick={() => {}}/>
               </div>
             </Dropdown>
-            <DeleteConfigModal
-              visible={deleteConfigModalVisible}
-              onCancel={() => setDeleteConfigModalVisible(false)}
-              onDelete={() => handleDelete()}
-            />
           </div>
         )
       },
@@ -144,6 +154,11 @@ const Anonymization = (): JSX.Element => {
           pagination={false}
         />
       </RoundedFrame>
+      <DeleteConfigModal
+        visible={deleteConfigModalVisible}
+        onCancel={() => setDeleteConfigModalVisible(false)}
+        onDelete={() => handleDelete()}
+      />
     </div>
   )
 }

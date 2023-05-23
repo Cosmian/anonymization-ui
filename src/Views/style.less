@@ -41,21 +41,26 @@
   }
 }
 
-.editView {
-  .editMain {
+.edit-view {
+  .edit-main {
     width: calc(100% - 378px);
     .head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      .head-titles {
         display: flex;
-        justify-content: space-between;
-        button {
-          margin-bottom: 10px;
-          height: 32px;
-        }
+        flex-direction: column;
+        margin-bottom: 10px;
       }
+      button {
+        height: 32px;
+      }
+    }
   }
 }
 
-.editBox {
+.edit-box {
   border-left: 1px solid #d4d4d8;;
   position: fixed;
   display: flex;
@@ -114,6 +119,15 @@
     line-height: 1.5715;
     padding: 4px 11px;
     min-height: 31px;
+    text-overflow: ellipsis;
+    overflow: scroll;
+  }
+  .input::-webkit-scrollbar {
+  display: none;
+  }
+  .input {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
   }
   button {
     margin: 5px;
@@ -126,7 +140,7 @@
     height: 80px;
     width: 340px;
   }
-  .horizontalButtons {
+  .horizontal-buttons {
     display: flex;
     justify-content: space-between;
     button {
@@ -191,12 +205,12 @@
   margin-top: 0.1em;
   margin-bottom: .3em;
 }
-.infoBox {
+.info-box {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
-  .infoText {
+  .info-text {
     white-space: pre-wrap;
   }
 }

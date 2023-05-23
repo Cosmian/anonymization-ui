@@ -84,7 +84,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
     if (example && selectedMethod) {
       handleApplyMethod(example, selectedMethod, selectedMethodOptions)
     }
-  }, [example, selectedMethod, selectedMethodOptions, applyMethod])
+  }, [example, selectedMethod, selectedMethodOptions])
 
   // Set example and result according to selected columns
   useEffect(() => {
@@ -171,7 +171,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
   const customDisabledBackgroundStyle = selectedRowKeys.length ? {} : { backgroundColor: "#f5f5f5" }
 
   return (
-    <div className="editBox">
+    <div className="edit-box">
       <h2 className="h4" style={customDisabledTextStyle}>{selectedRowKeys.length ? `Apply method on ${selectedRowKeys.length} column(s)` : "Apply method on columns"}</h2>
       <Divider />
       <Form name="edit" onFinish={saveMethod} form={form}>
@@ -212,7 +212,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
         </div>
         <div className="buttons">
           <Button type="dark" onClick={() => clearMethod()} disabled={!selectedRowKeys.length}>Clear selected column(s) method</Button>
-          <div className="horizontalButtons">
+          <div className="horizontal-buttons">
             <Button type="outline" onClick={() => resetForm()} disabled={!selectedRowKeys.length}>Cancel</Button>
             <Button htmlType="submit" disabled={!selectedRowKeys.length}>Save</Button>
           </div>

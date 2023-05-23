@@ -12,8 +12,8 @@ interface MethodInfoBoxProps {
 const MethodInfoBox: React.FC<MethodInfoBoxProps> = ({ open, method, close }) => {
   return (
     <Drawer title={`${method} method`} placement="right" onClose={close} open={open} style={{ position: "fixed", right: "378px", top: "60px" }} closable={false} zIndex={90}>
-      <div className="infoBox">
-        <div className="infoText">{methodsInfo[method]}</div>
+      <div className="info-box">
+        <div className="info-text">{methodsInfo[method]}</div>
         <Button type="outline" onClick={close}>Close</Button>
       </div>
     </Drawer>

@@ -49,8 +49,17 @@ const Import = (): JSX.Element => {
   const saveFile = async (): Promise<void> => {
     if (fileMetadata) {
       const uuid = uuidv4()
-      await localForage.setItem(uuid, { metadata: fileMetadata, configurationInfo: {...configurationInfo, uuid } })
-      navigate(paths_config.edit, { state: { uuid } })
+      try {
+        await localForage.setItem(uuid, { metadata: fileMetadata, configurationInfo: { ...configurationInfo, uuid } })
+        navigate(paths_config.edit, { state: { uuid } })
+      } catch (error) {
+        notification.error({
+          duration: 3,
+          message: "Error saving configuration",
+          description: (error as Error).message
+        })
+        throw new Error((error as Error).message)
+      }
     }
   }
 
