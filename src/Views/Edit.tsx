@@ -8,7 +8,7 @@ import { paths_config } from "../config/paths"
 import { ConfigurationInfo, MetaData, downloadFile } from "../utils/utils"
 import "./style.less"
 
-const ellipsisStyle: React.CSSProperties = { maxWidth: 200, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }
+const ellipsisStyle: React.CSSProperties = { maxWidth: 100, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }
 
 const columns = [
   {
@@ -97,10 +97,10 @@ const Edit = (): JSX.Element => {
   return (
     <div className="edit-view">
       <div className="edit-main">
-        <BackArrow onClick={() => navigate(paths_config.home)} text="Back to configurations list" />
+        <BackArrow onClick={() => navigate(paths_config.configuration)} text="Back to configurations list" />
         <div className="head">
           <div className="head-titles">
-            <h1>{configurationInfo?.name} anonymization columns</h1>
+            <h1>{configurationInfo?.name} data's columns</h1>
             <div>Select column(s) and define method to apply.</div>
           </div>
           <Button onClick={() => downloadConfiguration(configurationInfo?.uuid)}>Download configuration</Button>
@@ -113,7 +113,7 @@ const Edit = (): JSX.Element => {
             pagination={false}
             rowSelection={rowSelection}
             tableLayout="auto"
-            scroll={{ x: 800 }}
+            scroll={{ x: 400 }}
           />
         </RoundedFrame>
       </div>

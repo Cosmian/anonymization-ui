@@ -74,7 +74,8 @@ const Anonymize = (): JSX.Element => {
     if (file) {
       const formData = new FormData()
       formData.append("file", file)
-      const response = await fetch("http://127.0.0.1:5000/e0c589b8d", {
+      const configurationId = form.getFieldValue("configuration")
+      const response = await fetch(`http://127.0.0.1:5000/${configurationId}`, {
         method: "POST",
         body: formData
       })
@@ -83,7 +84,7 @@ const Anonymize = (): JSX.Element => {
         const link = document.createElement("a")
         const blob = new Blob([res], { type: "text/csv" })
         link.href = URL.createObjectURL(blob)
-        link.download = "anonnymized-file"
+        link.download = "anonymized-file"
         link.click()
         resetForm()
         return
@@ -110,9 +111,7 @@ const Anonymize = (): JSX.Element => {
         </Dragger>
         <h2 className="h4 title">Select configuration</h2>
         <Form form={form}>
-          <Form.Item
-            name="configuration"
-          >
+          <Form.Item name="configuration">
             <Select
               options={configList}
             />

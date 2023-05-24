@@ -1,9 +1,11 @@
-import { CosmianLogo, Header, MainLayout, MainNavigation } from "cosmian_ui"
+import { CosmianLogo, Header, MainLayout, MainNavigation, NavigationItem } from "cosmian_ui"
 import { IoBuildOutline, IoDocumentLockOutline } from "react-icons/io5"
-import { Outlet, useNavigate } from "react-router-dom"
+import { Outlet, useLocation, useNavigate } from "react-router-dom"
 import { paths_config } from "../config/paths"
 
 const Layout = (): JSX.Element => {
+  const location = useLocation()
+  const locationPathName = location.pathname
   const navigate = useNavigate()
 
   const logo = <CosmianLogo link={window.location.origin} />
@@ -11,7 +13,7 @@ const Layout = (): JSX.Element => {
     <Header mainLogo={logo} title="Data anonymization" />
   )
 
-  const navigationElements = [{
+  const navigationElements: NavigationItem[] = [{
     icon: <IoDocumentLockOutline/>,
     key: "Anonymize",
     navLink: "/",
@@ -31,7 +33,7 @@ const Layout = (): JSX.Element => {
     navigate(navigationElements[index].navLink)
   }
 
-  return <MainLayout header={header} navigation={<MainNavigation locationPathName={"#"} navigationConfig={navigationElements} handleClick={navigationClick} />}>
+  return <MainLayout header={header} navigation={<MainNavigation locationPathName={locationPathName} navigationConfig={navigationElements} handleClick={navigationClick} />}>
     <Outlet />
   </MainLayout>
 }

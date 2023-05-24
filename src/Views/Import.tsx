@@ -66,7 +66,7 @@ const Import = (): JSX.Element => {
   return (
     <div className="create">
       <BackArrow
-        onClick={() => navigate(paths_config.home)}
+        onClick={() => navigate(paths_config.configuration)}
         text="Back to configurations list"
       />
       <h1>Import configuration file</h1>
