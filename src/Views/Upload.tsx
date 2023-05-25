@@ -78,7 +78,8 @@ const Upload = (): JSX.Element => {
       />
       <h1>Create configuration file</h1>
       <RoundedFrame>
-        <Form form={form} className="header">
+        <h2 className="h4">1. Configuration information</h2>
+        <Form form={form} className="header" layout="vertical">
           <Form.Item
             name="name"
             label="Name"
@@ -102,7 +103,7 @@ const Upload = (): JSX.Element => {
             />
         </Form.Item>
       </Form>
-      <h2 className="h4">Upload your CSV sample</h2>
+      <h2 className="h4">2. Upload your CSV sample</h2>
       <FileDrop
         fileType="csv"
         getFileInfo={(file) => getFileInfo(file)}

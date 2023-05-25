@@ -101,15 +101,7 @@ const Anonymize = (): JSX.Element => {
     <div className="anonymize">
       <h1>Anonymize data</h1>
       <RoundedFrame>
-        <h2 className="h4">Upload your CSV</h2>
-        <Dragger {...props}>
-          <IoDownloadOutline />
-          <p className="ant-upload-text">Click or drag file to this area to upload</p>
-          <p className="ant-upload-hint">
-            File must be a csv file
-          </p>
-        </Dragger>
-        <h2 className="h4 title">Select configuration</h2>
+        <h2 className="h4">1. Select configuration</h2>
         <Form form={form}>
           <Form.Item name="configuration">
             <Select
@@ -117,6 +109,14 @@ const Anonymize = (): JSX.Element => {
             />
           </Form.Item>
         </Form>
+        <h2 className="h4 title">2. Select your dataset (CSV file)</h2>
+        <Dragger {...props}>
+          <IoDownloadOutline />
+          <p className="ant-upload-text">Click or drag file to this area to upload</p>
+          <p className="ant-upload-hint">
+            File must be a csv file
+          </p>
+        </Dragger>
       </RoundedFrame><div className="buttons">
         <Button type="outline" onClick={() => resetForm()} disabled={!file || !configuration}>Cancel</Button>
         <Button onClick={() => {
