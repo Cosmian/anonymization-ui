@@ -13,12 +13,13 @@ import "./style.less"
 
 const Configuration = (): JSX.Element => {
   const navigate = useNavigate()
-  const [configList, setConfigList] = useState<ConfigurationInfo[]>([])
+  const [localConfigList, setLocalConfigList] = useState<ConfigurationInfo[]>([])
+  const [uploadedConfigList, setUploadedConfigList] = useState<any[]>([])
   const [deleteConfigModalVisible, setDeleteConfigModalVisible] = useState<boolean>(false)
   const [configToDelete, setConfigToDelete] = useState<string | undefined>(undefined)
 
   useEffect(() => {
-    const fetchConfigurations = async (): Promise<void> => {
+    const fetchLocalConfigurations = async (): Promise<void> => {
       const elements = await localForage.keys()
       const data = await Promise.all(
         elements.map(async (uuid): Promise<ConfigurationInfo | undefined> => {
@@ -28,14 +29,26 @@ const Configuration = (): JSX.Element => {
       )
       if (data) {
         const filteredData = data.filter((el): el is ConfigurationInfo => !!el)
-        filteredData.sort(
-          (a: ConfigurationInfo, b: ConfigurationInfo): number => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-        )
-        setConfigList(filteredData)
+        filteredData.sort((a: ConfigurationInfo, b: ConfigurationInfo): number => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+        setLocalConfigList(filteredData)
+      }
+    }
+    const fetchUploadedConfigurations = async (): Promise<void> => {
+      const response = await fetch("http://localhost:8000/api/configurations")
+      const response_json = await response.json()
+      const data = JSON.parse(response_json.message)
+      if (data) {
+        const keys = Object.keys(data)
+        const configurations = keys.reduce((acc, key) => {
+          const configuration = { uuid: key, name: data[key].name, created_at: data[key].created_at, hash: data[key].hash}
+          return [...acc, configuration]
+        }, [])
+        setUploadedConfigList(configurations)
       }
     }
     try {
-      fetchConfigurations()
+      fetchLocalConfigurations()
+      fetchUploadedConfigurations()
     } catch (error) {
       notification.error({
         duration: 3,
@@ -48,11 +61,9 @@ const Configuration = (): JSX.Element => {
 
   const handleDelete = async (): Promise<void> => {
     if (configToDelete) {
-      if (configList) {
-        const updatedDataSource = configList
-          .filter((data) => data.uuid !== configToDelete)
-          .sort((a: ConfigurationInfo, b: ConfigurationInfo) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
-        setConfigList(updatedDataSource)
+      if (localConfigList) {
+        const updatedDataSource = localConfigList.filter(data => data.uuid!== configToDelete).sort((a: ConfigurationInfo, b: ConfigurationInfo) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+        setLocalConfigList(updatedDataSource)
       }
       await localForage.removeItem(configToDelete)
       setDeleteConfigModalVisible(false)
@@ -60,7 +71,26 @@ const Configuration = (): JSX.Element => {
     }
   }
 
-  const columns = [
+
+  const uploadedColumns = [
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Creation date",
+      dataIndex: "created_at",
+      key: "created_at",
+    },
+    {
+      title: "Hash",
+      dataIndex: "hash",
+      key: "hash",
+    },
+  ]
+
+  const localColumns = [
     {
       title: "Name",
       dataIndex: "name",
@@ -91,10 +121,8 @@ const Configuration = (): JSX.Element => {
         }
 
         const handleCopy = async (): Promise<void> => {
-          const configurationInitial: { configurationInfo: ConfigurationInfo; metadata: MetaData[] } | null = await localForage.getItem(
-            configuration.uuid
-          )
-          if (configurationInitial && configList) {
+          const configurationInitial: { configurationInfo: ConfigurationInfo, metadata: MetaData[] } | null = await localForage.getItem(configuration.uuid)
+          if (configurationInitial && localConfigList) {
             const uuid = uuidv4()
             const copyName = configuration.name + "_copy_" + uuid.slice(0, 4)
             const configurationInfoCopy: ConfigurationInfo = {
@@ -107,7 +135,7 @@ const Configuration = (): JSX.Element => {
             const configurationCopy = { ...configurationInitial, configurationInfo: configurationInfoCopy }
             try {
               await localForage.setItem(uuid, configurationCopy)
-              setConfigList([...configList, configurationInfoCopy])
+              setLocalConfigList([...localConfigList, configurationInfoCopy])
             } catch (error) {
               notification.error({
                 duration: 3,
@@ -166,11 +194,20 @@ const Configuration = (): JSX.Element => {
         </Button>
       </div>
       <RoundedFrame>
-        <p className="h4">List of Configuration</p>
+        <p className="h4">List of uploaded Configuration</p>
         <Table
           rowKey={"uuid"}
-          dataSource={configList}
-          columns={columns}
+          dataSource={uploadedConfigList}
+          columns={uploadedColumns}
+          pagination={false}
+        />
+      </RoundedFrame>
+      <RoundedFrame>
+        <p className="h4">List of local Configuration</p>
+        <Table
+          rowKey={"uuid"}
+          dataSource={localConfigList}
+          columns={localColumns}
           pagination={false}
         />
       </RoundedFrame>

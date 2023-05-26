@@ -85,6 +85,7 @@ const Edit = (): JSX.Element => {
     setTimeout(() => {
       navigate(paths_config.configuration)
     }, 1000)
+    navigate(paths_config.home)
   }
 
   const saveConfiguration = async (updatedFileMetaData: MetaData[]): Promise<void> => {
@@ -94,7 +95,7 @@ const Edit = (): JSX.Element => {
     } catch (error) {
       notification.error({
         duration: 3,
-        message: "Error saving configuration",
+        message: "Error saving Configuration",
         description: (error as Error).message,
       })
       throw new Error((error as Error).message)
@@ -108,10 +109,10 @@ const Edit = (): JSX.Element => {
         <div className="head">
           <div className="head-titles">
             <h1>{configurationInfo?.name} data's columns</h1>
-            <div>Select column(s) and define method to apply.</div>
+            <div>Select column(s) and define anonymization method to apply.</div>
           </div>
-          <Button type="dark" onClick={() => uploadConfiguration(configurationInfo?.uuid)}>Upload configuration</Button>
-          <Button onClick={() => downloadConfiguration(configurationInfo?.uuid)}>Download configuration</Button>
+          <Button type="dark" onClick={() => uploadConfiguration(configurationInfo?.uuid)}>Upload Configuration</Button>
+          <Button onClick={() => downloadConfiguration(configurationInfo?.uuid)}>Download Configuration</Button>
         </div>
         <RoundedFrame>
           <Table

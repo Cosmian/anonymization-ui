@@ -128,3 +128,34 @@ export const downloadFile = async (uuid: string | undefined): Promise<void> => {
     description: "An error occured.",
   })
 }
+
+export const uploadFile = async (uuid: string | undefined): Promise<void> => {
+  if (uuid) {
+    const configuration: { configurationInfo: ConfigurationInfo, metadata: MetaData[] } | null = await localForage.getItem(uuid)
+    // const formData = new FormData()
+    // const json = JSON.stringify(configuration)
+    // const file = new Blob([json], { type: "application/json" })
+    // formData.append("file", file, configuration.configurationInfo.name + ".json")
+    const response = await fetch("http://localhost:8000/api/configurations", {
+      method: "POST",
+      // headers: {
+      //   "Accept": "application/json",
+      //   "Content-Type": "application/json"
+      // },
+      body: JSON.stringify(configuration)
+    })
+    if (response.ok) {
+      notification.success({
+        duration: 3,
+        message: "Upload",
+        description: "File successfully uploaded on microservice.",
+      })
+      return
+    }
+    notification.error({
+      duration: 3,
+      message: "Upload",
+      description: "An error occured.",
+    })
+  }
+}
