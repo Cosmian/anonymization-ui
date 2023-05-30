@@ -85,7 +85,6 @@ const Edit = (): JSX.Element => {
     setTimeout(() => {
       navigate(paths_config.configuration)
     }, 1000)
-    navigate(paths_config.home)
   }
 
   const saveConfiguration = async (updatedFileMetaData: MetaData[]): Promise<void> => {

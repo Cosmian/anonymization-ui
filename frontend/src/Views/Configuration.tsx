@@ -16,10 +16,12 @@ const Configuration = (): JSX.Element => {
   const [localConfigList, setLocalConfigList] = useState<ConfigurationInfo[]>([])
   const [uploadedConfigList, setUploadedConfigList] = useState<any[]>([])
   const [deleteConfigModalVisible, setDeleteConfigModalVisible] = useState<boolean>(false)
-  const [configToDelete, setConfigToDelete] = useState<string | undefined>(undefined)
+  const [localConfigToDelete, setLocalConfigToDelete] = useState<string | undefined>(undefined)
+  const [uploadedConfigToDelete, setUploadedConfigToDelete] = useState<string | undefined>(undefined)
 
   useEffect(() => {
     const fetchLocalConfigurations = async (): Promise<void> => {
+
       const elements = await localForage.keys()
       const data = await Promise.all(
         elements.map(async (uuid): Promise<ConfigurationInfo | undefined> => {
@@ -44,6 +46,7 @@ const Configuration = (): JSX.Element => {
           return [...acc, configuration]
         }, [])
         setUploadedConfigList(configurations)
+
       }
     }
     try {
@@ -57,19 +60,42 @@ const Configuration = (): JSX.Element => {
       })
       throw new Error((error as Error).message)
     }
-  }, [])
+  }, [uploadedConfigToDelete])
 
   const handleDelete = async (): Promise<void> => {
-    if (configToDelete) {
+    if (localConfigToDelete) {
       if (localConfigList) {
-        const updatedDataSource = localConfigList.filter(data => data.uuid!== configToDelete).sort((a: ConfigurationInfo, b: ConfigurationInfo) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+        const updatedDataSource = localConfigList.filter(data => data.uuid!== localConfigToDelete).sort((a: ConfigurationInfo, b: ConfigurationInfo) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
         setLocalConfigList(updatedDataSource)
       }
-      await localForage.removeItem(configToDelete)
+      await localForage.removeItem(localConfigToDelete)
       setDeleteConfigModalVisible(false)
-      setConfigToDelete(undefined)
+      setLocalConfigToDelete(undefined)
+    }
+    if (uploadedConfigToDelete) {
+      const response = await fetch(`http://localhost:8000/api/configurations/${uploadedConfigToDelete}`, {
+        method: "DELETE",
+      })
+      if (response.ok) {
+        notification.success({
+          duration: 3,
+          message: "Delete",
+          description: "Configuration successfully deleted from microservice.",
+        })
+        setDeleteConfigModalVisible(false)
+        setUploadedConfigToDelete(undefined)
+        return
+      }
+      notification.error({
+        duration: 3,
+        message: "Delete",
+        description: "An error occured.",
+      })
+      setDeleteConfigModalVisible(false)
+      setUploadedConfigToDelete(undefined)
     }
   }
+
 
 
   const uploadedColumns = [
@@ -87,7 +113,38 @@ const Configuration = (): JSX.Element => {
       title: "Hash",
       dataIndex: "hash",
       key: "hash",
+      width: 50,
     },
+    {
+      title: "",
+      key: "options",
+      render: (configuration: ConfigurationInfo) => {
+        const handleSelect = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
+          e.stopPropagation()
+          navigate(paths_config.edit, { state: { uuid: configuration.uuid } })
+        }
+
+        const items = [
+          {
+            label: "Delete configuration", key: "delete", danger: true, onClick: () => {
+              setDeleteConfigModalVisible(true)
+              setUploadedConfigToDelete(configuration.uuid)
+            }, icon: <IoTrashOutline />
+          },
+        ]
+
+        return (
+          <div className="icons">
+            <Button type="dark" onClick={(e) => handleSelect(e)}>Edit</Button>
+            <Dropdown menu={{ items }} placement="bottomRight" trigger={["hover"]}>
+              <div className="icon">
+                <OptionButton onClick={() => { }} />
+              </div>
+            </Dropdown>
+          </div>
+        )
+      },
+    }
   ]
 
   const localColumns = [
@@ -156,9 +213,8 @@ const Configuration = (): JSX.Element => {
             danger: true,
             onClick: () => {
               setDeleteConfigModalVisible(true)
-              setConfigToDelete(configuration.uuid)
-            },
-            icon: <IoTrashOutline />,
+              setLocalConfigToDelete(configuration.uuid)
+            }, icon: <IoTrashOutline />
           },
         ]
 
