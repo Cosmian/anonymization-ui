@@ -11,7 +11,7 @@
   "dependencies": {
     "antd": "^4.24.7",
     "cloudproof_js": "^8.1.0",
-    "cosmian_ui": "^0.0.42",
+    "cosmian_ui": "^0.0.44",
     "eslint-plugin-react": "^7.32.2",
     "joi": "^17.9.1",
     "less": "^4.1.3",

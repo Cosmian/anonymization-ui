@@ -20,13 +20,17 @@ const Anonymization = (): JSX.Element => {
   useEffect(() => {
     const fetchConfigurations = async (): Promise<void> => {
       const elements = await localForage.keys()
-      const data = await Promise.all(elements.map(async (uuid): Promise<ConfigurationInfo | undefined> => {
-        const item: { configurationInfo: ConfigurationInfo, metadata: MetaData[] } | null = await localForage.getItem(uuid)
-        return item?.configurationInfo
-      }))
+      const data = await Promise.all(
+        elements.map(async (uuid): Promise<ConfigurationInfo | undefined> => {
+          const item: { configurationInfo: ConfigurationInfo; metadata: MetaData[] } | null = await localForage.getItem(uuid)
+          return item?.configurationInfo
+        })
+      )
       if (data) {
         const filteredData = data.filter((el): el is ConfigurationInfo => !!el)
-        filteredData.sort((a: ConfigurationInfo, b: ConfigurationInfo): number => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+        filteredData.sort(
+          (a: ConfigurationInfo, b: ConfigurationInfo): number => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        )
         setConfigList(filteredData)
       }
     }
@@ -36,7 +40,7 @@ const Anonymization = (): JSX.Element => {
       notification.error({
         duration: 3,
         message: "Error fetching configurations",
-        description: (error as Error).message
+        description: (error as Error).message,
       })
       throw new Error((error as Error).message)
     }
@@ -45,7 +49,9 @@ const Anonymization = (): JSX.Element => {
   const handleDelete = async (): Promise<void> => {
     if (configToDelete) {
       if (configList) {
-        const updatedDataSource = configList.filter(data => data.uuid!== configToDelete).sort((a: ConfigurationInfo, b: ConfigurationInfo) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+        const updatedDataSource = configList
+          .filter((data) => data.uuid !== configToDelete)
+          .sort((a: ConfigurationInfo, b: ConfigurationInfo) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
         setConfigList(updatedDataSource)
       }
       await localForage.removeItem(configToDelete)
@@ -77,7 +83,7 @@ const Anonymization = (): JSX.Element => {
       render: (configuration: ConfigurationInfo) => {
         const handleSelect = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
           e.stopPropagation()
-          navigate(paths_config.edit, { state: { uuid: configuration.uuid }})
+          navigate(paths_config.edit, { state: { uuid: configuration.uuid } })
         }
 
         const handleDownload = (): void => {
@@ -85,11 +91,19 @@ const Anonymization = (): JSX.Element => {
         }
 
         const handleCopy = async (): Promise<void> => {
-          const configurationInitial: { configurationInfo: ConfigurationInfo, metadata: MetaData[] } | null = await localForage.getItem(configuration.uuid)
+          const configurationInitial: { configurationInfo: ConfigurationInfo; metadata: MetaData[] } | null = await localForage.getItem(
+            configuration.uuid
+          )
           if (configurationInitial && configList) {
             const uuid = uuidv4()
             const copyName = configuration.name + "_copy_" + uuid.slice(0, 4)
-            const configurationInfoCopy: ConfigurationInfo = { name: copyName, created_at: new Date().toLocaleString(), file: configuration.file, uuid, delimiter: configuration.delimiter }
+            const configurationInfoCopy: ConfigurationInfo = {
+              name: copyName,
+              created_at: new Date().toLocaleString(),
+              file: configuration.file,
+              uuid,
+              delimiter: configuration.delimiter,
+            }
             const configurationCopy = { ...configurationInitial, configurationInfo: configurationInfoCopy }
             try {
               await localForage.setItem(uuid, configurationCopy)
@@ -98,7 +112,7 @@ const Anonymization = (): JSX.Element => {
               notification.error({
                 duration: 3,
                 message: "Error copying configuration",
-                description: (error as Error).message
+                description: (error as Error).message,
               })
               throw new Error((error as Error).message)
             }
@@ -109,19 +123,25 @@ const Anonymization = (): JSX.Element => {
           { label: "Copy configuration", key: "copy", onClick: handleCopy },
           { label: "Download configuration", key: "download", onClick: handleDownload },
           {
-            label: "Delete configuration", key: "delete", danger: true, onClick: () => {
+            label: "Delete configuration",
+            key: "delete",
+            danger: true,
+            onClick: () => {
               setDeleteConfigModalVisible(true)
               setConfigToDelete(configuration.uuid)
-            }, icon: <IoTrashOutline />
             },
+            icon: <IoTrashOutline />,
+          },
         ]
 
         return (
           <div className="icons">
-            <Button type="dark" onClick={(e) => handleSelect(e)}>Edit</Button>
+            <Button type="dark" onClick={(e) => handleSelect(e)}>
+              Edit
+            </Button>
             <Dropdown menu={{ items }} placement="bottomRight" trigger={["hover"]}>
               <div className="icon">
-                <OptionButton onClick={() => {}}/>
+                <OptionButton />
               </div>
             </Dropdown>
           </div>
@@ -137,22 +157,23 @@ const Anonymization = (): JSX.Element => {
       <div className="buttons">
         <Button
           type="outline"
-          onClick={() => {navigate(paths_config.import)}}>
+          onClick={() => {
+            navigate(paths_config.import)
+          }}
+        >
           Import configuration
         </Button>
         <Button
-          onClick={() => {navigate(paths_config.upload)}}>
+          onClick={() => {
+            navigate(paths_config.upload)
+          }}
+        >
           Create configuration
         </Button>
       </div>
       <RoundedFrame className="search">
         <p className="h4">List of configurations</p>
-        <Table
-          rowKey={"uuid"}
-          dataSource={configList}
-          columns={columns}
-          pagination={false}
-        />
+        <Table rowKey={"uuid"} dataSource={configList} columns={columns} pagination={false} />
       </RoundedFrame>
       <DeleteConfigModal
         visible={deleteConfigModalVisible}
