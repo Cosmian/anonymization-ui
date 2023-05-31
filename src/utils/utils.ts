@@ -44,9 +44,9 @@ export const dataTypesSelect: { value: string, label: string, example: string | 
 ]
 
 export const methodsForTypes: { Integer: DefaultOptionType[], Float: DefaultOptionType[], Text: DefaultOptionType[], Date: DefaultOptionType[] } = {
-  "Integer": [{ value: "FpeInteger", label: "FPE" },  { value: "AggregationInteger", label: "Aggregation" }, { value: "NoiseInteger", label: "Noise" }, { value: "RescalingInteger", label: "Rescaling" }],
-  "Float": [{ value: "FpeFloat", label: "FPE" },  { value: "AggregationFloat", label: "AggregationFloat" }, { value: "NoiseFloat", label: "Noise" }, { value: "RescalingFloat", label: "Rescaling" }],
-  "Text": [{ value: "Hash", label: "Hash" }, { value: "FpeString", label: "FPE" }, { value: "MaskWords", label: "Mask words" }, { value: "TokenizeWords", label: "Tokenize words" }, { value: "Regex", label: "Regex" }],
+  "Integer": [{ value: "FpeInteger", label: "Format Preserving Encryption (FPE)" },  { value: "AggregationInteger", label: "Aggregation" }, { value: "NoiseInteger", label: "Noise" }, { value: "RescalingInteger", label: "Rescaling" }],
+  "Float": [{ value: "FpeFloat", label: "Format Preserving Encryption (FPE)" },  { value: "AggregationFloat", label: "AggregationFloat" }, { value: "NoiseFloat", label: "Noise" }, { value: "RescalingFloat", label: "Rescaling" }],
+  "Text": [{ value: "Hash", label: "Hash" }, { value: "FpeString", label: "Format Preserving Encryption (FPE)" }, { value: "MaskWords", label: "Mask words" }, { value: "TokenizeWords", label: "Tokenize words" }, { value: "Regex", label: "Regex" }],
   "Date": [{ value: "AggregationDate", label: "Aggregation" }, { value: "NoiseDate", label: "Noise" }],
 }
 

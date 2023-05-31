@@ -21,17 +21,17 @@ const Layout = (): JSX.Element => {
   )
 
   const navigationElements: NavigationItem[] = [{
-    icon: <IoDocumentLockOutline/>,
-    key: "Anonymize",
-    navLink: "/",
-    title: "Anonymization",
+    icon: <IoBuildOutline />,
+    key: "Configuration",
+    navLink: paths_config.configuration,
+    title: "Configuration",
     type: "item"
   },
   {
-    icon: <IoBuildOutline />,
-    key: "Configurations",
-    navLink: paths_config.configuration,
-    title: "Configurations",
+    icon: <IoDocumentLockOutline />,
+    key: "Anonymize",
+    navLink: "/",
+    title: "Anonymization",
     type: "item"
   }]
 

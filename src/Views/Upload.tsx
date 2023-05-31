@@ -62,7 +62,7 @@ const Upload = (): JSX.Element => {
       } catch (error) {
         notification.error({
           duration: 3,
-          message: "Error saving configuration",
+          message: "Error saving Configuration",
           description: (error as Error).message
         })
         throw new Error((error as Error).message)
@@ -74,9 +74,9 @@ const Upload = (): JSX.Element => {
     <div className="create">
       <BackArrow
         onClick={() => navigate(paths_config.configuration)}
-        text="Back to configurations list"
+        text="Back to Configuration list"
       />
-      <h1>Create configuration file</h1>
+      <h1>Create Configuration file</h1>
       <RoundedFrame>
         <h2 className="h4">1. Configuration information</h2>
         <Form form={form} className="header" layout="vertical">
@@ -113,7 +113,7 @@ const Upload = (): JSX.Element => {
         <Button type="outline" onClick={() => resetFile()} disabled={!fileMetadata || !name}>Cancel</Button>
         <Button onClick={() => {
           saveFile()
-        }} disabled={!fileMetadata || !name}>Create configuration</Button>
+        }} disabled={!fileMetadata || !name}>Create Configuration</Button>
       </div>
     </div>
   )

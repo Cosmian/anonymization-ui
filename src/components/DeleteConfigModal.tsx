@@ -23,7 +23,7 @@ export const DeleteConfigModal: React.FC<DeleteConfigModalProps> = ({
       open={open}
       icon={<BigFillIcon type="trash" />}
       onOk={() => onDelete()}
-      okText={"Delete configuration"}
+      okText={"Delete Configuration"}
       onCancel={() => onCancel()}
       okButtonType={"danger"}
       centerBody={true}
@@ -34,7 +34,7 @@ export const DeleteConfigModal: React.FC<DeleteConfigModalProps> = ({
           <h1 className="h4">Configuration deletion</h1>
         </div>
         <div className="body">
-          <p>Are you sure you want to delete this configuration?</p>
+          <p>Are you sure you want to delete this Configuration?</p>
         </div>
       </>
     </Modal>

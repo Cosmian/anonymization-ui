@@ -101,7 +101,7 @@ const Anonymize = (): JSX.Element => {
     <div className="anonymize">
       <h1>Anonymize data</h1>
       <RoundedFrame>
-        <h2 className="h4">1. Select configuration</h2>
+        <h2 className="h4">1. Select Configuration</h2>
         <Form form={form}>
           <Form.Item name="configuration">
             <Select

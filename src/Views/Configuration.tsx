@@ -39,8 +39,8 @@ const Configuration = (): JSX.Element => {
     } catch (error) {
       notification.error({
         duration: 3,
-        message: "Error fetching configurations",
-        description: (error as Error).message,
+        message: "Error fetching configuration list",
+        description: (error as Error).message
       })
       throw new Error((error as Error).message)
     }
@@ -111,8 +111,8 @@ const Configuration = (): JSX.Element => {
             } catch (error) {
               notification.error({
                 duration: 3,
-                message: "Error copying configuration",
-                description: (error as Error).message,
+                message: "Error copying Configuration",
+                description: (error as Error).message
               })
               throw new Error((error as Error).message)
             }
@@ -120,8 +120,8 @@ const Configuration = (): JSX.Element => {
         }
 
         const items = [
-          { label: "Copy configuration", key: "copy", onClick: handleCopy },
-          { label: "Download configuration", key: "download", onClick: handleDownload },
+          { label: "Copy Configuration", key: "copy", onClick: handleCopy },
+          { label: "Download Configuration", key: "download", onClick: handleDownload },
           {
             label: "Delete configuration",
             key: "delete",
@@ -152,28 +152,27 @@ const Configuration = (): JSX.Element => {
 
   return (
     <div className="anonymization">
-      <h1>Anonymization configurations</h1>
+      <h1>Anonymization Configuration</h1>
       <p>Define your anonymization using various anonymization methods.</p>
       <div className="buttons">
         <Button
           type="outline"
-          onClick={() => {
-            navigate(paths_config.import)
-          }}
-        >
-          Import configuration
+          onClick={() => {navigate(paths_config.import)}}>
+          Import Configuration
         </Button>
         <Button
-          onClick={() => {
-            navigate(paths_config.upload)
-          }}
-        >
-          Create configuration
+          onClick={() => {navigate(paths_config.upload)}}>
+          Create Configuration
         </Button>
       </div>
       <RoundedFrame>
-        <p className="h4">List of configurations</p>
-        <Table rowKey={"uuid"} dataSource={configList} columns={columns} pagination={false} />
+        <p className="h4">List of Configuration</p>
+        <Table
+          rowKey={"uuid"}
+          dataSource={configList}
+          columns={columns}
+          pagination={false}
+        />
       </RoundedFrame>
       <DeleteConfigModal
         visible={deleteConfigModalVisible}

@@ -34,7 +34,7 @@ const Import = (): JSX.Element => {
       notification.error({
         duration: 4,
         message: "Import",
-        description: "Error importing this JSON: is not a configuration.",
+        description: "Error importing this JSON: is not a Configuration.",
       })
       resetFile()
     }
@@ -55,7 +55,7 @@ const Import = (): JSX.Element => {
       } catch (error) {
         notification.error({
           duration: 3,
-          message: "Error saving configuration",
+          message: "Error saving Configuration",
           description: (error as Error).message
         })
         throw new Error((error as Error).message)
@@ -67,16 +67,16 @@ const Import = (): JSX.Element => {
     <div className="create">
       <BackArrow
         onClick={() => navigate(paths_config.configuration)}
-        text="Back to configurations list"
+        text="Back to Configuration list"
       />
-      <h1>Import configuration file</h1>
+      <h1>Import Configuration file</h1>
       <RoundedFrame>
         <h2 className="h4">Upload your JSON file</h2>
         <FileDrop fileType="json" getFileInfo={(file) => getFileInfo(file)} getResult={(result) => getFileResult(result as fileResult)} updateFile={fileInfo} />
       </RoundedFrame>
       <div className="buttons">
         <Button type="outline" onClick={() => resetFile()} disabled={!fileMetadata}>Cancel</Button>
-        <Button onClick={() => saveFile()} disabled={!fileMetadata}>Import configuration</Button>
+        <Button onClick={() => saveFile()} disabled={!fileMetadata}>Import Configuration</Button>
       </div>
     </div>
   )

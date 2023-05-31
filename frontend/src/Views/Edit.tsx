@@ -5,7 +5,7 @@ import { Key, useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import EditMethodBox from "../components/EditMethodBox"
 import { paths_config } from "../config/paths"
-import { ConfigurationInfo, MetaData, downloadFile } from "../utils/utils"
+import { ConfigurationInfo, MetaData, downloadFile, uploadFile } from "../utils/utils"
 import "./style.less"
 
 const ellipsisStyle: React.CSSProperties = { maxWidth: 100, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }
@@ -80,6 +80,13 @@ const Edit = (): JSX.Element => {
     navigate(paths_config.home)
   }
 
+  const uploadConfiguration = (configurationUuid: string | undefined): void => {
+    uploadFile(configurationUuid)
+    setTimeout(() => {
+      navigate(paths_config.configuration)
+    }, 1000)
+  }
+
   const saveConfiguration = async (updatedFileMetaData: MetaData[]): Promise<void> => {
     setFileMetadata(updatedFileMetaData)
     try {
@@ -87,7 +94,7 @@ const Edit = (): JSX.Element => {
     } catch (error) {
       notification.error({
         duration: 3,
-        message: "Error saving Configuration",
+        message: "Error saving configuration",
         description: (error as Error).message,
       })
       throw new Error((error as Error).message)
@@ -101,9 +108,10 @@ const Edit = (): JSX.Element => {
         <div className="head">
           <div className="head-titles">
             <h1>{configurationInfo?.name} data's columns</h1>
-            <div>Select column(s) and define anonymization method to apply.</div>
+            <div>Select column(s) and define method to apply.</div>
           </div>
-          <Button onClick={() => downloadConfiguration(configurationInfo?.uuid)}>Download Configuration</Button>
+          <Button type="dark" onClick={() => uploadConfiguration(configurationInfo?.uuid)}>Upload configuration</Button>
+          <Button onClick={() => downloadConfiguration(configurationInfo?.uuid)}>Download configuration</Button>
         </div>
         <RoundedFrame>
           <Table
