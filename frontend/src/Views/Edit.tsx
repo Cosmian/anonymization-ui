@@ -51,6 +51,8 @@ const columns = [
 
 const Edit = (): JSX.Element => {
   const configUuid: string = useLocation().state?.uuid
+  const fetchType: string = useLocation().state?.type
+
   const navigate = useNavigate()
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([])
@@ -59,7 +61,16 @@ const Edit = (): JSX.Element => {
 
   useEffect(() => {
     const fetchConfig = async (): Promise<void> => {
-      const configuration: { configurationInfo: ConfigurationInfo; metadata: MetaData[] } | null = await localForage.getItem(configUuid)
+      let configuration: { configurationInfo: ConfigurationInfo; metadata: MetaData[] } | null = null
+      if (fetchType === "local") {
+        configuration = await localForage.getItem(configUuid)
+      } else {
+        const response = await fetch(`http://localhost:8000/api/configurations/${configUuid}`)
+        if (response.ok) {
+          const response_json = await response.json()
+          configuration = JSON.parse(response_json.message)
+        }
+      }
       if (configuration) {
         setConfigurationInfo(configuration.configurationInfo)
         setFileMetadata(configuration.metadata)
@@ -103,15 +114,17 @@ const Edit = (): JSX.Element => {
 
   return (
     <div className="edit-view">
-      <div className="edit-main">
+      <div className={fetchType === "local" ?  "edit-main with-box" : "edit-main"}>
         <BackArrow onClick={() => navigate(paths_config.configuration)} text="Back to Configuration list" />
         <div className="head">
           <div className="head-titles">
             <h1>{configurationInfo?.name} data's columns</h1>
             <div>Select column(s) and define anonymization method to apply.</div>
           </div>
-          <Button type="dark" onClick={() => uploadConfiguration(configurationInfo?.uuid)}>Upload Configuration</Button>
-          <Button onClick={() => downloadConfiguration(configurationInfo?.uuid)}>Download Configuration</Button>
+          <div className="buttons">
+            {fetchType === "local" && <Button type="dark" onClick={() => uploadConfiguration(configurationInfo?.uuid)}>Upload Configuration</Button>}
+            <Button onClick={() => downloadConfiguration(configurationInfo?.uuid)}>Download Configuration</Button>
+          </div>
         </div>
         <RoundedFrame>
           <Table
@@ -125,12 +138,12 @@ const Edit = (): JSX.Element => {
           />
         </RoundedFrame>
       </div>
-      <EditMethodBox
+      {fetchType === "local" && <EditMethodBox
         selectedRowKeys={selectedRowKeys}
         fileMetadata={fileMetadata}
         saveConfiguration={saveConfiguration}
         setSelectedRowKeys={setSelectedRowKeys}
-      />
+      />}
     </div>
   )
 }

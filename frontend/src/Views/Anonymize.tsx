@@ -75,18 +75,17 @@ const Anonymize = (): JSX.Element => {
       const formData = new FormData()
       formData.append("file", file)
       const configurationId = form.getFieldValue("configuration")
-      const response = await fetch(`http://127.0.0.1:5000/${configurationId}`, {
+      const response = await fetch(`http://127.0.0.1:8000/api/${configurationId}`, {
         method: "POST",
         body: formData
       })
       if (response.ok) {
-        const res = await response.text()
-        const link = document.createElement("a")
-        const blob = new Blob([res], { type: "text/csv" })
-        link.href = URL.createObjectURL(blob)
-        link.download = "anonymized-file"
-        link.click()
-        resetForm()
+        const response_json = await response.json()
+        notification.success({
+          duration: 3,
+          message: "Anonymization",
+          description: response_json.message,
+        })
         return
       }
     }
@@ -101,7 +100,7 @@ const Anonymize = (): JSX.Element => {
     <div className="anonymize">
       <h1>Anonymize data</h1>
       <RoundedFrame>
-        <h2 className="h4">1. Select Configuration</h2>
+        <h2 className="h4">1. Select Uploaded Configuration</h2>
         <Form form={form}>
           <Form.Item name="configuration">
             <Select
@@ -121,7 +120,7 @@ const Anonymize = (): JSX.Element => {
         <Button type="outline" onClick={() => resetForm()} disabled={!file || !configuration}>Cancel</Button>
         <Button onClick={() => {
           anonymizeFile()
-        }} disabled={!file || !configuration}>Anonymize CSV</Button>
+        }} disabled={!file || !configuration} loading="true">Send to anonymize</Button>
       </div>
     </div>
   )

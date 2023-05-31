@@ -58,7 +58,7 @@ const Upload = (): JSX.Element => {
       const delimiter = form.getFieldValue("delimiter")
       try {
         await localForage.setItem(uuid, { metadata: fileMetadata, configurationInfo: { name, created_at: new Date().toLocaleString(), file: fileInfo?.name, uuid, delimiter } })
-        navigate(paths_config.edit, { state: { uuid } })
+        navigate(paths_config.edit, { state: { uuid, type: "local" } })
       } catch (error) {
         notification.error({
           duration: 3,

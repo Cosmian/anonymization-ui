@@ -51,7 +51,7 @@ const Import = (): JSX.Element => {
       const uuid = uuidv4()
       try {
         await localForage.setItem(uuid, { metadata: fileMetadata, configurationInfo: { ...configurationInfo, uuid } })
-        navigate(paths_config.edit, { state: { uuid } })
+        navigate(paths_config.edit, { state: { uuid, type: "local" } })
       } catch (error) {
         notification.error({
           duration: 3,

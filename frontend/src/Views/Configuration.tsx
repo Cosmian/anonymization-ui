@@ -118,15 +118,16 @@ const Configuration = (): JSX.Element => {
     {
       title: "",
       key: "options",
+      width: 100,
       render: (configuration: ConfigurationInfo) => {
         const handleSelect = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
           e.stopPropagation()
-          navigate(paths_config.edit, { state: { uuid: configuration.uuid } })
+          navigate(paths_config.edit, { state: { uuid: configuration.uuid, type: "uploaded" } })
         }
 
         const items = [
           {
-            label: "Delete configuration", key: "delete", danger: true, onClick: () => {
+            label: "Delete uploaded configuration", key: "delete", danger: true, onClick: () => {
               setDeleteConfigModalVisible(true)
               setUploadedConfigToDelete(configuration.uuid)
             }, icon: <IoTrashOutline />
@@ -135,7 +136,7 @@ const Configuration = (): JSX.Element => {
 
         return (
           <div className="icons">
-            <Button type="dark" onClick={(e) => handleSelect(e)}>Edit</Button>
+            <Button type="dark" onClick={(e) => handleSelect(e)}>Details</Button>
             <Dropdown menu={{ items }} placement="bottomRight" trigger={["hover"]}>
               <div className="icon">
                 <OptionButton onClick={() => { }} />
@@ -170,7 +171,7 @@ const Configuration = (): JSX.Element => {
       render: (configuration: ConfigurationInfo) => {
         const handleSelect = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
           e.stopPropagation()
-          navigate(paths_config.edit, { state: { uuid: configuration.uuid } })
+          navigate(paths_config.edit, { state: { uuid: configuration.uuid, type: "local" }})
         }
 
         const handleDownload = (): void => {
