@@ -1,6 +1,6 @@
 import { Tooltip } from "antd"
 import { CosmianLogo, Header, MainLayout, MainNavigation, NavigationItem } from "cosmian_ui"
-import { IoBuildOutline, IoDocumentLockOutline, IoFingerPrintSharp } from "react-icons/io5"
+import { IoBuildOutline, IoCloudUploadOutline, IoDocumentLockOutline, IoFingerPrintSharp } from "react-icons/io5"
 import { Outlet, useLocation, useNavigate } from "react-router-dom"
 import { paths_config } from "../config/paths"
 
@@ -28,12 +28,19 @@ const Layout = (): JSX.Element => {
     type: "item"
   },
   {
-    icon: <IoDocumentLockOutline />,
+    icon: <IoCloudUploadOutline />,
     key: "Anonymize",
     navLink: "/",
-    title: "Anonymization",
+    title: "Anonymize",
     type: "item"
-  }]
+    },
+    {
+      icon: <IoDocumentLockOutline />,
+      key: "Anonymization",
+      navLink: paths_config.anonymization,
+      title: "Anonymization",
+      type: "item"
+    }]
 
   const navigationClick = (key: string): void => {
     const index = navigationElements.findIndex((navItem): boolean => navItem.key === key)

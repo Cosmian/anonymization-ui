@@ -5,7 +5,7 @@ import { Key, useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import EditMethodBox from "../components/EditMethodBox"
 import { paths_config } from "../config/paths"
-import { ConfigurationInfo, MetaData, downloadFile, uploadFile } from "../utils/utils"
+import { ConfigurationInfo, MetaData, uploadConfiguration } from "../utils/utils"
 import "./style.less"
 
 const ellipsisStyle: React.CSSProperties = { maxWidth: 100, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }
@@ -86,13 +86,27 @@ const Edit = (): JSX.Element => {
     },
   }
 
-  const downloadConfiguration = (configurationUuid: string | undefined): void => {
-    downloadFile(configurationUuid)
-    navigate(paths_config.home)
+  const downloadConfiguration = async (): Promise<void> => {
+    const configuration = { configurationInfo, fileMetadata }
+    const fileName = "config-" + configuration.configurationInfo.name
+    const json = JSON.stringify(configuration)
+    const blob = new Blob([json], { type: "application/json" })
+    const href = await URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.href = href
+    link.download = fileName + ".json"
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    notification.success({
+      duration: 3,
+      message: "Download",
+      description: "File successfully downloaded.",
+    })
   }
 
-  const uploadConfiguration = (configurationUuid: string | undefined): void => {
-    uploadFile(configurationUuid)
+  const handleUploadConfiguration = (configurationUuid: string | undefined): void => {
+    uploadConfiguration(configurationUuid)
     setTimeout(() => {
       navigate(paths_config.configuration)
     }, 1000)
@@ -122,8 +136,8 @@ const Edit = (): JSX.Element => {
             <div>Select column(s) and define anonymization method to apply.</div>
           </div>
           <div className="buttons">
-            {fetchType === "local" && <Button type="dark" onClick={() => uploadConfiguration(configurationInfo?.uuid)}>Upload Configuration</Button>}
-            <Button onClick={() => downloadConfiguration(configurationInfo?.uuid)}>Download Configuration</Button>
+            {fetchType === "local" && <Button type="dark" onClick={() => handleUploadConfiguration(configurationInfo?.uuid)}>Upload Configuration</Button>}
+            <Button onClick={() => downloadConfiguration()}>Download Configuration</Button>
           </div>
         </div>
         <RoundedFrame>

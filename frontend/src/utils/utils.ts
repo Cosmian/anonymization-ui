@@ -100,7 +100,7 @@ export const applyMethod = async (plainText: string | number, method: MethodType
 }
 
 
-export const downloadFile = async (uuid: string | undefined): Promise<void> => {
+export const downloadLocalConfiguration = async (uuid: string | undefined): Promise<void> => {
   if (uuid) {
     const configuration: { configurationInfo: ConfigurationInfo, metadata: MetaData[] } | null = await localForage.getItem(uuid)
     if (configuration) {
@@ -129,7 +129,66 @@ export const downloadFile = async (uuid: string | undefined): Promise<void> => {
   })
 }
 
-export const uploadFile = async (uuid: string | undefined): Promise<void> => {
+export const downloadUploadedConfiguration = async (uuid: string | undefined): Promise<void> => {
+  if (uuid) {
+    const response = await fetch(`http://localhost:8000/api/configurations/${uuid}`)
+    if (response.ok) {
+      const response_json = await response.json()
+      const configuration = JSON.parse(response_json.message)
+      const fileName = "config-" + configuration.configurationInfo.name
+      const json = JSON.stringify(configuration)
+      const blob = new Blob([json], { type: "application/json" })
+      const href = await URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = href
+      link.download = fileName + ".json"
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      notification.success({
+        duration: 3,
+        message: "Download",
+        description: "File successfully downloaded.",
+      })
+      return
+    }
+  }
+  notification.error({
+    duration: 3,
+    message: "Download",
+    description: "An error occured.",
+  })
+}
+
+export const downloadAnonymization = async (name: string | undefined): Promise<void> => {
+  if (name) {
+    const response = await fetch(`http://localhost:8000/api/anonymizations/${name}`)
+    if (response.ok) {
+      const response_content = await response.text()
+      const blob = new Blob([response_content], { type: "text/csv" })
+      const href = await URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = href
+      link.download = name
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      notification.success({
+        duration: 3,
+        message: "Download",
+        description: "Aonymized Dataset successfully downloaded.",
+      })
+      return
+    }
+  }
+  notification.error({
+    duration: 3,
+    message: "Download",
+    description: "An error occured.",
+  })
+}
+
+export const uploadConfiguration = async (uuid: string | undefined): Promise<void> => {
   if (uuid) {
     const configuration: { configurationInfo: ConfigurationInfo, metadata: MetaData[] } | null = await localForage.getItem(uuid)
     const response = await fetch("http://localhost:8000/api/configurations", {

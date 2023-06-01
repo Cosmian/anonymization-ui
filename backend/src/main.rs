@@ -1,11 +1,8 @@
 use actix_cors::Cors;
-use actix_web::{middleware::Logger, web::{Path, self}, HttpRequest};
+use actix_web::{middleware::Logger, web::Path, HttpRequest};
 use actix_web::{get, post, delete, App, HttpResponse, HttpServer, Responder};
 use serde::{Serialize};
-use std::fs::File;
-use std::io::Read;
-use reqwest::{Client, Body};
-use tokio_util::codec::{BytesCodec, FramedRead};
+use reqwest::Client;
 
 #[derive(Serialize)]
 pub struct GenericResponse {
@@ -24,11 +21,10 @@ async fn get_configurations() -> impl Responder {
         .build().unwrap();
     let response = client.get("http://127.0.0.1:5000/configurations")
         .send().await.unwrap().text().await.unwrap();
-    let message: &str = &response;
 
     let response_json = &GenericResponse {
         status: "success".to_string(),
-        message: message.to_string(),
+        message: response,
     };
     HttpResponse::Ok().json(response_json)
 }
@@ -44,11 +40,9 @@ async fn get_configuration_by_id(
     let response = client.get(url)
         .send().await.unwrap().text().await.unwrap();
 
-    let message: &str = &response;
-
     let response_json = &GenericResponse {
         status: "success".to_string(),
-        message: message.to_string(),
+        message: response,
     };
     HttpResponse::Ok().json(response_json)
 }
@@ -67,11 +61,9 @@ async fn post_configuration(req_body: String) -> impl Responder {
         .body(req_body)
         .send().await.unwrap().text().await.unwrap();
 
-    let message: &str = &response;
-
     let response_json = &GenericResponse {
         status: "success".to_string(),
-        message: message.to_string(),
+        message: response,
     };
     HttpResponse::Ok().json(response_json)
 }
@@ -87,20 +79,12 @@ async fn delete_configuration(
     let response = client.delete(url)
         .send().await.unwrap().text().await.unwrap();
 
-    let message: &str = &response;
-
     let response_json = &GenericResponse {
         status: "success".to_string(),
-        message: message.to_string(),
+        message: response,
     };
     HttpResponse::Ok().json(response_json)
 }
-
-// fn file_to_body(file: File) -> Body {
-//     let stream = FramedRead::new(file, BytesCodec::new());
-//     let body = Body::wrap_stream(stream);
-//     body
-// }
 
 #[post("/api/{configuration_id}")]
 async fn post_anonymize(req_body: String, request: HttpRequest, configuration_id: Path<(String,)>) -> impl Responder {
@@ -119,6 +103,52 @@ async fn post_anonymize(req_body: String, request: HttpRequest, configuration_id
         message: response,
     };
     HttpResponse::Ok().json(response_json)
+}
+
+#[get("/api/anonymizations")]
+async fn get_anonymizations() -> impl Responder {
+    let client = Client::builder()
+        .build().unwrap();
+    let response = client.get("http://127.0.0.1:5000/anonymizations")
+        .send().await.unwrap().text().await.unwrap();
+
+    let response_json = &GenericResponse {
+        status: "success".to_string(),
+        message: response,
+    };
+    HttpResponse::Ok().json(response_json)
+}
+
+#[delete("/api/anonymizations/{anonymization_name}")]
+async fn delete_anonymization(
+    anonymization_name: Path<(String,)>,
+) -> impl Responder {
+    let anonymization_name = anonymization_name.to_owned().0;
+    let client = Client::builder()
+        .build().unwrap();
+    let url = format!("http://127.0.0.1:5000/anonymizations/{}", anonymization_name);
+    let response = client.delete(url)
+        .send().await.unwrap().text().await.unwrap();
+
+    let response_json = &GenericResponse {
+        status: "success".to_string(),
+        message: response,
+    };
+    HttpResponse::Ok().json(response_json)
+}
+
+#[get("/api/anonymizations/{anonymization_name}")]
+async fn get_anonymization_by_name(
+    anonymization_name: Path<(String,)>,
+) -> impl Responder {
+    let anonymization_name = anonymization_name.to_owned().0;
+    let client = Client::builder()
+        .build().unwrap();
+    let url = format!("http://127.0.0.1:5000/anonymizations/{}", anonymization_name);
+    let response = client.get(url)
+        .send().await.unwrap().text().await.unwrap();
+
+    HttpResponse::Ok().body(response)
 }
 
 #[actix_web::main]
@@ -141,6 +171,9 @@ async fn main() -> std::io::Result<()> {
             .service(post_configuration)
             .service(delete_configuration)
             .service(post_anonymize)
+            .service(get_anonymizations)
+            .service(delete_anonymization)
+            .service(get_anonymization_by_name)
             .wrap(cors)
             .wrap(Logger::default())
     })

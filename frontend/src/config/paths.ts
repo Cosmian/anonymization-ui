@@ -4,6 +4,7 @@ export const paths_config = {
   edit: "/edit",
   import: "/import",
   anonymize: "/anonymize",
+  anonymization: "/anonymization",
   configuration: "/configuration",
   notFound: "/404",
 }

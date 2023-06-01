@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from "uuid"
 import { paths_config } from "../config/paths"
 
 import { DeleteConfigModal } from "../components/DeleteConfigModal"
-import { ConfigurationInfo, MetaData, downloadFile } from "../utils/utils"
+import { ConfigurationInfo, MetaData, downloadLocalConfiguration, downloadUploadedConfiguration } from "../utils/utils"
 import "./style.less"
 
 const Configuration = (): JSX.Element => {
@@ -21,7 +21,6 @@ const Configuration = (): JSX.Element => {
 
   useEffect(() => {
     const fetchLocalConfigurations = async (): Promise<void> => {
-
       const elements = await localForage.keys()
       const data = await Promise.all(
         elements.map(async (uuid): Promise<ConfigurationInfo | undefined> => {
@@ -46,7 +45,6 @@ const Configuration = (): JSX.Element => {
           return [...acc, configuration]
         }, [])
         setUploadedConfigList(configurations)
-
       }
     }
     try {
@@ -96,8 +94,6 @@ const Configuration = (): JSX.Element => {
     }
   }
 
-
-
   const uploadedColumns = [
     {
       title: "Name",
@@ -125,7 +121,12 @@ const Configuration = (): JSX.Element => {
           navigate(paths_config.edit, { state: { uuid: configuration.uuid, type: "uploaded" } })
         }
 
+        const handleDownload = (): void => {
+          downloadUploadedConfiguration(configuration.uuid)
+        }
+
         const items = [
+          { label: "Download Configuration", key: "download", onClick: handleDownload },
           {
             label: "Delete uploaded configuration", key: "delete", danger: true, onClick: () => {
               setDeleteConfigModalVisible(true)
@@ -175,7 +176,7 @@ const Configuration = (): JSX.Element => {
         }
 
         const handleDownload = (): void => {
-          downloadFile(configuration.uuid)
+          downloadLocalConfiguration(configuration.uuid)
         }
 
         const handleCopy = async (): Promise<void> => {
