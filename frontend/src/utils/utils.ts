@@ -11,6 +11,8 @@ export type ConfigurationInfo = { uuid: string, name: string, created_at: string
 
 export type FileInfo = { last_modified: number, name: string, size: number, type: string }
 
+export type AnonymizationType = { key: number, name: string, created_at: number }
+
 export enum DataType {
   Integer = "Integer",
   Text = "Text",
@@ -99,26 +101,30 @@ export const applyMethod = async (plainText: string | number, method: MethodType
   }
 }
 
+export const downloadFile = async (content: any, type: { type: string }, fileName: string) => {
+  const blob = new Blob([content], type)
+  const href = await URL.createObjectURL(blob)
+  const link = document.createElement("a")
+  link.href = href
+  link.download = fileName
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  notification.success({
+    duration: 3,
+    message: "Download",
+    description: "File successfully downloaded.",
+  })
+}
+
 
 export const downloadLocalConfiguration = async (uuid: string | undefined): Promise<void> => {
   if (uuid) {
     const configuration: { configurationInfo: ConfigurationInfo, metadata: MetaData[] } | null = await localForage.getItem(uuid)
     if (configuration) {
-      const fileName = "config-" + configuration.configurationInfo.name
-      const json = JSON.stringify(configuration)
-      const blob = new Blob([json], { type: "application/json" })
-      const href = await URL.createObjectURL(blob)
-      const link = document.createElement("a")
-      link.href = href
-      link.download = fileName + ".json"
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      notification.success({
-        duration: 3,
-        message: "Download",
-        description: "File successfully downloaded.",
-      })
+      const fileName = "config-" + configuration.configurationInfo.name + ".json"
+      const content = JSON.stringify(configuration)
+      downloadFile(content, { type: "application/json"}, fileName)
       return
     }
   }
@@ -133,23 +139,10 @@ export const downloadUploadedConfiguration = async (uuid: string | undefined): P
   if (uuid) {
     const response = await fetch(`http://localhost:8000/api/configurations/${uuid}`)
     if (response.ok) {
-      const response_json = await response.json()
-      const configuration = JSON.parse(response_json.message)
-      const fileName = "config-" + configuration.configurationInfo.name
-      const json = JSON.stringify(configuration)
-      const blob = new Blob([json], { type: "application/json" })
-      const href = await URL.createObjectURL(blob)
-      const link = document.createElement("a")
-      link.href = href
-      link.download = fileName + ".json"
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      notification.success({
-        duration: 3,
-        message: "Download",
-        description: "File successfully downloaded.",
-      })
+      const content = await response.json()
+      const configuration = JSON.parse(content.message)
+      const fileName = "config-" + configuration.configurationInfo.name + ".json"
+      downloadFile(content.message, { type: "application/json" }, fileName)
       return
     }
   }
@@ -164,20 +157,8 @@ export const downloadAnonymization = async (name: string | undefined): Promise<v
   if (name) {
     const response = await fetch(`http://localhost:8000/api/anonymizations/${name}`)
     if (response.ok) {
-      const response_content = await response.text()
-      const blob = new Blob([response_content], { type: "text/csv" })
-      const href = await URL.createObjectURL(blob)
-      const link = document.createElement("a")
-      link.href = href
-      link.download = name
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      notification.success({
-        duration: 3,
-        message: "Download",
-        description: "Aonymized Dataset successfully downloaded.",
-      })
+      const content = await response.text()
+      downloadFile(content, { type: "text/csv" }, name)
       return
     }
   }
@@ -191,9 +172,12 @@ export const downloadAnonymization = async (name: string | undefined): Promise<v
 export const uploadConfiguration = async (uuid: string | undefined): Promise<void> => {
   if (uuid) {
     const configuration: { configurationInfo: ConfigurationInfo, metadata: MetaData[] } | null = await localForage.getItem(uuid)
+    const jsonFile = new Blob([JSON.stringify(configuration)], { type: "application/json" })
+    const formData = new FormData()
+    formData.append("file", jsonFile, `${configuration.configurationInfo.name}.json`)
     const response = await fetch("http://localhost:8000/api/configurations", {
       method: "POST",
-      body: JSON.stringify(configuration)
+      body: formData
     })
     if (response.ok) {
       notification.success({

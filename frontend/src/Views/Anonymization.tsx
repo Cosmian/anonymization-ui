@@ -2,7 +2,7 @@ import { Table, notification } from "antd"
 import { Button, RoundedFrame } from "cosmian_ui"
 import { useEffect, useState } from "react"
 import { DeleteAnonymizationModal } from "../components/DeleteAnonymizationModal"
-import { downloadAnonymization } from "../utils/utils"
+import { AnonymizationType, downloadAnonymization } from "../utils/utils"
 import "./style.less"
 
 
@@ -47,7 +47,7 @@ const Anonymization = (): JSX.Element => {
       title: "Creation date",
       dataIndex: "created_at",
       key: "created_at",
-      render: (timestamp: any) => {
+      render: (timestamp: number) => {
         return new Date(timestamp * 1000).toLocaleString()
       }
     },
@@ -63,7 +63,7 @@ const Anonymization = (): JSX.Element => {
       title: "",
       key: "options",
       width: 100,
-      render: (data: any) => {
+      render: (data: AnonymizationType) => {
         const handleDownload = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
           e.stopPropagation()
           downloadAnonymization(data.name)

@@ -48,16 +48,18 @@ async fn get_configuration_by_id(
 }
 
 #[post("/api/configurations")]
-async fn post_configuration(req_body: String) -> impl Responder {
+async fn post_configuration(req_body: String, request: HttpRequest) -> impl Responder {
     // let mut cert_file = File::open("/Users/celia-std/Documents/mse-demo/backend-deno/yaos_millionaires/cert.pem").unwrap();
     // let mut cert_buffer = Vec::new();
     // cert_file.read_to_end(&mut cert_buffer).unwrap();
+    let content_type = request.headers().get("content-type").unwrap().to_str().unwrap().to_string();
     let client = Client::builder()
         // .danger_accept_invalid_certs(true)
         // .add_root_certificate(reqwest::Certificate::from_pem(&cert_buffer).unwrap())
         .build().unwrap();
-    let response = client.post("http://127.0.0.1:5000/configurations/body")
-        .header("Content-Type", "application/json")
+    let response = client.post("http://127.0.0.1:5000/configurations")
+        // .header("Content-Type", "application/json")
+        .header("Content-Type", content_type)
         .body(req_body)
         .send().await.unwrap().text().await.unwrap();
 

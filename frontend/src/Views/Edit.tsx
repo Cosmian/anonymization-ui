@@ -5,7 +5,7 @@ import { Key, useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import EditMethodBox from "../components/EditMethodBox"
 import { paths_config } from "../config/paths"
-import { ConfigurationInfo, MetaData, uploadConfiguration } from "../utils/utils"
+import { ConfigurationInfo, MetaData, downloadFile, uploadConfiguration } from "../utils/utils"
 import "./style.less"
 
 const ellipsisStyle: React.CSSProperties = { maxWidth: 100, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }
@@ -86,23 +86,11 @@ const Edit = (): JSX.Element => {
     },
   }
 
-  const downloadConfiguration = async (): Promise<void> => {
+  const handleDownloadConfiguration = async (): Promise<void> => {
     const configuration = { configurationInfo, fileMetadata }
     const fileName = "config-" + configuration.configurationInfo.name
-    const json = JSON.stringify(configuration)
-    const blob = new Blob([json], { type: "application/json" })
-    const href = await URL.createObjectURL(blob)
-    const link = document.createElement("a")
-    link.href = href
-    link.download = fileName + ".json"
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    notification.success({
-      duration: 3,
-      message: "Download",
-      description: "File successfully downloaded.",
-    })
+    const content = JSON.stringify(configuration)
+    downloadFile(content, { type: "application/json" }, fileName)
   }
 
   const handleUploadConfiguration = (configurationUuid: string | undefined): void => {
@@ -137,7 +125,7 @@ const Edit = (): JSX.Element => {
           </div>
           <div className="buttons">
             {fetchType === "local" && <Button type="dark" onClick={() => handleUploadConfiguration(configurationInfo?.uuid)}>Upload Configuration</Button>}
-            <Button onClick={() => downloadConfiguration()}>Download Configuration</Button>
+            <Button onClick={() => handleDownloadConfiguration()}>Download Configuration</Button>
           </div>
         </div>
         <RoundedFrame>
