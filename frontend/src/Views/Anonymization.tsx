@@ -37,6 +37,11 @@ const Anonymization = (): JSX.Element => {
       title: "Name",
       dataIndex: "name",
       key: "name",
+      render: (name: string) => {
+        const index = name.indexOf("_")
+        const parsedName = name.substring(index + 1)
+        return parsedName
+      }
     },
     {
       title: "Creation date",
@@ -46,7 +51,14 @@ const Anonymization = (): JSX.Element => {
         return new Date(timestamp * 1000).toLocaleString()
       }
     },
-
+    {
+      title: "Configuration hash",
+      dataIndex: "name",
+      key: "hash",
+      render: (name: string) => {
+        return name.split("_", 1)
+      }
+    },
     {
       title: "",
       key: "options",

@@ -112,7 +112,9 @@ const Configuration = (): JSX.Element => {
       title: "Hash",
       dataIndex: "hash",
       key: "hash",
-      width: 50,
+      render: (hash: string) => {
+        return hash.substring(0,9)
+      }
     },
     {
       title: "",
