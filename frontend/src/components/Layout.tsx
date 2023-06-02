@@ -30,7 +30,7 @@ const Layout = (): JSX.Element => {
   {
     icon: <IoCloudUploadOutline />,
     key: "Anonymize",
-    navLink: "/",
+    navLink: paths_config.anonymize,
     title: "Anonymize",
     type: "item"
     },

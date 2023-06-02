@@ -75,7 +75,7 @@ const Anonymize = (): JSX.Element => {
       const formData = new FormData()
       formData.append("file", file)
       const configurationId = form.getFieldValue("configuration")
-      const response = await fetch(`http://127.0.0.1:8000/api/${configurationId}`, {
+      const response = await fetch(`http://127.0.0.1:8000/api/anonymize/${configurationId}`, {
         method: "POST",
         body: formData
       })
@@ -120,7 +120,7 @@ const Anonymize = (): JSX.Element => {
         <Button type="outline" onClick={() => resetForm()} disabled={!file || !configuration}>Cancel</Button>
         <Button onClick={() => {
           anonymizeFile()
-        }} disabled={!file || !configuration} loading="true">Send to anonymize</Button>
+        }} disabled={!file || !configuration}>Send to anonymize</Button>
       </div>
     </div>
   )

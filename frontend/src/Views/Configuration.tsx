@@ -104,6 +104,9 @@ const Configuration = (): JSX.Element => {
       title: "Creation date",
       dataIndex: "created_at",
       key: "created_at",
+      render: (timestamp: any) => {
+        return new Date(timestamp * 1000).toLocaleString()
+      }
     },
     {
       title: "Hash",

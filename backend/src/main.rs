@@ -86,10 +86,10 @@ async fn delete_configuration(
     HttpResponse::Ok().json(response_json)
 }
 
-#[post("/api/{configuration_id}")]
+#[post("/api/anonymize/{configuration_id}")]
 async fn post_anonymize(req_body: String, request: HttpRequest, configuration_id: Path<(String,)>) -> impl Responder {
     let configuration_id = configuration_id.to_owned().0;
-    let url = format!("http://127.0.0.1:5000/{}", configuration_id);
+    let url = format!("http://127.0.0.1:5000/anonymize/{}", configuration_id);
     let content_type = request.headers().get("content-type").unwrap().to_str().unwrap().to_string();
     let client = Client::builder()
         .build().unwrap();

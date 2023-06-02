@@ -42,8 +42,8 @@ const Anonymization = (): JSX.Element => {
       title: "Creation date",
       dataIndex: "created_at",
       key: "created_at",
-      render: (data: any) => {
-        return new Date(data).toLocaleString()
+      render: (timestamp: any) => {
+        return new Date(timestamp * 1000).toLocaleString()
       }
     },
 

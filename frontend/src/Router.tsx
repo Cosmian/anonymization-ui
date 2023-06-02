@@ -13,7 +13,8 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route path="/" element={<Layout />}>
-        <Route index element={<Anonymize />} />
+        <Route index element={<Anonymization />} />
+        <Route path={paths_config.anonymize} element={<Anonymize />} />
         <Route path={paths_config.configuration} element={<Configuration />} />
         <Route path={paths_config.upload} element={<Upload />} />
         <Route path={paths_config.edit} element={<Edit />} />

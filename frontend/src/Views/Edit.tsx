@@ -133,7 +133,7 @@ const Edit = (): JSX.Element => {
         <div className="head">
           <div className="head-titles">
             <h1>{configurationInfo?.name} data's columns</h1>
-            <div>Select column(s) and define anonymization method to apply.</div>
+            {fetchType === "local" && <div>Select column(s) and define anonymization method to apply.</div>}
           </div>
           <div className="buttons">
             {fetchType === "local" && <Button type="dark" onClick={() => handleUploadConfiguration(configurationInfo?.uuid)}>Upload Configuration</Button>}
@@ -146,7 +146,7 @@ const Edit = (): JSX.Element => {
             dataSource={fileMetadata}
             columns={columns}
             pagination={false}
-            rowSelection={rowSelection}
+            rowSelection={fetchType === "local" ? rowSelection : null}
             tableLayout="auto"
             scroll={{ x: 400 }}
           />
