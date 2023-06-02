@@ -1,3 +1,4 @@
+import { CloudUploadOutlined, DownloadOutlined } from "@ant-design/icons"
 import { Table, Tag, notification } from "antd"
 import { BackArrow, Button, RoundedFrame } from "cosmian_ui"
 import localForage from "localforage"
@@ -116,19 +117,15 @@ const Edit = (): JSX.Element => {
 
   return (
     <div className="edit-view">
-      <div className={fetchType === "local" ?  "edit-main with-box" : "edit-main"}>
+      <div className={fetchType === "local" ? "edit-main with-box" : "edit-main"}>
         <BackArrow onClick={() => navigate(paths_config.configuration)} text="Back to Configuration list" />
         <div className="head">
           <div className="head-titles">
             <h1>{configurationInfo?.name} data's columns</h1>
             {fetchType === "local" && <div>Select column(s) and define anonymization method to apply.</div>}
           </div>
-          <div className="buttons">
-            {fetchType === "local" && <Button type="dark" onClick={() => handleUploadConfiguration(configurationInfo?.uuid)}>Upload Configuration</Button>}
-            <Button onClick={() => handleDownloadConfiguration()}>Download Configuration</Button>
-          </div>
         </div>
-        <RoundedFrame>
+        <RoundedFrame className="edit-table">
           <Table
             rowKey={"key"}
             dataSource={fileMetadata}
@@ -139,13 +136,25 @@ const Edit = (): JSX.Element => {
             scroll={{ x: 400 }}
           />
         </RoundedFrame>
+        <div className="buttons">
+          <Button onClick={() => downloadConfiguration()} type="dark" icon={<DownloadOutlined />}>
+            Download Configuration
+          </Button>
+          {fetchType === "local" && (
+            <Button onClick={() => handleUploadConfiguration(configurationInfo?.uuid)} icon={<CloudUploadOutlined />}>
+              Upload Configuration
+            </Button>
+          )}
+        </div>
       </div>
-      {fetchType === "local" && <EditMethodBox
-        selectedRowKeys={selectedRowKeys}
-        fileMetadata={fileMetadata}
-        saveConfiguration={saveConfiguration}
-        setSelectedRowKeys={setSelectedRowKeys}
-      />}
+      {fetchType === "local" && (
+        <EditMethodBox
+          selectedRowKeys={selectedRowKeys}
+          fileMetadata={fileMetadata}
+          saveConfiguration={saveConfiguration}
+          setSelectedRowKeys={setSelectedRowKeys}
+        />
+      )}
     </div>
   )
 }

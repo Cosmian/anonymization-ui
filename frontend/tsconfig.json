@@ -16,6 +16,6 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["frontent/src"],
+  "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

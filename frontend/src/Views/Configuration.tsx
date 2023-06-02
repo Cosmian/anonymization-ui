@@ -1,3 +1,4 @@
+import { CloudServerOutlined, DesktopOutlined } from "@ant-design/icons"
 import { Dropdown, Table, notification } from "antd"
 import { Button, OptionButton, RoundedFrame } from "cosmian_ui"
 import localForage from "localforage"
@@ -5,9 +6,8 @@ import { useEffect, useState } from "react"
 import { IoTrashOutline } from "react-icons/io5"
 import { useNavigate } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
-import { paths_config } from "../config/paths"
-
 import { DeleteConfigModal } from "../components/DeleteConfigModal"
+import { paths_config } from "../config/paths"
 import { ConfigurationInfo, MetaData, downloadLocalConfiguration, downloadUploadedConfiguration } from "../utils/utils"
 import "./style.less"
 
@@ -41,7 +41,7 @@ const Configuration = (): JSX.Element => {
       if (data) {
         const keys = Object.keys(data)
         const configurations = keys.reduce((acc, key) => {
-          const configuration = { uuid: key, name: data[key].name, created_at: data[key].created_at, hash: data[key].hash}
+          const configuration = { uuid: key, name: data[key].name, created_at: data[key].created_at, hash: data[key].hash }
           return [...acc, configuration]
         }, [])
         setUploadedConfigList(configurations)
@@ -54,7 +54,7 @@ const Configuration = (): JSX.Element => {
       notification.error({
         duration: 3,
         message: "Error fetching configuration list",
-        description: (error as Error).message
+        description: (error as Error).message,
       })
       throw new Error((error as Error).message)
     }
@@ -63,7 +63,9 @@ const Configuration = (): JSX.Element => {
   const handleDelete = async (): Promise<void> => {
     if (localConfigToDelete) {
       if (localConfigList) {
-        const updatedDataSource = localConfigList.filter(data => data.uuid!== localConfigToDelete).sort((a: ConfigurationInfo, b: ConfigurationInfo) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+        const updatedDataSource = localConfigList
+          .filter((data) => data.uuid !== localConfigToDelete)
+          .sort((a: ConfigurationInfo, b: ConfigurationInfo) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
         setLocalConfigList(updatedDataSource)
       }
       await localForage.removeItem(localConfigToDelete)
@@ -106,15 +108,15 @@ const Configuration = (): JSX.Element => {
       key: "created_at",
       render: (timestamp: number) => {
         return new Date(timestamp * 1000).toLocaleString()
-      }
+      },
     },
     {
       title: "Hash",
       dataIndex: "hash",
       key: "hash",
       render: (hash: string) => {
-        return hash.substring(0,9)
-      }
+        return hash.substring(0, 9)
+      },
     },
     {
       title: "",
@@ -133,25 +135,31 @@ const Configuration = (): JSX.Element => {
         const items = [
           { label: "Download Configuration", key: "download", onClick: handleDownload },
           {
-            label: "Delete uploaded configuration", key: "delete", danger: true, onClick: () => {
+            label: "Delete uploaded configuration",
+            key: "delete",
+            danger: true,
+            onClick: () => {
               setDeleteConfigModalVisible(true)
               setUploadedConfigToDelete(configuration.uuid)
-            }, icon: <IoTrashOutline />
+            },
+            icon: <IoTrashOutline />,
           },
         ]
 
         return (
           <div className="icons">
-            <Button type="dark" onClick={(e) => handleSelect(e)}>Details</Button>
+            <Button type="dark" onClick={(e) => handleSelect(e)}>
+              Details
+            </Button>
             <Dropdown menu={{ items }} placement="bottomRight" trigger={["hover"]}>
               <div className="icon">
-                <OptionButton onClick={() => { }} />
+                <OptionButton onClick={() => {}} />
               </div>
             </Dropdown>
           </div>
         )
       },
-    }
+    },
   ]
 
   const localColumns = [
@@ -177,7 +185,7 @@ const Configuration = (): JSX.Element => {
       render: (configuration: ConfigurationInfo) => {
         const handleSelect = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
           e.stopPropagation()
-          navigate(paths_config.edit, { state: { uuid: configuration.uuid, type: "local" }})
+          navigate(paths_config.edit, { state: { uuid: configuration.uuid, type: "local" } })
         }
 
         const handleDownload = (): void => {
@@ -185,7 +193,7 @@ const Configuration = (): JSX.Element => {
         }
 
         const handleCopy = async (): Promise<void> => {
-          const configurationInitial: { configurationInfo: ConfigurationInfo, metadata: MetaData[] } | null = await localForage.getItem(configuration.uuid)
+          const configurationInitial: { configurationInfo: ConfigurationInfo; metadata: MetaData[] } | null = await localForage.getItem(configuration.uuid)
           if (configurationInitial && localConfigList) {
             const uuid = uuidv4()
             const copyName = configuration.name + "_copy_" + uuid.slice(0, 4)
@@ -204,7 +212,7 @@ const Configuration = (): JSX.Element => {
               notification.error({
                 duration: 3,
                 message: "Error copying Configuration",
-                description: (error as Error).message
+                description: (error as Error).message,
               })
               throw new Error((error as Error).message)
             }
@@ -221,7 +229,8 @@ const Configuration = (): JSX.Element => {
             onClick: () => {
               setDeleteConfigModalVisible(true)
               setLocalConfigToDelete(configuration.uuid)
-            }, icon: <IoTrashOutline />
+            },
+            icon: <IoTrashOutline />,
           },
         ]
 
@@ -248,37 +257,37 @@ const Configuration = (): JSX.Element => {
       <div className="buttons">
         <Button
           type="outline"
-          onClick={() => {navigate(paths_config.import)}}>
+          onClick={() => {
+            navigate(paths_config.import)
+          }}
+        >
           Import Configuration
         </Button>
         <Button
-          onClick={() => {navigate(paths_config.upload)}}>
+          onClick={() => {
+            navigate(paths_config.upload)
+          }}
+        >
           Create Configuration
         </Button>
       </div>
       <RoundedFrame>
-        <p className="h4">List of uploaded Configuration</p>
-        <Table
-          rowKey={"uuid"}
-          dataSource={uploadedConfigList}
-          columns={uploadedColumns}
-          pagination={false}
-        />
+        <h2 className="h4">
+          <CloudServerOutlined style={{ marginRight: ".5em" }} />
+          Uploaded Configuration
+        </h2>
+        <p>List of configurations on your Microservice Encryption serveur. You can read, download or delete these configurations.</p>
+        <Table rowKey={"uuid"} dataSource={uploadedConfigList} columns={uploadedColumns} pagination={false} />
       </RoundedFrame>
       <RoundedFrame>
-        <p className="h4">List of local Configuration</p>
-        <Table
-          rowKey={"uuid"}
-          dataSource={localConfigList}
-          columns={localColumns}
-          pagination={false}
-        />
+        <h2 className="h4">
+          <DesktopOutlined style={{ marginRight: ".5em" }} />
+          Local Configuration
+        </h2>
+        <p>List of local configurations, only available on your browser. You can edit, duplicate and delete these configurations.</p>
+        <Table rowKey={"uuid"} dataSource={localConfigList} columns={localColumns} pagination={false} />
       </RoundedFrame>
-      <DeleteConfigModal
-        visible={deleteConfigModalVisible}
-        onCancel={() => setDeleteConfigModalVisible(false)}
-        onDelete={() => handleDelete()}
-      />
+      <DeleteConfigModal visible={deleteConfigModalVisible} onCancel={() => setDeleteConfigModalVisible(false)} onDelete={() => handleDelete()} />
     </div>
   )
 }
