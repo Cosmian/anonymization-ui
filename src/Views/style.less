@@ -1,6 +1,7 @@
 @import "../../node_modules/cosmian_ui/dist/less/variables.less";
 
-.anonymization, .create {
+.anonymization,
+.create {
   .buttons {
     display: flex;
     justify-content: flex-end;
@@ -46,22 +47,19 @@
     width: calc(100% - 378px);
     .head {
       display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      .head-titles {
-        display: flex;
-        flex-direction: column;
-        margin-bottom: 10px;
-      }
-      button {
-        height: 32px;
-      }
+      flex-direction: column;
+      margin-bottom: 2em;
+      .responsive(@xl, {
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: space-between;
+      });
     }
   }
 }
 
 .edit-box {
-  border-left: 1px solid #d4d4d8;;
+  border-left: 1px solid #d4d4d8;
   position: fixed;
   display: flex;
   flex-direction: column;
@@ -84,7 +82,7 @@
     margin: 0px 0px 10px 0px;
     flex-grow: 1;
     label {
-      font-size: .875rem;
+      font-size: 0.875rem;
     }
   }
   .box {
@@ -112,7 +110,8 @@
   .ant-form-item-row .ant-input-number-in-form-item {
     width: 100%;
   }
-  .input, .ant-input {
+  .input,
+  .ant-input {
     border: 1px solid #d9d9d9;
     border-radius: 2px;
     font-weight: 400;
@@ -123,11 +122,11 @@
     overflow: scroll;
   }
   .input::-webkit-scrollbar {
-  display: none;
+    display: none;
   }
   .input {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
   }
   button {
     margin: 5px;
@@ -203,7 +202,7 @@
   font-weight: 600;
   line-height: 1.3em;
   margin-top: 0.1em;
-  margin-bottom: .3em;
+  margin-bottom: 0.3em;
 }
 .info-box {
   display: flex;

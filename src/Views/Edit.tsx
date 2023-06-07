@@ -1,3 +1,4 @@
+import { DownloadOutlined } from "@ant-design/icons"
 import { Table, Tag, notification } from "antd"
 import { BackArrow, Button, RoundedFrame } from "cosmian_ui"
 import localForage from "localforage"
@@ -94,6 +95,8 @@ const Edit = (): JSX.Element => {
     }
   }
 
+  console.log(rowSelection)
+
   return (
     <div className="edit-view">
       <div className="edit-main">
@@ -101,9 +104,11 @@ const Edit = (): JSX.Element => {
         <div className="head">
           <div className="head-titles">
             <h1>{configurationInfo?.name} anonymization columns</h1>
-            <div>Select column(s) and define method to apply.</div>
+            <p>Select column(s) and define method to apply.</p>
           </div>
-          <Button onClick={() => downloadConfiguration(configurationInfo?.uuid)}>Download configuration</Button>
+          <Button onClick={() => downloadConfiguration(configurationInfo?.uuid)} icon={<DownloadOutlined />}>
+            Download configuration
+          </Button>
         </div>
         <RoundedFrame>
           <Table
