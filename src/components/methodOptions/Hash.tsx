@@ -5,11 +5,11 @@ import { Button } from "cosmian_ui"
 import { v4 as uuidv4 } from "uuid"
 
 interface HashOptionsProps {
-  form: FormInstance;
+  form: FormInstance
 }
 
 interface HashShaOptionsProps {
-  form: FormInstance;
+  form: FormInstance
   handleSaltChange: () => void
 }
 
@@ -27,9 +27,7 @@ export const HashOptions: React.FC<HashOptionsProps> = ({ form }) => {
 
   return (
     <>
-      <Form.Item name={["methodOptions", "hashType"]} label="Type"
-        rules={[{ required: true, message: "Please select a type" }]}
-      >
+      <Form.Item name={["methodOptions", "hashType"]} label="Type" rules={[{ required: true, message: "Please select a type" }]}>
         <Select
           options={[
             { value: "SHA2", label: "SHA 2" },
@@ -39,7 +37,7 @@ export const HashOptions: React.FC<HashOptionsProps> = ({ form }) => {
         />
       </Form.Item>
       {(hashType === "SHA2" || hashType === "SHA3") && <HashShaOptions form={form} handleSaltChange={handleSaltChange} />}
-      {(hashType === "Argon2") && <HashArgonOptions handleSaltChange={handleSaltChange} />}
+      {hashType === "Argon2" && <HashArgonOptions handleSaltChange={handleSaltChange} />}
     </>
   )
 }
@@ -58,11 +56,13 @@ const HashShaOptions: React.FC<HashShaOptionsProps> = ({ form, handleSaltChange 
   return (
     <>
       <Form.Item valuePropName="checked" style={{ marginBottom: 0 }}>
-        <Checkbox onChange={(event) => handleSaltCheck(event)} checked={salt !== undefined}>Add salt</Checkbox>
+        <Checkbox onChange={(event) => handleSaltCheck(event)} checked={salt !== undefined}>
+          Add salt
+        </Checkbox>
       </Form.Item>
       <div className="line">
         <Form.Item name={["methodOptions", "saltValue"]}>
-          <Input disabled={!salt}/>
+          <Input disabled={!salt} />
         </Form.Item>
         <Button type="primary" onClick={() => handleSaltChange()} disabled={!salt} className="button">
           <ReloadOutlined />
@@ -76,14 +76,12 @@ const HashArgonOptions: React.FC<HashArgonOptionsProps> = ({ handleSaltChange })
   return (
     <>
       <Form.Item initialValue={true} style={{ marginBottom: 0 }}>
-        <Checkbox checked disabled>Add salt</Checkbox>
+        <Checkbox checked disabled>
+          Add salt
+        </Checkbox>
       </Form.Item>
       <div className="line">
-        <Form.Item
-          name={["methodOptions", "saltValue"]}
-          initialValue={uuidv4()}
-          rules={[{ required: true, message: "Salt is mandatory" }]}
-        >
+        <Form.Item name={["methodOptions", "saltValue"]} initialValue={uuidv4()} rules={[{ required: true, message: "Salt is mandatory" }]}>
           <Input />
         </Form.Item>
         <Button type="primary" onClick={() => handleSaltChange()} className="button">

@@ -124,89 +124,157 @@ const anonymization = await Anonymization()
 const key = crypto.getRandomValues(new Uint8Array(32))
 const tweak = crypto.getRandomValues(new Uint8Array(1024))
 
-export const applyMethod = async (plainText: string | number, method: MethodType, methodOptions: any): Promise<any> => {
+export const applyMethod = async (clearInput: string | number, method: MethodType, methodOptions: any): Promise<any> => {
+  if (!methodOptions) return undefined
   switch (method) {
     case "FpeString":
     case "FpeFloat":
     case "FpeInteger": {
-      let result: string | number
-      try {
-        const res = await FPE.encrypt(key, tweak, plainText, methodOptions)
-        result = typeof res === "bigint" ? Number(res) : res
-      } catch (e: any) {
-        result = "Error - " + e.match(/\(([^)]+)\)/)[1]
+      if (!methodOptions) return
+      const convertedInput = method === "FpeString" ? clearInput.toString() : Number(clearInput)
+      const options = {
+        alphabet: methodOptions.alphabet,
+        additionalCharacters: methodOptions.extendWith,
       }
-      return result
+      try {
+        const res = await FPE.encrypt(key, tweak, convertedInput, options)
+        const result = typeof res === "bigint" ? Number(res) : res
+        return result
+      } catch (error: any) {
+        console.error(error)
+        return "Error - " + error.match(/\(([^)]+)\)/)[1]
+      }
     }
     case "Hash": {
-      const hasher = new anonymization.Hasher(methodOptions.hashType, plainText.toString())
-      const digest = hasher.apply(plainText.toString())
-      return digest
+      if (!methodOptions.hashType) return
+      try {
+        const hasher = new anonymization.Hasher(methodOptions.hashType, clearInput.toString())
+        const digest = hasher.apply(clearInput.toString())
+        return digest
+      } catch (error: any) {
+        console.error(error)
+        return "Error - " + error.match(/\(([^)]+)\)/)[1]
+      }
     }
     case "MaskWords": {
-      const wordMasker = new anonymization.WordMasker(methodOptions.wordsList)
-      const safeStr = wordMasker.apply(plainText.toString())
-      return safeStr
+      if (methodOptions.wordsList == null) return undefined
+      try {
+        const wordMasker = new anonymization.WordMasker(methodOptions.wordsList)
+        const safeStr = wordMasker.apply(clearInput.toString())
+        return safeStr
+      } catch (error: any) {
+        console.error(error)
+        return "Error - " + error.match(/\(([^)]+)\)/)[1]
+      }
     }
     case "TokenizeWords": {
-      const wordTokenizer = new anonymization.WordTokenizer(methodOptions.wordsList)
-      const safeStr = wordTokenizer.apply(plainText.toString())
-      return safeStr
+      if (methodOptions.wordsList == null) return
+      try {
+        const wordTokenizer = new anonymization.WordTokenizer(methodOptions.wordsList)
+        const safeStr = wordTokenizer.apply(clearInput.toString())
+        return safeStr
+      } catch (error: any) {
+        console.error(error)
+        return "Error - " + error.match(/\(([^)]+)\)/)[1]
+      }
     }
     case "Regex": {
-      const patternMatcher = new anonymization.WordPatternMasker(methodOptions.pattern, methodOptions.replace)
-      const matchedStr = patternMatcher.apply(plainText.toString())
-      return matchedStr
+      if (!methodOptions.pattern || !methodOptions.replace) return
+      try {
+        const patternMatcher = new anonymization.WordPatternMasker(methodOptions.pattern, methodOptions.replace)
+        const matchedStr = patternMatcher.apply(clearInput.toString())
+        return matchedStr
+      } catch (error: any) {
+        console.error(error)
+        return "Error - " + error.match(/\(([^)]+)\)/)[1]
+      }
     }
     case "AggregationInteger":
     case "AggregationFloat": {
-      const intAggregator = new anonymization.NumberAggregator(methodOptions.powerOfTen)
-      const res = intAggregator.apply(Number(plainText))
-      return res
+      if (!methodOptions.powerOfTen) return
+      try {
+        const intAggregator = new anonymization.NumberAggregator(methodOptions.powerOfTen)
+        const res = intAggregator.apply(Number(clearInput))
+        return res
+      } catch (error: any) {
+        console.error(error)
+        return "Error - " + error.match(/\(([^)]+)\)/)[1]
+      }
     }
     case "AggregationDate": {
-      // Changing is comming on next lib realease: input Date / output Date
-      const date = new Date(plainText).toISOString()
-      const timeAggregator = new anonymization.DateAggregator(methodOptions.timeUnit)
-      const outputDateStr = timeAggregator.apply(date)
-      return new Date(outputDateStr).toISOString()
+      if (!methodOptions.timeUnit) return
+      try {
+        const date = new Date(clearInput).toISOString()
+        const timeAggregator = new anonymization.DateAggregator(methodOptions.timeUnit)
+        const outputDateStr = timeAggregator.apply(date)
+        return new Date(outputDateStr).toISOString()
+      } catch (error: any) {
+        console.error(error)
+        return "Error - " + error.match(/\(([^)]+)\)/)[1]
+      }
     }
     case "NoiseDate": {
-      const date = new Date(plainText).toISOString()
-      const noiser = new anonymization.NoiseWithParameters(
-        methodOptions.distribution,
-        methodOptions.mean.precision * datePrecisionFactor(methodOptions.mean.unit),
-        methodOptions.stdDev.precision * datePrecisionFactor(methodOptions.mean.unit)
+      if (
+        !methodOptions.distribution ||
+        !methodOptions.mean.precision ||
+        !methodOptions.mean.unit ||
+        !methodOptions.stdDev.precision ||
+        !methodOptions.mean.unit
       )
-      const noisyData = noiser.apply(date)
-      return noisyData
+        return undefined
+      try {
+        const date = new Date(clearInput).toISOString()
+        const noiser = new anonymization.NoiseWithParameters(
+          methodOptions.distribution,
+          methodOptions.mean.precision * datePrecisionFactor(methodOptions.mean.unit),
+          methodOptions.stdDev.precision * datePrecisionFactor(methodOptions.mean.unit)
+        )
+        const noisyData = noiser.apply(date)
+        return noisyData
+      } catch (error: any) {
+        console.error(error)
+        return "Error - " + error.match(/\(([^)]+)\)/)[1]
+      }
     }
     case "NoiseInteger":
     case "NoiseFloat": {
-      if (methodOptions.distribution === "Uniform" && methodOptions.lowerBoundary && methodOptions.upperBoundary) {
-        const noiser = new anonymization.NoiseWithBounds(
-          methodOptions.distribution,
-          methodOptions.lowerBoundary,
-          methodOptions.upperBoundary
-        )
-        const noisyData = noiser.apply(Number(plainText))
-        return noisyData
-      } else {
-        const noiser = new anonymization.NoiseWithParameters(methodOptions.distribution, methodOptions.mean, methodOptions.stdDev)
-        const noisyData = noiser.apply(Number(plainText))
-        return noisyData
+      try {
+        if (methodOptions.distribution === "Uniform") {
+          if (!methodOptions.lowerBoundary || !methodOptions.upperBoundary) return
+          const noiser = new anonymization.NoiseWithBounds(
+            methodOptions.distribution,
+            methodOptions.lowerBoundary,
+            methodOptions.upperBoundary
+          )
+          const noisyData = noiser.apply(Number(clearInput))
+          return noisyData
+        } else {
+          if (!methodOptions.mean || !methodOptions.stdDev) return
+          const noiser = new anonymization.NoiseWithParameters(methodOptions.distribution, methodOptions.mean, methodOptions.stdDev)
+          const noisyData = noiser.apply(Number(clearInput))
+          return noisyData
+        }
+      } catch (error: any) {
+        console.error(error)
+        return "Error - " + error.match(/\(([^)]+)\)/)[1]
       }
     }
     case "RescalingInteger":
     case "RescalingFloat": {
-      const scaler = new anonymization.NumberScaler(
-        methodOptions.mean,
-        methodOptions.stdDev,
-        methodOptions.scale,
-        methodOptions.translation
-      )
-      const result = scaler.apply(Number(plainText))
-      return result
+      if (!methodOptions.mean || !methodOptions.stdDev || !methodOptions.scale || !methodOptions.translation) return
+      try {
+        const scaler = new anonymization.NumberScaler(
+          methodOptions.mean,
+          methodOptions.stdDev,
+          methodOptions.scale,
+          methodOptions.translation
+        )
+        const result = scaler.apply(Number(clearInput))
+        return result
+      } catch (error: any) {
+        console.error(error)
+        return "Error - " + error.match(/\(([^)]+)\)/)[1]
+      }
     }
   }
 }
