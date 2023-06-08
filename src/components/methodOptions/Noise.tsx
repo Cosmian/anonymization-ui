@@ -10,7 +10,7 @@ interface NoiseOptionsProps {
 
 interface NoiseSubOptionsProps {
   form: FormInstance
-  distribution: "Gaussian" | "Laplacian" | "Uniform"
+  distribution: "Gaussian" | "Laplace" | "Uniform"
   notCorrelated: boolean
 }
 
@@ -48,7 +48,7 @@ export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form, columns, getCo
 
   const noiseFormOptions = [{ value: "Gaussian", label: "Gaussian" }]
   if (dataType !== "Date") {
-    noiseFormOptions.push({ value: "Laplacian", label: "Laplacian" }, { value: "Uniform", label: "Uniform" })
+    noiseFormOptions.push({ value: "Laplace", label: "Laplace" }, { value: "Uniform", label: "Uniform" })
   }
 
   return (
@@ -117,7 +117,7 @@ const NoiseNumberOptions: React.FC<NoiseSubOptionsProps> = ({ form, distribution
               name={["methodOptions", "lowerBoundary"]}
               label="Minimum"
               className="option-parameter"
-              initialValue={0}
+              initialValue={1}
               rules={[{ required: true, message: "Please provide a boundary" }]}
             >
               <InputNumber disabled={!notCorrelated} min={0} step={1} precision={1} />
@@ -126,7 +126,7 @@ const NoiseNumberOptions: React.FC<NoiseSubOptionsProps> = ({ form, distribution
               name={["methodOptions", "upperBoundary"]}
               label="Maximum"
               className="option-parameter"
-              initialValue={0}
+              initialValue={2}
               rules={[{ required: true, message: "Please provide a boundary" }]}
             >
               <InputNumber disabled={!notCorrelated} min={form.getFieldValue(["methodOptions", "lowerBoundary"])} step={1} precision={1} />

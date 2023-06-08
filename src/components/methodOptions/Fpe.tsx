@@ -22,7 +22,7 @@ export const FpeIntegerOptions: React.FC = () => {
           },
         ]}
       >
-        <InputNumber step={1} />
+        <InputNumber step={1} min={6} />
       </Form.Item>
     </>
   )

@@ -1,0 +1,55 @@
+{
+  "configurationInfo": {
+    "created_at": "08/06/2023 11:31:36",
+    "delimiter": ";",
+    "file": "data-EF6NYfkT1t7SxuTkg3y9c.csv",
+    "name": "Medical",
+    "uuid": "334b9063-3d0c-4b02-8718-d0b521c285d6"
+  },
+  "metadata": [
+    {
+      "example": "198503051462580",
+      "key": "0",
+      "method": "FpeString",
+      "methodOptions": { "alphabet": "numeric" },
+      "name": "ssn",
+      "result": "248854094131708",
+      "type": "Text"
+    },
+    {
+      "example": "Jun 7, 2022",
+      "key": "1",
+      "method": "NoiseDate",
+      "methodOptions": {
+        "correlation": "5594adf4-45c3-406e-a1ad-b85aef2c7078",
+        "distribution": "Gaussian",
+        "mean": { "precision": 1, "unit": "Month" },
+        "stdDev": { "precision": 20, "unit": "Day" }
+      },
+      "name": "admissionDate",
+      "type": "Date"
+    },
+    {
+      "example": "Jul 26, 2022",
+      "key": "2",
+      "method": "NoiseDate",
+      "methodOptions": {
+        "correlation": "5594adf4-45c3-406e-a1ad-b85aef2c7078",
+        "distribution": "Gaussian",
+        "mean": { "precision": 1, "unit": "Month" },
+        "stdDev": { "precision": 20, "unit": "Day" }
+      },
+      "name": "dischargeDate",
+      "type": "Date"
+    },
+    {
+      "example": "A",
+      "key": "3",
+      "method": "TokenizeWords",
+      "methodOptions": { "wordsList": ["A", "B", "AB", "O"] },
+      "name": "type",
+      "type": "Text"
+    },
+    { "example": "51", "key": "4", "method": "AggregationInteger", "methodOptions": { "powerOfTen": 1 }, "name": "age", "type": "Integer" }
+  ]
+}

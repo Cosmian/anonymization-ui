@@ -97,11 +97,11 @@ export const methodsInfo: { [key: string]: string } = {
   AggregationInteger: "Round numbers to a desired power of ten.",
   AggregationFloat: "Round numbers to a desired power of ten.",
   NoiseDate:
-    "This method aims to partially hide data, adding noise, while preserving data's statistical distribution. The noise can be sampled from three distributions : Gaussian, Laplacian and Uniform, of which you have to specify parameters.\n\nSampled noise is always different between runs, but can be correlated between columns, by selecting mutliple columns and checking the correlation option.",
+    "This method aims to partially hide data, adding noise, while preserving data's statistical distribution. The noise can be sampled from three distributions : Gaussian, Laplace and Uniform, of which you have to specify parameters.\n\nSampled noise is always different between runs, but can be correlated between columns, by selecting mutliple columns and checking the correlation option.",
   NoiseInteger:
-    "This method aims to partially hide data, adding noise, while preserving data's statistical distribution. The noise can be sampled from three distributions : Gaussian, Laplacian and Uniform, of which you have to specify parameters.\n\nSampled noise is always different between runs, but can be correlated between columns, by selecting mutliple columns and checking the correlation option.",
+    "This method aims to partially hide data, adding noise, while preserving data's statistical distribution. The noise can be sampled from three distributions : Gaussian, Laplace and Uniform, of which you have to specify parameters.\n\nSampled noise is always different between runs, but can be correlated between columns, by selecting mutliple columns and checking the correlation option.",
   NoiseFloat:
-    "This method aims to partially hide data, adding noise, while preserving data's statistical distribution. The noise can be sampled from three distributions : Gaussian, Laplacian and Uniform, of which you have to specify parameters.\n\nSampled noise is always different between runs, but can be correlated between columns, by selecting mutliple columns and checking the correlation option.",
+    "This method aims to partially hide data, adding noise, while preserving data's statistical distribution. The noise can be sampled from three distributions : Gaussian, Laplace and Uniform, of which you have to specify parameters.\n\nSampled noise is always different between runs, but can be correlated between columns, by selecting mutliple columns and checking the correlation option.",
   RescalingInteger:
     "This method aims to partially hide data, while applying normalization and linear transformation to a column. One must provide the mean and standard deviation of the data, as well as the scaling parameters.\n\n /!\\ Keep in mind that these parameters are sensitive, as they allow to recover the original data.",
   RescalingFloat:
@@ -129,6 +129,7 @@ interface FpeOptions {
 }
 
 export const applyMethod = async (clearInput: string | number, method: MethodType, methodOptions: any): Promise<any> => {
+  console.log(methodOptions)
   if (!methodOptions) return undefined
   switch (method) {
     case "FpeString": {
@@ -165,7 +166,7 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
     case "Hash": {
       if (!methodOptions.hashType) return
       try {
-        const hasher = new anonymization.Hasher(methodOptions.hashType, clearInput.toString())
+        const hasher = new anonymization.Hasher(methodOptions.hashType, methodOptions.saltValue)
         const digest = hasher.apply(clearInput.toString())
         return digest
       } catch (error: any) {
