@@ -28,7 +28,6 @@ export enum DataType {
 
 export enum MethodType {
   Hash = "Hash",
-  FpeFloat = "FpeFloat",
   FpeInteger = "FpeInteger",
   FpeString = "FpeString",
   MaskWords = "MaskWords",
@@ -64,7 +63,6 @@ export const methodsForTypes: {
     { value: "RescalingInteger", label: "Rescaling" },
   ],
   Float: [
-    { value: "FpeFloat", label: "FPE" },
     { value: "AggregationFloat", label: "AggregationFloat" },
     { value: "NoiseFloat", label: "Noise" },
     { value: "RescalingFloat", label: "Rescaling" },
@@ -148,7 +146,6 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
         return "Error - " + error.match(/\(([^)]+)\)/)[1]
       }
     }
-    case "FpeFloat":
     case "FpeInteger": {
       if (!methodOptions) return
       const options: FpeOptions = {

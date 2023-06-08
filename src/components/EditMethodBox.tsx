@@ -75,14 +75,14 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
   }, [selectedMethod])
 
   // Apply method to current example to set result
-  const handleApplyMethod = useCallback(async (plainText: string | number, selectedMethod: MethodType, selectedMethodOptions: unknown) => {
-    const result = await applyMethod(plainText, selectedMethod, selectedMethodOptions)
+  const handleApplyMethod = useCallback(async (plainText: string | number, selectedMethod: MethodType) => {
+    const result = await applyMethod(plainText, selectedMethod, form.getFieldValue("methodOptions"))
     setResult(result)
   }, [])
 
   useEffect(() => {
-    if (example && selectedMethod) {
-      handleApplyMethod(example, selectedMethod, selectedMethodOptions)
+    if (example && selectedMethod && selectedMethodOptions) {
+      handleApplyMethod(example, selectedMethod)
     }
   }, [example, selectedMethod, selectedMethodOptions])
 

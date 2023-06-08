@@ -21,7 +21,7 @@ const MethodOptions: React.FC<MethodOptionsProps> = ({ selected, form, columns, 
     <>
       {selected === "Hash" && <HashOptions form={form} />}
       {selected === "FpeString" && <FpeStringOptions />}
-      {(selected === "FpeInteger" || selected === "FpeFloat") && <FpeIntegerOptions />}
+      {selected === "FpeInteger" && <FpeIntegerOptions />}
       {selected === "MaskWords" && <MaskWordsOptions />}
       {selected === "TokenizeWords" && <TokenizeWordsOptions />}
       {selected === "Regex" && <RegexOptions />}

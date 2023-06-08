@@ -46,17 +46,15 @@ export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form, columns, getCo
     form.setFieldValue(["methodOptions", "correlation"], uuid)
   }
 
+  const noiseFormOptions = [{ value: "Gaussian", label: "Gaussian" }]
+  if (dataType !== "Date") {
+    noiseFormOptions.push({ value: "Laplacian", label: "Laplacian" }, { value: "Uniform", label: "Uniform" })
+  }
+
   return (
     <>
       <Form.Item name={["methodOptions", "distribution"]} label="Distribution" initialValue="Gaussian">
-        <Select
-          disabled={!notCorrelated}
-          options={[
-            { value: "Gaussian", label: "Gaussian" },
-            { value: "Laplacian", label: "Laplacian" },
-            { value: "Uniform", label: "Uniform" },
-          ]}
-        />
+        <Select disabled={!notCorrelated} options={noiseFormOptions} />
       </Form.Item>
       {notCorrelated ? (
         <Form.Item valuePropName="checked" initialValue={undefined} style={{ marginBottom: 0 }} className="tags-list">
@@ -97,7 +95,7 @@ const NoiseNumberOptions: React.FC<NoiseSubOptionsProps> = ({ form, distribution
               name={["methodOptions", "mean"]}
               label="Mean"
               className="option-parameter"
-              initialValue={0}
+              initialValue={1}
               rules={[{ required: true, message: "Please provide a value" }]}
             >
               <InputNumber disabled={!notCorrelated} min={0} step={1} precision={1} />
@@ -106,7 +104,7 @@ const NoiseNumberOptions: React.FC<NoiseSubOptionsProps> = ({ form, distribution
               name={["methodOptions", "stdDev"]}
               label="Standard deviation"
               className="option-parameter"
-              initialValue={0}
+              initialValue={1}
               rules={[{ required: true, message: "Please provide a value" }]}
             >
               <InputNumber disabled={!notCorrelated} min={0} step={1} precision={1} />
