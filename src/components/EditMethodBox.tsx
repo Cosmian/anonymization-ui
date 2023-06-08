@@ -143,7 +143,6 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
       await Promise.all(
         selectedRowKeys.map(async (key) => {
           if (selectedMethod) {
-            const result = await applyMethod(updatedFileMetaData[Number(key)].example, selectedMethod, selectedMethodOptions)
             updatedFileMetaData[Number(key)] = {
               ...updatedFileMetaData[Number(key)],
               ...(form.getFieldValue("columnType") && { type: form.getFieldValue("columnType") }),

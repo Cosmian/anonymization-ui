@@ -129,7 +129,6 @@ interface FpeOptions {
 }
 
 export const applyMethod = async (clearInput: string | number, method: MethodType, methodOptions: any): Promise<any> => {
-  console.log(methodOptions)
   if (!methodOptions) return undefined
   switch (method) {
     case "FpeString": {

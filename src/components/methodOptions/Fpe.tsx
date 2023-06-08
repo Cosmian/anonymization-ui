@@ -37,7 +37,7 @@ export const FpeStringOptions: React.FC = () => {
             { value: "alpha_numeric", label: "Alpha numeric" },
             { value: "alpha", label: "Alpha" },
             { value: "numeric", label: "Numeric" },
-            { value: "latin1sup", label: "Windows" },
+            { value: "latin1sup", label: "Latin-1" },
           ]}
         />
       </Form.Item>
