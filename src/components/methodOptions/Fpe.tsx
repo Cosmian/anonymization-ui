@@ -1,7 +1,9 @@
 import { Form, Input, InputNumber, Select } from "antd"
+import { Rule } from "antd/lib/form"
 
 export const FpeIntegerOptions: React.FC = () => {
   // for base 10 minimum precision must be 6
+
   return (
     <>
       <Form.Item name={["methodOptions", "radix"]} label="Radix" initialValue={10} style={{ display: "none" }}>
@@ -10,13 +12,17 @@ export const FpeIntegerOptions: React.FC = () => {
       <Form.Item
         name={["methodOptions", "digit"]}
         label="Digit"
-        initialValue={9}
+        initialValue={6}
         rules={[
           { required: true, message: "Please provide a value" },
-          { min: 6, message: "Minimum value is 6" },
+          {
+            validator: (_rule: Rule, value: number, cb: (msg?: string) => void) => {
+              value < 6 ? cb("Minimum value is 6") : cb()
+            },
+          },
         ]}
       >
-        <InputNumber min={6} step={1} precision={0} />
+        <InputNumber step={1} />
       </Form.Item>
     </>
   )

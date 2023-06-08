@@ -95,8 +95,6 @@ const Edit = (): JSX.Element => {
     }
   }
 
-  console.log(rowSelection)
-
   return (
     <div className="edit-view">
       <div className="edit-main">

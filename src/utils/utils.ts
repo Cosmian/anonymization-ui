@@ -123,21 +123,41 @@ const FPE = await Fpe()
 const anonymization = await Anonymization()
 const key = crypto.getRandomValues(new Uint8Array(32))
 const tweak = crypto.getRandomValues(new Uint8Array(1024))
+interface FpeOptions {
+  alphabet?: string
+  additionalCharacters?: string
+  radix?: number
+  digits?: number
+}
 
 export const applyMethod = async (clearInput: string | number, method: MethodType, methodOptions: any): Promise<any> => {
   if (!methodOptions) return undefined
   switch (method) {
-    case "FpeString":
-    case "FpeFloat":
-    case "FpeInteger": {
+    case "FpeString": {
       if (!methodOptions) return
-      const convertedInput = method === "FpeString" ? clearInput.toString() : Number(clearInput)
-      const options = {
+      const options: FpeOptions = {
         alphabet: methodOptions.alphabet,
         additionalCharacters: methodOptions.extendWith,
       }
       try {
-        const res = await FPE.encrypt(key, tweak, convertedInput, options)
+        const res = await FPE.encrypt(key, tweak, clearInput.toString(), options)
+        const result = typeof res === "bigint" ? Number(res) : res
+        return result
+      } catch (error: any) {
+        console.error(error)
+        return "Error - " + error.match(/\(([^)]+)\)/)[1]
+      }
+    }
+    case "FpeFloat":
+    case "FpeInteger": {
+      if (!methodOptions) return
+      const options: FpeOptions = {
+        alphabet: "numeric",
+        radix: 10,
+        digits: methodOptions.digit,
+      }
+      try {
+        const res = await FPE.encrypt(key, tweak, clearInput.toString(), options)
         const result = typeof res === "bigint" ? Number(res) : res
         return result
       } catch (error: any) {
