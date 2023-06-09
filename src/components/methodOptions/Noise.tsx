@@ -46,10 +46,10 @@ export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form, columns, getCo
     form.setFieldValue(["methodOptions", "correlation"], uuid)
   }
 
-  const noiseFormOptions = [{ value: "Gaussian", label: "Gaussian" }]
-  if (dataType !== "Date") {
-    noiseFormOptions.push({ value: "Laplace", label: "Laplace" }, { value: "Uniform", label: "Uniform" })
-  }
+  const noiseFormOptions = [
+    { value: "Gaussian", label: "Gaussian" },
+    { value: "Laplace", label: "Laplace" },
+  ]
 
   return (
     <>
