@@ -64,6 +64,8 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
     if (selectedType !== initialType) {
       form.setFieldValue("methodOptions", undefined)
       form.setFieldValue("columnMethod", undefined)
+    } else {
+      form.setFieldValue("columnMethod", initialMethod)
     }
   }, [selectedType])
 
@@ -73,12 +75,6 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
       form.setFieldValue("methodOptions", undefined)
     }
   }, [selectedMethod])
-
-  // Apply method to current example to set result
-  const handleApplyMethod = useCallback(async (plainText: string | number, selectedMethod: MethodType) => {
-    const result = await applyMethod(plainText, selectedMethod, form.getFieldValue("methodOptions"))
-    setResult(result)
-  }, [])
 
   useEffect(() => {
     if (example && selectedMethod && selectedMethodOptions) {
@@ -101,6 +97,12 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
       setResult(undefined)
     }
   }, [selectedType, selectedRowKeys])
+
+  // Apply method to current example to set result
+  const handleApplyMethod = useCallback(async (plainText: string | number, selectedMethod: MethodType) => {
+    const result = await applyMethod(plainText, selectedMethod, form.getFieldValue("methodOptions"))
+    setResult(result)
+  }, [])
 
   const getCorrelatedColumns = (uuid: string): string[] => {
     if (fileMetadata && uuid) {
@@ -138,23 +140,25 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
   }
 
   const saveMethod = async (): Promise<void> => {
+    const formValues = form.getFieldsValue()
     if (fileMetadata) {
       const updatedFileMetaData = [...fileMetadata]
       await Promise.all(
         selectedRowKeys.map(async (key) => {
           if (selectedMethod) {
+            const rowResult = await applyMethod(updatedFileMetaData[Number(key)].example, formValues.columnMethod, formValues.methodOptions)
             updatedFileMetaData[Number(key)] = {
               ...updatedFileMetaData[Number(key)],
-              ...(form.getFieldValue("columnType") && { type: form.getFieldValue("columnType") }),
-              ...(form.getFieldValue("columnMethod") && { method: form.getFieldValue("columnMethod"), result: result }),
-              ...(form.getFieldValue("methodOptions") && { methodOptions: form.getFieldValue("methodOptions") }),
+              ...(formValues.columnType && { type: formValues.columnType }),
+              ...(formValues.columnMethod && { method: formValues.columnMethod, result: rowResult }),
+              ...(formValues.methodOptions && { methodOptions: formValues.methodOptions }),
             }
           } else {
             const methodList = methodsForTypes[selectedType]
             if (!methodList.some((method: DefaultOptionType) => method.value === updatedFileMetaData[Number(key)].method)) {
               updatedFileMetaData[Number(key)] = {
                 ...updatedFileMetaData[Number(key)],
-                ...(form.getFieldValue("columnType") && { type: form.getFieldValue("columnType") }),
+                ...(formValues.columnType && { type: formValues.columnType }),
                 method: undefined,
                 methodOptions: undefined,
                 result: undefined,

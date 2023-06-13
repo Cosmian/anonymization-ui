@@ -49,6 +49,7 @@ export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form, columns, getCo
   const noiseFormOptions = [
     { value: "Gaussian", label: "Gaussian" },
     { value: "Laplace", label: "Laplace" },
+    { value: "Uniform", label: "Uniform" },
   ]
 
   return (

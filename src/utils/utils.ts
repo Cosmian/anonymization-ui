@@ -231,23 +231,29 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
       }
     }
     case "NoiseDate": {
-      if (
-        !methodOptions.distribution ||
-        !methodOptions.mean.precision ||
-        !methodOptions.mean.unit ||
-        !methodOptions.stdDev.precision ||
-        !methodOptions.mean.unit
-      )
-        return undefined
       try {
         const date = new Date(clearInput).toISOString()
-        const noiser = new anonymization.NoiseWithParameters(
-          methodOptions.distribution,
-          methodOptions.mean.precision * datePrecisionFactor(methodOptions.mean.unit),
-          methodOptions.stdDev.precision * datePrecisionFactor(methodOptions.mean.unit)
-        )
-        const noisyData = noiser.apply(date)
-        return noisyData
+        if (methodOptions.distribution === "Uniform") {
+          if (!methodOptions.lowerBoundary || !methodOptions.upperBoundary) return
+          const noiseParams = {
+            methodName: methodOptions.distribution,
+            mean: (methodOptions.lowerBoundary.precision as number) * datePrecisionFactor(methodOptions.lowerBoundary.unit),
+            stdDev: (methodOptions.upperBoundary.precision as number) * datePrecisionFactor(methodOptions.upperBoundary.unit),
+          }
+          const noiser = new anonymization.NoiseWithBounds(noiseParams.methodName, noiseParams.mean, noiseParams.stdDev)
+          const noisyDate = noiser.apply(date)
+          return noisyDate
+        } else {
+          if (!methodOptions.mean || !methodOptions.stdDev) return
+          const noiseParams = {
+            methodName: methodOptions.distribution,
+            mean: (methodOptions.mean.precision as number) * datePrecisionFactor(methodOptions.mean.unit),
+            stdDev: (methodOptions.stdDev.precision as number) * datePrecisionFactor(methodOptions.stdDev.unit),
+          }
+          const noiser = new anonymization.NoiseWithParameters(noiseParams.methodName, noiseParams.mean, noiseParams.stdDev)
+          const noisyDate = noiser.apply(date)
+          return noisyDate
+        }
       } catch (error: any) {
         console.error(error)
         return "Error - " + error.match(/\(([^)]+)\)/)[1]
