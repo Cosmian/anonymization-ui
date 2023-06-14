@@ -140,25 +140,28 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
   }
 
   const saveMethod = async (): Promise<void> => {
-    const formValues = form.getFieldsValue()
     if (fileMetadata) {
       const updatedFileMetaData = [...fileMetadata]
       await Promise.all(
         selectedRowKeys.map(async (key) => {
           if (selectedMethod) {
-            const rowResult = await applyMethod(updatedFileMetaData[Number(key)].example, formValues.columnMethod, formValues.methodOptions)
+            const rowResult = await applyMethod(
+              updatedFileMetaData[Number(key)].example,
+              form.getFieldValue("columnMethod"),
+              form.getFieldValue("methodOptions")
+            )
             updatedFileMetaData[Number(key)] = {
               ...updatedFileMetaData[Number(key)],
-              ...(formValues.columnType && { type: formValues.columnType }),
-              ...(formValues.columnMethod && { method: formValues.columnMethod, result: rowResult }),
-              ...(formValues.methodOptions && { methodOptions: formValues.methodOptions }),
+              ...(form.getFieldValue("columnType") && { type: form.getFieldValue("columnType") }),
+              ...(form.getFieldValue("columnMethod") && { method: form.getFieldValue("columnMethod"), result: rowResult }),
+              ...(form.getFieldValue("methodOptions") && { methodOptions: form.getFieldValue("methodOptions") }),
             }
           } else {
             const methodList = methodsForTypes[selectedType]
             if (!methodList.some((method: DefaultOptionType) => method.value === updatedFileMetaData[Number(key)].method)) {
               updatedFileMetaData[Number(key)] = {
                 ...updatedFileMetaData[Number(key)],
-                ...(formValues.columnType && { type: formValues.columnType }),
+                ...(form.getFieldValue("columnType") && { type: form.getFieldValue("columnType") }),
                 method: undefined,
                 methodOptions: undefined,
                 result: undefined,

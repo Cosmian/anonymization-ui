@@ -141,9 +141,8 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
         const res = await FPE.encrypt(key, tweak, clearInput.toString(), options)
         const result = typeof res === "bigint" ? Number(res) : res
         return result
-      } catch (error: any) {
-        console.error(error)
-        return "Error - " + error.match(/\(([^)]+)\)/)[1]
+      } catch (error) {
+        return parseError(error)
       }
     }
     case "FpeInteger": {
@@ -157,9 +156,8 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
         const res = await FPE.encrypt(key, tweak, clearInput.toString(), options)
         const result = typeof res === "bigint" ? Number(res) : res
         return result
-      } catch (error: any) {
-        console.error(error)
-        return "Error - " + error.match(/\(([^)]+)\)/)[1]
+      } catch (error) {
+        return parseError(error)
       }
     }
     case "Hash": {
@@ -168,9 +166,8 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
         const hasher = new anonymization.Hasher(methodOptions.hashType, methodOptions.saltValue)
         const digest = hasher.apply(clearInput.toString())
         return digest
-      } catch (error: any) {
-        console.error(error)
-        return "Error - " + error.match(/\(([^)]+)\)/)[1]
+      } catch (error) {
+        return parseError(error)
       }
     }
     case "MaskWords": {
@@ -179,9 +176,8 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
         const wordMasker = new anonymization.WordMasker(methodOptions.wordsList)
         const safeStr = wordMasker.apply(clearInput.toString())
         return safeStr
-      } catch (error: any) {
-        console.error(error)
-        return "Error - " + error.match(/\(([^)]+)\)/)[1]
+      } catch (error) {
+        return parseError(error)
       }
     }
     case "TokenizeWords": {
@@ -190,9 +186,8 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
         const wordTokenizer = new anonymization.WordTokenizer(methodOptions.wordsList)
         const safeStr = wordTokenizer.apply(clearInput.toString())
         return safeStr
-      } catch (error: any) {
-        console.error(error)
-        return "Error - " + error.match(/\(([^)]+)\)/)[1]
+      } catch (error) {
+        return parseError(error)
       }
     }
     case "Regex": {
@@ -201,9 +196,8 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
         const patternMatcher = new anonymization.WordPatternMasker(methodOptions.pattern, methodOptions.replace)
         const matchedStr = patternMatcher.apply(clearInput.toString())
         return matchedStr
-      } catch (error: any) {
-        console.error(error)
-        return "Error - " + error.match(/\(([^)]+)\)/)[1]
+      } catch (error) {
+        return parseError(error)
       }
     }
     case "AggregationInteger":
@@ -213,9 +207,8 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
         const intAggregator = new anonymization.NumberAggregator(methodOptions.powerOfTen)
         const res = intAggregator.apply(Number(clearInput))
         return res
-      } catch (error: any) {
-        console.error(error)
-        return "Error - " + error.match(/\(([^)]+)\)/)[1]
+      } catch (error) {
+        return parseError(error)
       }
     }
     case "AggregationDate": {
@@ -225,9 +218,8 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
         const timeAggregator = new anonymization.DateAggregator(methodOptions.timeUnit)
         const outputDateStr = timeAggregator.apply(date)
         return new Date(outputDateStr).toISOString()
-      } catch (error: any) {
-        console.error(error)
-        return "Error - " + error.match(/\(([^)]+)\)/)[1]
+      } catch (error) {
+        return parseError(error)
       }
     }
     case "NoiseDate": {
@@ -254,9 +246,8 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
           const noisyDate = noiser.apply(date)
           return noisyDate
         }
-      } catch (error: any) {
-        console.error(error)
-        return "Error - " + error.match(/\(([^)]+)\)/)[1]
+      } catch (error) {
+        return parseError(error)
       }
     }
     case "NoiseInteger":
@@ -277,9 +268,8 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
           const noisyData = noiser.apply(Number(clearInput))
           return noisyData
         }
-      } catch (error: any) {
-        console.error(error)
-        return "Error - " + error.match(/\(([^)]+)\)/)[1]
+      } catch (error) {
+        return parseError(error)
       }
     }
     case "RescalingInteger":
@@ -294,11 +284,19 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
         )
         const result = scaler.apply(Number(clearInput))
         return result
-      } catch (error: any) {
-        console.error(error)
-        return "Error - " + error.match(/\(([^)]+)\)/)[1]
+      } catch (error) {
+        return parseError(error)
       }
     }
+  }
+}
+
+export const parseError = (error: any): string => {
+  console.error(error)
+  if (error.match(/\(([^)]+)\)/) && error.match(/\(([^)]+)\)/)[1]) {
+    return "Error - " + error.match(/\(([^)]+)\)/)[1]
+  } else {
+    return "Error - " + error.toString()
   }
 }
 
