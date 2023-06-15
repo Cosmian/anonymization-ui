@@ -2,8 +2,6 @@ import { Form, Input, InputNumber, Select } from "antd"
 import { Rule } from "antd/lib/form"
 
 export const FpeIntegerOptions: React.FC = () => {
-  // for base 10 minimum precision must be 6
-
   return (
     <>
       <Form.Item name={["methodOptions", "radix"]} label="Radix" initialValue={10} style={{ display: "none" }}>

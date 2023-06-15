@@ -19,7 +19,7 @@ export const TokenizeWordsOptions: React.FC = () => {
       rules={[{ required: true, message: "Please provide a word to tokenize" }]}
       initialValue={[]}
     >
-      <Select mode="tags" style={{ width: "100%" }} allowClear placeholder="Type words to block" />
+      <Select mode="tags" style={{ width: "100%" }} allowClear placeholder="Type words to tokenize" />
     </Form.Item>
   )
 }
