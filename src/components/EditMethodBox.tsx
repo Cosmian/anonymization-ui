@@ -64,6 +64,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
     if (selectedType !== initialType) {
       form.setFieldValue("methodOptions", undefined)
       form.setFieldValue("columnMethod", undefined)
+      setResult(undefined)
     } else {
       form.setFieldValue("columnMethod", initialMethod)
     }
@@ -73,12 +74,13 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
   useEffect(() => {
     if (selectedMethod !== initialMethod) {
       form.setFieldValue("methodOptions", undefined)
+      setResult(undefined)
     }
   }, [selectedMethod])
 
   useEffect(() => {
-    if (example && selectedMethod && selectedMethodOptions) {
-      handleApplyMethod(example, selectedMethod)
+    if (example && form.getFieldValue("columnMethod") && form.getFieldValue("methodOptions")) {
+      handleApplyMethod(example, form.getFieldValue("columnMethod"))
     }
   }, [example, selectedMethod, selectedMethodOptions])
 

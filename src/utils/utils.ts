@@ -132,7 +132,6 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
   if (!methodOptions) return undefined
   switch (method) {
     case "FpeString": {
-      if (!methodOptions) return
       const options: FpeOptions = {
         alphabet: methodOptions.alphabet,
         additionalCharacters: methodOptions.extendWith,
@@ -146,7 +145,6 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
       }
     }
     case "FpeInteger": {
-      if (!methodOptions) return
       const options: FpeOptions = {
         alphabet: "numeric",
         radix: 10,
@@ -161,7 +159,7 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
       }
     }
     case "Hash": {
-      if (!methodOptions.hashType) return
+      if (methodOptions.hashType == null) return
       try {
         const hasher = new anonymization.Hasher(methodOptions.hashType, methodOptions.saltValue)
         const digest = hasher.apply(clearInput.toString())
@@ -191,7 +189,7 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
       }
     }
     case "Regex": {
-      if (!methodOptions.pattern || !methodOptions.replace) return
+      if (methodOptions.pattern == null || methodOptions.replace == null) return
       try {
         const patternMatcher = new anonymization.WordPatternMasker(methodOptions.pattern, methodOptions.replace)
         const matchedStr = patternMatcher.apply(clearInput.toString())
@@ -202,7 +200,7 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
     }
     case "AggregationInteger":
     case "AggregationFloat": {
-      if (!methodOptions.powerOfTen) return
+      if (methodOptions.powerOfTen == null) return
       try {
         const intAggregator = new anonymization.NumberAggregator(methodOptions.powerOfTen)
         const res = intAggregator.apply(Number(clearInput))
@@ -212,7 +210,7 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
       }
     }
     case "AggregationDate": {
-      if (!methodOptions.timeUnit) return
+      if (methodOptions.timeUnit == null) return
       try {
         const date = new Date(clearInput).toISOString()
         const timeAggregator = new anonymization.DateAggregator(methodOptions.timeUnit)
@@ -226,7 +224,7 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
       try {
         const date = new Date(clearInput).toISOString()
         if (methodOptions.distribution === "Uniform") {
-          if (!methodOptions.lowerBoundary || !methodOptions.upperBoundary) return
+          if (methodOptions.lowerBoundary == null || methodOptions.upperBoundary == null) return
           const noiseParams = {
             methodName: methodOptions.distribution,
             mean: (methodOptions.lowerBoundary.precision as number) * datePrecisionFactor(methodOptions.lowerBoundary.unit),
@@ -236,7 +234,7 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
           const noisyDate = noiser.apply(date)
           return noisyDate
         } else {
-          if (!methodOptions.mean || !methodOptions.stdDev) return
+          if (methodOptions.mean == null || methodOptions.stdDev == null) return
           const noiseParams = {
             methodName: methodOptions.distribution,
             mean: (methodOptions.mean.precision as number) * datePrecisionFactor(methodOptions.mean.unit),
@@ -254,7 +252,7 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
     case "NoiseFloat": {
       try {
         if (methodOptions.distribution === "Uniform") {
-          if (!methodOptions.lowerBoundary || !methodOptions.upperBoundary) return
+          if (methodOptions.lowerBoundary == null || methodOptions.upperBoundary == null) return
           const noiser = new anonymization.NoiseWithBounds(
             methodOptions.distribution,
             methodOptions.lowerBoundary,
@@ -263,7 +261,7 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
           const noisyData = noiser.apply(Number(clearInput))
           return noisyData
         } else {
-          if (!methodOptions.mean || !methodOptions.stdDev) return
+          if (methodOptions.mean == null || methodOptions.stdDev == null) return
           const noiser = new anonymization.NoiseWithParameters(methodOptions.distribution, methodOptions.mean, methodOptions.stdDev)
           const noisyData = noiser.apply(Number(clearInput))
           return noisyData
@@ -274,7 +272,8 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
     }
     case "RescalingInteger":
     case "RescalingFloat": {
-      if (!methodOptions.mean || !methodOptions.stdDev || !methodOptions.scale || !methodOptions.translation) return
+      if (methodOptions.mean == null || methodOptions.stdDev == null || methodOptions.scale == null || methodOptions.translation == null)
+        return
       try {
         const scaler = new anonymization.NumberScaler(
           methodOptions.mean,
@@ -293,6 +292,9 @@ export const applyMethod = async (clearInput: string | number, method: MethodTyp
 
 export const parseError = (error: any): string => {
   console.error(error)
+  if (error.message) {
+    return "Error - " + error.message
+  }
   if (error.match(/\(([^)]+)\)/) && error.match(/\(([^)]+)\)/)[1]) {
     return "Error - " + error.match(/\(([^)]+)\)/)[1]
   } else {
