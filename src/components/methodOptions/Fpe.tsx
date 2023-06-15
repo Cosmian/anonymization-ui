@@ -1,21 +1,26 @@
 import { Form, Input, InputNumber, Select } from "antd"
+import { Rule } from "antd/lib/form"
 
 export const FpeIntegerOptions: React.FC = () => {
   return (
     <>
-      <Form.Item name={["methodOptions", "radix"]} label="Radix" initialValue={10}>
-        <InputNumber
-          disabled
-        />
+      <Form.Item name={["methodOptions", "radix"]} label="Radix" initialValue={10} style={{ display: "none" }}>
+        <InputNumber disabled />
       </Form.Item>
-      <Form.Item name={["methodOptions", "digit"]} label="Digit" initialValue={9}
-        rules={[{ required: true, message: "Please provide a value" }]}
+      <Form.Item
+        name={["methodOptions", "digit"]}
+        label="Digit"
+        initialValue={6}
+        rules={[
+          { required: true, message: "Please provide a value" },
+          {
+            validator: (_rule: Rule, value: number, cb: (msg?: string) => void) => {
+              value < 6 ? cb("Minimum value is 6") : cb()
+            },
+          },
+        ]}
       >
-        <InputNumber
-          min={0}
-          step={1}
-          precision={0}
-        />
+        <InputNumber step={1} min={6} />
       </Form.Item>
     </>
   )
@@ -30,7 +35,7 @@ export const FpeStringOptions: React.FC = () => {
             { value: "alpha_numeric", label: "Alpha numeric" },
             { value: "alpha", label: "Alpha" },
             { value: "numeric", label: "Numeric" },
-            { value: "latin1sup", label: "Windows" },
+            { value: "latin1sup", label: "Latin-1" },
           ]}
         />
       </Form.Item>

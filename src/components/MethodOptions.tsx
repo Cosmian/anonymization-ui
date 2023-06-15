@@ -10,14 +10,13 @@ import { RegexOptions } from "./methodOptions/Regex"
 import { RescalingOptions } from "./methodOptions/Rescaling"
 
 interface MethodOptionsProps {
-  selected: MethodType;
-  form: FormInstance;
-  columns: string[];
+  selected: MethodType
+  form: FormInstance
+  columns: string[]
   getCorrelatedColumns: (uuid: string) => string[]
 }
 
 const MethodOptions: React.FC<MethodOptionsProps> = ({ selected, form, columns, getCorrelatedColumns }) => {
-
   return (
     <>
       {selected === "Hash" && <HashOptions form={form} />}
@@ -27,9 +26,13 @@ const MethodOptions: React.FC<MethodOptionsProps> = ({ selected, form, columns, 
       {selected === "TokenizeWords" && <TokenizeWordsOptions />}
       {selected === "Regex" && <RegexOptions />}
       {selected === "AggregationDate" && <DateAggregationOptions />}
-      {(selected === "AggregationInteger" || selected === "AggregationFloat") && <NumberAggregationOptions />}
+      {(selected === "AggregationInteger" || selected === "AggregationFloat") && (
+        <NumberAggregationOptions float={form.getFieldValue("columnType") === "Float"} />
+      )}
       {(selected === "RescalingInteger" || selected === "RescalingFloat") && <RescalingOptions />}
-      {(selected === "NoiseInteger" || selected === "NoiseFloat" || selected === "NoiseDate") && <NoiseOptions form={form} columns={columns} getCorrelatedColumns={getCorrelatedColumns} />}
+      {(selected === "NoiseInteger" || selected === "NoiseFloat" || selected === "NoiseDate") && (
+        <NoiseOptions form={form} columns={columns} getCorrelatedColumns={getCorrelatedColumns} />
+      )}
     </>
   )
 }
