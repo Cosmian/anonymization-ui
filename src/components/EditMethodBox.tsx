@@ -2,7 +2,16 @@ import { Divider, Form, Input, Select } from "antd"
 import { DefaultOptionType } from "antd/lib/select"
 import { Button } from "cosmian_ui"
 import React, { Key, useCallback, useEffect, useState } from "react"
-import { DataType, MetaData, MethodType, applyMethod, dataTypesSelect, getCommonMethods, methodsForTypes } from "../utils/utils"
+import {
+  DataType,
+  MetaData,
+  MethodType,
+  applyMethod,
+  dataTypesSelect,
+  getCommonMethods,
+  getCorrelatedColumns,
+  methodsForTypes,
+} from "../utils/utils"
 import MethodInfoBox from "./MethodInfoBox"
 import MethodOptions from "./MethodOptions"
 
@@ -106,17 +115,6 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
     setResult(result)
   }, [])
 
-  const getCorrelatedColumns = (uuid: string): string[] => {
-    if (fileMetadata && uuid) {
-      const columns = fileMetadata.reduce((acc: string[], column: MetaData) => {
-        if (column.methodOptions?.correlation === uuid) return [...acc, column.name]
-        return acc
-      }, [] as string[])
-      if (columns.length !== 1) return columns
-    }
-    return []
-  }
-
   const resetForm = (): void => {
     form.resetFields()
     setSelectedRowKeys([])
@@ -216,7 +214,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
                   selected={selectedMethod}
                   form={form}
                   columns={selectedColumns}
-                  getCorrelatedColumns={getCorrelatedColumns}
+                  getCorrelatedColumns={(uuid) => getCorrelatedColumns(uuid, fileMetadata)}
                 />
               </Form.Item>
             </>

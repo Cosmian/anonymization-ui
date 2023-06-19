@@ -317,6 +317,17 @@ const datePrecisionFactor = (unit: "Minute" | "Hour" | "Day" | "Month" | "Year")
   }
 }
 
+export const getCorrelatedColumns = (uuid: string, fileMetadata: MetaData[] | undefined): string[] => {
+  if (fileMetadata && uuid) {
+    const columns = fileMetadata.reduce((acc: string[], column: MetaData) => {
+      if (column.methodOptions?.correlation === uuid) return [...acc, column.name]
+      return acc
+    }, [] as string[])
+    if (columns.length !== 1) return columns
+  }
+  return []
+}
+
 export const downloadFile = async (uuid: string | undefined): Promise<void> => {
   if (uuid) {
     const configuration: { configurationInfo: ConfigurationInfo; metadata: MetaData[] } | null = await localForage.getItem(uuid)
