@@ -34,6 +34,7 @@ const Edit = (): JSX.Element => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([])
   const [configurationInfo, setConfigurationInfo] = useState<ConfigurationInfo>()
   const [fileMetadata, setFileMetadata] = useState<MetaData[] | undefined>(undefined)
+  const [screenHeight, setScreenHeight] = useState(getTableHeight(window.innerHeight))
 
   useEffect(() => {
     const fetchConfig = async (): Promise<void> => {
@@ -45,6 +46,10 @@ const Edit = (): JSX.Element => {
     }
     fetchConfig()
   }, [])
+
+  addEventListener("resize", (_event) => {
+    setScreenHeight(getTableHeight(window.innerHeight))
+  })
 
   const columns = [
     {
@@ -190,7 +195,7 @@ const Edit = (): JSX.Element => {
             pagination={false}
             rowSelection={rowSelection}
             tableLayout="auto"
-            scroll={{ x: 800 }}
+            scroll={{ x: 800, y: screenHeight }}
           />
         </RoundedFrame>
         <div style={{ marginTop: "2em", width: "100%", textAlign: "right" }}>
@@ -210,3 +215,7 @@ const Edit = (): JSX.Element => {
 }
 
 export default Edit
+
+const getTableHeight = (windowHeight: number): number => {
+  return windowHeight - 500 > 200 ? windowHeight - 500 : 200
+}
