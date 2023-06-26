@@ -1,4 +1,4 @@
-import { DownloadOutlined } from "@ant-design/icons"
+import { DownloadOutlined, EditOutlined } from "@ant-design/icons"
 import { Skeleton, Table, Tag, Typography, notification } from "antd"
 import { BackArrow, Button, RoundedFrame } from "cosmian_ui"
 import localForage from "localforage"
@@ -10,21 +10,15 @@ import { ConfigurationInfo, MetaData, downloadFile, getCorrelatedColumns } from 
 
 const ellipsisStyle: React.CSSProperties = { maxWidth: 200, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }
 
-const flattenObject = (obj: Record<string, any>): Record<string, any> => {
-  let result: Record<string, any> = {}
-  for (const key in obj) {
-    if (Object.getOwnPropertyDescriptor(obj, key)) {
-      if (typeof obj[key] === "object" && obj[key] !== null && key !== "wordsList") {
-        const flattened = flattenObject(obj[key])
-        result = { ...result, ...flattened }
-      } else if (key === "wordsList") {
-        result[key] = obj[key].toString()
-      } else {
-        if (obj[key]) result[key] = obj[key]
-      }
+const flattenObject = (obj: Record<string, any>): Record<string, string> => {
+  return Object.entries(obj).reduce((result, [key, value]) => {
+    if (key === "wordsList") {
+      return { [key]: value.toString() }
+    } else if (typeof value !== "object" || !value) {
+      return { ...result, [key]: value }
     }
-  }
-  return result
+    return { ...result, ...flattenObject(value) }
+  }, {})
 }
 
 const Edit = (): JSX.Element => {
@@ -79,7 +73,7 @@ const Edit = (): JSX.Element => {
       key: "method",
     },
     {
-      title: "Method Options",
+      title: "Options",
       dataIndex: "methodOptions",
       key: "methodOptions2",
       render: (methodOptions: any) => {
@@ -99,7 +93,7 @@ const Edit = (): JSX.Element => {
                 if (value[0] === "correlation") {
                   return (
                     <span key={key}>
-                      – <span className="strong">{value[0]}</span>:{" "}
+                      – <span className="strong">{value[0].charAt(0).toUpperCase() + value[0].slice(1)}</span>:{" "}
                       {getCorrelatedColumns(value[1], fileMetadata).map((name, index) => (
                         <Tag key={index}>{name}</Tag>
                       ))}{" "}
@@ -109,7 +103,7 @@ const Edit = (): JSX.Element => {
                 } else {
                   return (
                     <span key={key}>
-                      – <span className="strong">{value[0]}</span>: {value[1]} <br />
+                      – <span className="strong">{value[0].charAt(0).toUpperCase() + value[0].slice(1)}</span>: {value[1]} <br />
                     </span>
                   )
                 }
@@ -167,7 +161,6 @@ const Edit = (): JSX.Element => {
         message: "Error saving configuration",
         description: (error as Error).message,
       })
-      console.error(error)
     }
   }
   if (configurationInfo == null || fileMetadata == null) return <Skeleton />
@@ -182,6 +175,7 @@ const Edit = (): JSX.Element => {
             onChange: (text) => renameConfigTitle(text),
             text: configurationInfo?.name,
             autoSize: { maxRows: 1, minRows: 1 },
+            icon: <EditOutlined style={{ marginLeft: "0.25em" }} />,
           }}
         >
           {configurationInfo?.name}
