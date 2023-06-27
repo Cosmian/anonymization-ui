@@ -10,7 +10,8 @@ import { ConfigurationInfo, MetaData, downloadFile, getCorrelatedColumns } from 
 
 const ellipsisStyle: React.CSSProperties = { maxWidth: 200, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }
 
-const flattenObject = (obj: Record<string, any>): Record<string, string> => {
+const flattenObject = (obj: Record<string, any>): Record<string, string> | null => {
+  if (obj == null) return null
   return Object.entries(obj).reduce((result, [key, value]) => {
     if (key === "wordsList") {
       return { [key]: value.toString() }
@@ -79,8 +80,8 @@ const Edit = (): JSX.Element => {
       key: "methodOptions2",
       width: 120,
       render: (methodOptions: any) => {
-        if (methodOptions != null) {
-          const flatten = flattenObject(methodOptions)
+        const flatten = flattenObject(methodOptions)
+        if (flatten)
           return (
             <>
               <div
@@ -114,7 +115,6 @@ const Edit = (): JSX.Element => {
               </div>
             </>
           )
-        }
       },
     },
     {
