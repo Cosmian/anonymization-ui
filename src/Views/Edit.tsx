@@ -71,52 +71,57 @@ const Edit = (): JSX.Element => {
       title: "Method",
       dataIndex: "method",
       key: "method",
+      width: 120,
     },
     {
       title: "Options",
       dataIndex: "methodOptions",
       key: "methodOptions2",
+      width: 120,
       render: (methodOptions: any) => {
-        const flatten = flattenObject(methodOptions)
-        return (
-          <>
-            <div
-              style={{
-                width: methodOptions ? 250 : 0,
-                display: "block",
-                height: "auto",
-                maxHeight: 100,
-                overflow: "scroll",
-              }}
-            >
-              {Object.entries(flatten).map((value, key) => {
-                if (value[0] === "correlation") {
-                  return (
-                    <span key={key}>
-                      – <span className="strong">{value[0].charAt(0).toUpperCase() + value[0].slice(1)}</span>:{" "}
-                      {getCorrelatedColumns(value[1], fileMetadata).map((name, index) => (
-                        <Tag key={index}>{name}</Tag>
-                      ))}{" "}
-                      <br />
-                    </span>
-                  )
-                } else {
-                  return (
-                    <span key={key}>
-                      – <span className="strong">{value[0].charAt(0).toUpperCase() + value[0].slice(1)}</span>: {value[1]} <br />
-                    </span>
-                  )
-                }
-              })}
-            </div>
-          </>
-        )
+        if (methodOptions != null) {
+          const flatten = flattenObject(methodOptions)
+          return (
+            <>
+              <div
+                style={{
+                  width: methodOptions ? 250 : 0,
+                  display: "block",
+                  height: "auto",
+                  maxHeight: 100,
+                  overflow: "scroll",
+                }}
+              >
+                {Object.entries(flatten).map((value, key) => {
+                  if (value[0] === "correlation") {
+                    return (
+                      <span key={key}>
+                        – <span className="strong">{value[0].charAt(0).toUpperCase() + value[0].slice(1)}</span>:{" "}
+                        {getCorrelatedColumns(value[1], fileMetadata).map((name, index) => (
+                          <Tag key={index}>{name}</Tag>
+                        ))}{" "}
+                        <br />
+                      </span>
+                    )
+                  } else {
+                    return (
+                      <span key={key}>
+                        – <span className="strong">{value[0].charAt(0).toUpperCase() + value[0].slice(1)}</span>: {value[1]} <br />
+                      </span>
+                    )
+                  }
+                })}
+              </div>
+            </>
+          )
+        }
       },
     },
     {
       title: "Result",
       dataIndex: "result",
       key: "result",
+      width: 120,
       render: (result: string | number) => {
         if (result && result.toString().substring(0, 5) === "Error")
           return <div style={{ color: "#e34319", fontStyle: "italic", ...ellipsisStyle }}>{result}</div>
