@@ -7,9 +7,8 @@ import { useNavigate } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
 import { paths_config } from "../config/paths"
 import { ConfigurationInfo, FileInfo } from "../utils/utils"
-import "./style.less"
 
-type fileResult = { metadata: Metadata[], configurationInfo: ConfigurationInfo }
+type fileResult = { metadata: Metadata[]; configurationInfo: ConfigurationInfo }
 
 const Import = (): JSX.Element => {
   const navigate = useNavigate()
@@ -56,7 +55,7 @@ const Import = (): JSX.Element => {
         notification.error({
           duration: 3,
           message: "Error saving configuration",
-          description: (error as Error).message
+          description: (error as Error).message,
         })
         throw new Error((error as Error).message)
       }
@@ -65,18 +64,24 @@ const Import = (): JSX.Element => {
 
   return (
     <div className="create">
-      <BackArrow
-        onClick={() => navigate(paths_config.home)}
-        text="Back to configurations list"
-      />
+      <BackArrow onClick={() => navigate(paths_config.home)} text="Back to configurations list" />
       <h1>Import configuration file</h1>
       <RoundedFrame>
         <h2 className="h4">Upload your JSON file</h2>
-        <FileDrop fileType="json" getFileInfo={(file) => getFileInfo(file)} getResult={(result) => getFileResult(result as fileResult)} updateFile={fileInfo} />
+        <FileDrop
+          fileType="json"
+          getFileInfo={(file) => getFileInfo(file)}
+          getResult={(result) => getFileResult(result as fileResult)}
+          updateFile={fileInfo}
+        />
       </RoundedFrame>
       <div className="buttons">
-        <Button type="outline" onClick={() => resetFile()} disabled={!fileMetadata}>Cancel</Button>
-        <Button onClick={() => saveFile()} disabled={!fileMetadata}>Import configuration</Button>
+        <Button type="outline" onClick={() => resetFile()} disabled={!fileMetadata}>
+          Cancel
+        </Button>
+        <Button onClick={() => saveFile()} disabled={!fileMetadata}>
+          Import configuration
+        </Button>
       </div>
     </div>
   )

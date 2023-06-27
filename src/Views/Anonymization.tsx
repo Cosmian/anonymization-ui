@@ -9,7 +9,6 @@ import { paths_config } from "../config/paths"
 
 import { DeleteConfigModal } from "../components/DeleteConfigModal"
 import { ConfigurationInfo, MetaData, downloadFile } from "../utils/utils"
-import "./style.less"
 
 const Anonymization = (): JSX.Element => {
   const navigate = useNavigate()

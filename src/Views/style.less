@@ -45,16 +45,6 @@
 .edit-view {
   .edit-main {
     width: calc(100% - 378px);
-    .head {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 2em;
-      .responsive(@xl, {
-        flex-direction: row;
-        align-items: flex-start;
-        justify-content: space-between;
-      });
-    }
   }
 }
 
@@ -212,4 +202,9 @@
   .info-text {
     white-space: pre-wrap;
   }
+}
+
+textarea {
+  line-height: 2rem !important;
+  font-size: 1.875rem !important;
 }

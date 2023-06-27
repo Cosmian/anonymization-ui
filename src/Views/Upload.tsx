@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
 import { paths_config } from "../config/paths"
 import { DataType, FileInfo, MetaData } from "../utils/utils"
-import "./style.less"
 
 const Upload = (): JSX.Element => {
   const [form] = Form.useForm()
@@ -17,7 +16,7 @@ const Upload = (): JSX.Element => {
 
   const name = Form.useWatch("name", form)
 
-  const parseFile = (data: { [key: string]: string; }): void => {
+  const parseFile = (data: { [key: string]: string }): void => {
     const metadata: MetaData[] = []
     for (const [index, [key, value]] of Object.entries(Object.entries(data))) {
       let type: DataType
@@ -57,13 +56,16 @@ const Upload = (): JSX.Element => {
       const uuid = uuidv4()
       const delimiter = form.getFieldValue("delimiter")
       try {
-        await localForage.setItem(uuid, { metadata: fileMetadata, configurationInfo: { name, created_at: new Date().toLocaleString(), file: fileInfo?.name, uuid, delimiter } })
+        await localForage.setItem(uuid, {
+          metadata: fileMetadata,
+          configurationInfo: { name, created_at: new Date().toLocaleString(), file: fileInfo?.name, uuid, delimiter },
+        })
         navigate(paths_config.edit, { state: { uuid } })
       } catch (error) {
         notification.error({
           duration: 3,
           message: "Error saving configuration",
-          description: (error as Error).message
+          description: (error as Error).message,
         })
         throw new Error((error as Error).message)
       }
@@ -72,10 +74,7 @@ const Upload = (): JSX.Element => {
 
   return (
     <div className="create">
-      <BackArrow
-        onClick={() => navigate(paths_config.home)}
-        text="Back to configurations list"
-      />
+      <BackArrow onClick={() => navigate(paths_config.home)} text="Back to configurations list" />
       <h1>Create configuration file</h1>
       <RoundedFrame>
         <Form form={form} className="header">
@@ -86,33 +85,42 @@ const Upload = (): JSX.Element => {
             rules={[
               { required: true, message: "Please provide a name." },
               { min: 3, message: "Name must be at least 3 characters long." },
-              { pattern: /[^\p{Zs}]/u, message: "Name should contain visible characters."},
+              { pattern: /[^\p{Zs}]/u, message: "Name should contain visible characters." },
             ]}
           >
-          <Input placeholder="Configuration name" />
-        </Form.Item>
-        <Form.Item name="delimiter" label="Delimiter" initialValue=";">
+            <Input placeholder="Configuration name" />
+          </Form.Item>
+          <Form.Item name="delimiter" label="Delimiter" initialValue=";">
             <Select
-              style={{width: "70px", textAlign: "center"}}
+              style={{ width: "70px", textAlign: "center" }}
               className="delimiter"
               options={[
                 { value: ";", label: ";" },
-                { value: ",", label: "," }
+                { value: ",", label: "," },
               ]}
             />
-        </Form.Item>
-      </Form>
-      <h2 className="h4">Upload your CSV sample</h2>
-      <FileDrop
-        fileType="csv"
-        getFileInfo={(file) => getFileInfo(file)}
-        getResult={(result) => parseFile(result.data[0])}
-        updateFile={fileInfo} />
-      </RoundedFrame><div className="buttons">
-        <Button type="outline" onClick={() => resetFile()} disabled={!fileMetadata || !name}>Cancel</Button>
-        <Button onClick={() => {
-          saveFile()
-        }} disabled={!fileMetadata || !name}>Create configuration</Button>
+          </Form.Item>
+        </Form>
+        <h2 className="h4">Upload your CSV sample</h2>
+        <FileDrop
+          fileType="csv"
+          getFileInfo={(file) => getFileInfo(file)}
+          getResult={(result) => parseFile(result.data[0])}
+          updateFile={fileInfo}
+        />
+      </RoundedFrame>
+      <div className="buttons">
+        <Button type="outline" onClick={() => resetFile()} disabled={!fileMetadata || !name}>
+          Cancel
+        </Button>
+        <Button
+          onClick={() => {
+            saveFile()
+          }}
+          disabled={!fileMetadata || !name}
+        >
+          Create configuration
+        </Button>
       </div>
     </div>
   )
