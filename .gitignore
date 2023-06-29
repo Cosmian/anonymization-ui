@@ -34,3 +34,4 @@ cypress/screenshots
 
 # npx tsc compilation
 /dist-tsc
+/dist

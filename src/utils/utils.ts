@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Anonymization, Fpe } from "cloudproof_js"
+// import { Anonymization, Fpe } from "cloudproof_js"
+import { Hasher } from "cloudproof_js/dist/umd/anonymization/hash"
+import { NoiseWithBounds, NoiseWithParameters } from "cloudproof_js/dist/umd/anonymization/noise"
+import { DateAggregator, NumberAggregator, NumberScaler } from "cloudproof_js/dist/umd/anonymization/number"
+import { WordMasker, WordPatternMasker, WordTokenizer } from "cloudproof_js/dist/umd/anonymization/word"
 
 import { notification } from "antd"
 import { DefaultOptionType } from "antd/lib/select"
@@ -117,8 +121,33 @@ export const getCommonMethods = (types: DataType[]): DefaultOptionType[] => {
   return []
 }
 
-const FPE = await Fpe()
-const anonymization = await Anonymization()
+export type FpeType = {
+  encrypt: (
+    key: Uint8Array,
+    tweak: Uint8Array,
+    plaintext: string | number | bigint,
+    options?: FpeOptions
+  ) => Promise<string | number | bigint>
+  decrypt: (
+    key: Uint8Array,
+    tweak: Uint8Array,
+    ciphertext: string | number | bigint,
+    options?: FpeOptions
+  ) => Promise<string | number | bigint>
+}
+
+export type AnonymizationMethodType = {
+  Hasher: typeof Hasher
+  NoiseWithParameters: typeof NoiseWithParameters
+  NoiseWithBounds: typeof NoiseWithBounds
+  NumberAggregator: typeof NumberAggregator
+  NumberScaler: typeof NumberScaler
+  DateAggregator: typeof DateAggregator
+  WordMasker: typeof WordMasker
+  WordPatternMasker: typeof WordPatternMasker
+  WordTokenizer: typeof WordTokenizer
+}
+
 const key = crypto.getRandomValues(new Uint8Array(32))
 const tweak = crypto.getRandomValues(new Uint8Array(1024))
 interface FpeOptions {
@@ -128,7 +157,13 @@ interface FpeOptions {
   digits?: number
 }
 
-export const applyMethod = async (clearInput: string | number, method: MethodType, methodOptions: any): Promise<any> => {
+export const applyMethod = async (
+  clearInput: string | number,
+  method: MethodType,
+  methodOptions: any,
+  FPE: FpeType,
+  anonymization: AnonymizationMethodType
+): Promise<any> => {
   if (!methodOptions) return undefined
   switch (method) {
     case "FpeString": {
