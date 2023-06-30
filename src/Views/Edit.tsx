@@ -1,5 +1,5 @@
 import { DownloadOutlined, EditOutlined } from "@ant-design/icons"
-import { Skeleton, Table, Tag, Typography, notification } from "antd"
+import { Skeleton, Space, Table, Tag, Typography, notification } from "antd"
 import { BackArrow, Button, RoundedFrame } from "cosmian_ui"
 import localForage from "localforage"
 import { Key, useEffect, useState } from "react"
@@ -29,7 +29,6 @@ const Edit = (): JSX.Element => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([])
   const [configurationInfo, setConfigurationInfo] = useState<ConfigurationInfo>()
   const [fileMetadata, setFileMetadata] = useState<MetaData[] | undefined>(undefined)
-  const [screenHeight, setScreenHeight] = useState(getTableHeight(window.innerHeight))
 
   useEffect(() => {
     const fetchConfig = async (): Promise<void> => {
@@ -41,10 +40,6 @@ const Edit = (): JSX.Element => {
     }
     fetchConfig()
   }, [])
-
-  addEventListener("resize", (_event) => {
-    setScreenHeight(getTableHeight(window.innerHeight))
-  })
 
   const columns = [
     {
@@ -185,7 +180,12 @@ const Edit = (): JSX.Element => {
         >
           {configurationInfo?.name}
         </Typography.Title>
-        <p>Select column(s) and define method to apply.</p>
+        <Space style={{ marginTop: "2em", marginBottom: "2em", width: "100%", justifyContent: "space-between" }}>
+          <p style={{ margin: 0 }}>Select column(s) and define method to apply.</p>
+          <Button onClick={() => downloadConfiguration(configurationInfo?.uuid)} icon={<DownloadOutlined />}>
+            Download configuration
+          </Button>
+        </Space>
         <RoundedFrame>
           <Table
             rowKey={"key"}
@@ -194,14 +194,9 @@ const Edit = (): JSX.Element => {
             pagination={false}
             rowSelection={rowSelection}
             tableLayout="auto"
-            scroll={{ x: 800, y: screenHeight }}
+            scroll={{ x: 800 }}
           />
         </RoundedFrame>
-        <div style={{ marginTop: "2em", width: "100%", textAlign: "right" }}>
-          <Button onClick={() => downloadConfiguration(configurationInfo?.uuid)} icon={<DownloadOutlined />}>
-            Download configuration
-          </Button>
-        </div>
       </div>
       <EditMethodBox
         selectedRowKeys={selectedRowKeys}
