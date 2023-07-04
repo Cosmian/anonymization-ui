@@ -75,7 +75,7 @@ const Anonymize = (): JSX.Element => {
           message: "Anonymization",
           description: responseContent,
         })
-        navigate(paths_config.anonymization)
+        navigate(paths_config.anonymizationList)
         return
       }
       notification.error({

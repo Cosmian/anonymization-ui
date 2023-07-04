@@ -74,7 +74,7 @@ const CreateConfiguration = (): JSX.Element => {
 
   return (
     <div className="create">
-      <BackArrow onClick={() => navigate(paths_config.configuration)} text="Back to configurations list" />
+      <BackArrow onClick={() => navigate(paths_config.configurationList)} text="Back to configurations list" />
       <h1>Create configuration file</h1>
       <RoundedFrame>
         <h2 className="h4">1. Configuration information</h2>

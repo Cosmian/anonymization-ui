@@ -2,12 +2,13 @@ import { Menu, MenuProps, Tooltip } from "antd"
 import { ItemType } from "antd/lib/menu/hooks/useItems"
 import { CosmianLogo, Header, MainLayout } from "cosmian_ui"
 import { useContext } from "react"
-import { IoBuildOutline, IoCloudUploadOutline, IoDocumentLockOutline, IoFingerPrintSharp } from "react-icons/io5"
-import { Outlet, useNavigate } from "react-router-dom"
+import { IoBuildOutline, IoCloudOfflineOutline, IoCloudUploadOutline, IoDocumentLockOutline, IoFingerPrintSharp } from "react-icons/io5"
+import { Outlet, useLocation, useNavigate } from "react-router-dom"
 import AppContext from "../AppContext"
 import "../Views/style.less"
 
 const Layout = (): JSX.Element => {
+  const location = useLocation()
   const navigate = useNavigate()
   const context = useContext(AppContext)
 
@@ -27,8 +28,8 @@ const Layout = (): JSX.Element => {
       ) : (
         <Tooltip title={unverifiedContent}>
           <div className="unverified">
-            Microservice not running
-            <IoFingerPrintSharp className="icon" size={20} />
+            Microservice is not running
+            <IoCloudOfflineOutline className="icon" size={20} />
           </div>
         </Tooltip>
       )}
@@ -38,17 +39,17 @@ const Layout = (): JSX.Element => {
   const items: MenuProps["items"] = [
     {
       icon: <IoDocumentLockOutline />,
-      key: "anonymization",
+      key: "/anonymizations",
       label: "Anonymized datasets",
     },
     {
       icon: <IoBuildOutline />,
-      key: "configuration",
+      key: "/configurations",
       label: "Configuration",
     },
     {
       icon: <IoCloudUploadOutline />,
-      key: "anonymize",
+      key: "/anonymize",
       label: "Anonymize",
     },
   ]
@@ -60,7 +61,12 @@ const Layout = (): JSX.Element => {
   const header = (
     <div className="header">
       <Header mainLogo={logo} title="Data anonymization" userMenu={rightElement} />
-      <Menu mode="horizontal" items={items} onClick={navigationClick} />
+      <Menu
+        mode="horizontal"
+        items={items}
+        onClick={navigationClick}
+        selectedKeys={location.pathname !== "/" ? [location.pathname] : ["/anonymizations"]}
+      />
     </div>
   )
 

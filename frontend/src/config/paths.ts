@@ -1,10 +1,10 @@
 export const paths_config = {
   home: "/",
-  upload: "/upload",
+  create: "/create",
   edit: "/edit",
   import: "/import",
   anonymize: "/anonymize",
-  anonymization: "/anonymization",
-  configuration: "/configuration",
+  anonymizationList: "/anonymizations",
+  configurationList: "/configurations",
   notFound: "/404",
 }
