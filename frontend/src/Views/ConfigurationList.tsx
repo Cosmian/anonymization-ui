@@ -17,7 +17,7 @@ import {
   downloadUploadedConfiguration,
 } from "../utils/utils"
 
-const Configuration = (): JSX.Element => {
+const ConfigurationList = (): JSX.Element => {
   const navigate = useNavigate()
   const context = useContext(AppContext)
   const [localConfigList, setLocalConfigList] = useState<ConfigurationInfo[]>([])
@@ -280,7 +280,7 @@ const Configuration = (): JSX.Element => {
         </Button>
         <Button
           onClick={() => {
-            navigate(paths_config.upload)
+            navigate(paths_config.create)
           }}
         >
           Create Configuration
@@ -311,4 +311,4 @@ const Configuration = (): JSX.Element => {
   )
 }
 
-export default Configuration
+export default ConfigurationList

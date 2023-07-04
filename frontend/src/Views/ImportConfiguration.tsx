@@ -10,7 +10,7 @@ import { ConfigurationInfo, FileInfo } from "../utils/utils"
 
 type fileResult = { metadata: Metadata[]; configurationInfo: ConfigurationInfo }
 
-const Import = (): JSX.Element => {
+const ImportConfiguration = (): JSX.Element => {
   const navigate = useNavigate()
   const [configurationInfo, setConfigurationInfo] = useState<ConfigurationInfo | undefined>()
   const [fileInfo, setFileInfo] = useState<FileInfo | undefined>()
@@ -64,7 +64,7 @@ const Import = (): JSX.Element => {
 
   return (
     <div className="create">
-      <BackArrow onClick={() => navigate(paths_config.configuration)} text="Back to configurations list" />
+      <BackArrow onClick={() => navigate(paths_config.configurationList)} text="Back to configurations list" />
       <h1>Import configuration file</h1>
       <RoundedFrame>
         <h2 className="h4">Upload your JSON file</h2>
@@ -87,4 +87,4 @@ const Import = (): JSX.Element => {
   )
 }
 
-export default Import
+export default ImportConfiguration

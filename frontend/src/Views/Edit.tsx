@@ -55,7 +55,7 @@ const Edit = (): JSX.Element => {
         message: "Error fetching configuration",
         description: (error as Error).message,
       })
-      navigate(paths_config.configuration)
+      navigate(paths_config.configurationList)
       throw new Error((error as Error).message)
     })
   }, [])
@@ -77,7 +77,7 @@ const Edit = (): JSX.Element => {
   const handleUploadConfiguration = (configurationUuid: string | undefined): void => {
     uploadConfiguration(configurationUuid)
     setTimeout(() => {
-      navigate(paths_config.configuration)
+      navigate(paths_config.configurationList)
     }, 1000)
   }
 
@@ -227,7 +227,7 @@ const Edit = (): JSX.Element => {
   return (
     <div className="edit-view">
       <div className={fetchType === "local" ? "with-box" : ""}>
-        <BackArrow onClick={() => navigate(paths_config.configuration)} text="Back to Configuration list" />
+        <BackArrow onClick={() => navigate(paths_config.configurationList)} text="Back to Configuration list" />
         <Typography.Title
           level={1}
           style={{ marginBottom: "1em", fontSize: "1.875rem" }}

@@ -4,10 +4,10 @@ import Layout from "./components/Layout"
 import { paths_config } from "./config/paths"
 import AnonymizationList from "./Views/AnonymizationList"
 import Anonymize from "./Views/Anonymize"
-import Configuration from "./Views/Configuration"
+import ConfigurationList from "./Views/ConfigurationList"
 import CreateConfiguration from "./Views/CreateConfiguration"
 import Edit from "./Views/Edit"
-import Import from "./Views/Import"
+import ImportConfiguration from "./Views/ImportConfiguration"
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -15,11 +15,11 @@ const router = createBrowserRouter(
       <Route path="/" element={<Layout />}>
         <Route index element={<AnonymizationList />} />
         <Route path={paths_config.anonymize} element={<Anonymize />} />
-        <Route path={paths_config.configuration} element={<Configuration />} />
-        <Route path={paths_config.upload} element={<CreateConfiguration />} />
+        <Route path={paths_config.configurationList} element={<ConfigurationList />} />
+        <Route path={paths_config.create} element={<CreateConfiguration />} />
         <Route path={paths_config.edit + "/:id"} element={<Edit />} />
-        <Route path={paths_config.import} element={<Import />} />
-        <Route path={paths_config.anonymization} element={<AnonymizationList />} />
+        <Route path={paths_config.import} element={<ImportConfiguration />} />
+        <Route path={paths_config.anonymizationList} element={<AnonymizationList />} />
       </Route>
       <Route path="*" element={<NotFoundPage />} />
     </>
