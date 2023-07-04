@@ -209,7 +209,3 @@ const Edit = (): JSX.Element => {
 }
 
 export default Edit
-
-const getTableHeight = (windowHeight: number): number => {
-  return windowHeight - 500 > 200 ? windowHeight - 500 : 200
-}

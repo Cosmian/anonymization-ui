@@ -1,12 +1,9 @@
 import { Divider, Form, Input, Select } from "antd"
 import { DefaultOptionType } from "antd/lib/select"
-import { Anonymization, Fpe } from "cloudproof_js"
 import { Button } from "cosmian_ui"
 import React, { Key, useCallback, useEffect, useState } from "react"
 import {
-  AnonymizationMethodType,
   DataType,
-  FpeType,
   MetaData,
   MethodType,
   applyMethod,
@@ -35,23 +32,10 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
   const [initialType, setInitialType] = useState<DataType | undefined>(undefined)
   const [initialMethod, setInitialMethod] = useState<MethodType | undefined>(undefined)
   const [open, setOpen] = useState(false)
-  const [fpe, setFpe] = useState<FpeType | undefined>(undefined)
-  const [anonymization, setAnonymization] = useState<AnonymizationMethodType | undefined>(undefined)
 
   const selectedType: DataType = Form.useWatch("columnType", form)
   const selectedMethod: MethodType = Form.useWatch("columnMethod", form)
   const selectedMethodOptions = Form.useWatch("methodOptions", form)
-
-  // Initialize FPE and Anonymization elements
-  useEffect(() => {
-    const setupAnonymizationElements = async (): Promise<void> => {
-      const fpe = await Fpe()
-      setFpe(fpe)
-      const anonymization = await Anonymization()
-      setAnonymization(anonymization)
-    }
-    setupAnonymizationElements()
-  }, [])
 
   // Select the right current type and method according to column's selection
   useEffect(() => {
@@ -104,8 +88,8 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
   }, [selectedMethod])
 
   useEffect(() => {
-    if (example && form.getFieldValue("columnMethod") && form.getFieldValue("methodOptions") && fpe && anonymization) {
-      handleApplyMethod(example, form.getFieldValue("columnMethod"), fpe, anonymization)
+    if (example && form.getFieldValue("columnMethod") && form.getFieldValue("methodOptions")) {
+      handleApplyMethod(example, form.getFieldValue("columnMethod"))
     }
   }, [example, selectedMethod, selectedMethodOptions])
 
@@ -126,13 +110,10 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
   }, [selectedType, selectedRowKeys])
 
   // Apply method to current example to set result
-  const handleApplyMethod = useCallback(
-    async (plainText: string | number, selectedMethod: MethodType, fpe: FpeType, anonymization: AnonymizationMethodType) => {
-      const result = await applyMethod(plainText, selectedMethod, form.getFieldValue("methodOptions"), fpe, anonymization)
-      setResult(result)
-    },
-    []
-  )
+  const handleApplyMethod = useCallback(async (plainText: string | number, selectedMethod: MethodType) => {
+    const result = await applyMethod(plainText, selectedMethod, form.getFieldValue("methodOptions"))
+    setResult(result)
+  }, [])
 
   const resetForm = (): void => {
     form.resetFields()
@@ -163,13 +144,11 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
       const updatedFileMetaData = [...fileMetadata]
       await Promise.all(
         selectedRowKeys.map(async (key) => {
-          if (selectedMethod && fpe && anonymization) {
+          if (selectedMethod) {
             const rowResult = await applyMethod(
               updatedFileMetaData[Number(key)].example,
               form.getFieldValue("columnMethod"),
-              form.getFieldValue("methodOptions"),
-              fpe,
-              anonymization
+              form.getFieldValue("methodOptions")
             )
             updatedFileMetaData[Number(key)] = {
               ...updatedFileMetaData[Number(key)],
