@@ -17,6 +17,7 @@ const Anonymize = (): JSX.Element => {
   const [file, setFile] = useState<RcFile | undefined>()
   const fileList = file ? [file] : []
   const [configList, setConfigList] = useState<{ value: string; label: string }[]>([])
+  const [loading, setLoading] = useState(false)
 
   const configuration = Form.useWatch("configuration", form)
 
@@ -75,9 +76,11 @@ const Anonymize = (): JSX.Element => {
           message: "Anonymization",
           description: responseContent,
         })
+        setLoading(false)
         navigate(paths_config.anonymizationList)
         return
       }
+      setLoading(false)
       notification.error({
         duration: 3,
         message: "Anonymization",
@@ -118,9 +121,11 @@ const Anonymize = (): JSX.Element => {
         </Button>
         <Button
           onClick={() => {
+            setLoading(true)
             anonymizeFile()
           }}
           disabled={!file || !configuration}
+          loading={loading}
         >
           Send to anonymize
         </Button>
