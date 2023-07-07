@@ -1,4 +1,4 @@
-import { Form, Input, Select, notification } from "antd"
+import { Form, Input, Select, Space, notification } from "antd"
 import { BackArrow, Button, FileDrop, RoundedFrame } from "cosmian_ui"
 import localForage from "localforage"
 import { useState } from "react"
@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid"
 import { paths_config } from "../config/paths"
 import { DataType, FileInfo, MetaData } from "../utils/utils"
 
-const Upload = (): JSX.Element => {
+const CreateConfiguration = (): JSX.Element => {
   const [form] = Form.useForm()
 
   const navigate = useNavigate()
@@ -60,7 +60,7 @@ const Upload = (): JSX.Element => {
           metadata: fileMetadata,
           configurationInfo: { name, created_at: new Date().toLocaleString(), file: fileInfo?.name, uuid, delimiter },
         })
-        navigate(paths_config.edit, { state: { uuid } })
+        navigate(paths_config.edit + `/${uuid}`, { state: { type: "local" } })
       } catch (error) {
         notification.error({
           duration: 3,
@@ -74,10 +74,11 @@ const Upload = (): JSX.Element => {
 
   return (
     <div className="create">
-      <BackArrow onClick={() => navigate(paths_config.home)} text="Back to configurations list" />
+      <BackArrow onClick={() => navigate(paths_config.configuration)} text="Back to configurations list" />
       <h1>Create configuration file</h1>
       <RoundedFrame>
-        <Form form={form} className="header">
+        <h2 className="h4">1. Configuration information</h2>
+        <Form form={form} className="header" layout="vertical" style={{ width: "100%" }}>
           <Form.Item
             name="name"
             label="Name"
@@ -109,7 +110,7 @@ const Upload = (): JSX.Element => {
           updateFile={fileInfo}
         />
       </RoundedFrame>
-      <div className="buttons">
+      <Space className="buttons">
         <Button type="outline" onClick={() => resetFile()} disabled={!fileMetadata || !name}>
           Cancel
         </Button>
@@ -121,9 +122,9 @@ const Upload = (): JSX.Element => {
         >
           Create configuration
         </Button>
-      </div>
+      </Space>
     </div>
   )
 }
 
-export default Upload
+export default CreateConfiguration

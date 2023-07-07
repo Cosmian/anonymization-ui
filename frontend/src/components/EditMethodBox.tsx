@@ -127,6 +127,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
     setSelectMethodList([])
     setExample(undefined)
     setResult(undefined)
+    setOpen(false)
   }
 
   const clearMethod = async (): Promise<void> => {

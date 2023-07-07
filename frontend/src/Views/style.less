@@ -1,24 +1,29 @@
 @import "../../node_modules/cosmian_ui/dist/less/variables.less";
 
+.ant-menu-title-content {
+  font-size: 0.9rem;
+}
+
+.ant-menu {
+  position: fixed;
+  margin-top: 60px;
+  width: 100%;
+}
+
 .anonymization,
-.create {
+.create,
+.anonymize,
+.edit-view {
   .buttons {
     display: flex;
     justify-content: flex-end;
-    gap: 1.5em;
     margin-bottom: 1.5em;
   }
 }
-
-.anonymization {
-  .icons {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    .icon {
-      cursor: pointer;
-      margin-left: 30px;
-    }
+.edit-view {
+  .edit-table {
+    max-height: 90vh;
+    overflow-y: scroll;
   }
 }
 
@@ -28,9 +33,9 @@
   }
   .header {
     display: flex;
-    justify-content: start;
     .name {
-      margin-right: 40px;
+      margin-right: 30px;
+      width: 100%;
       .ant-input {
         border: 1px solid #d9d9d9;
         border-radius: 2px;
@@ -43,7 +48,7 @@
 }
 
 .edit-view {
-  .edit-main {
+  .with-box {
     width: calc(100% - 378px);
   }
 }
@@ -207,4 +212,45 @@
 textarea {
   line-height: 2rem !important;
   font-size: 1.875rem !important;
+}
+
+.main-layout {
+  main {
+    margin-left: 0px;
+    .content {
+      max-width: 1500px;
+    }
+  }
+  section {
+    margin-top: 80px;
+  }
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+}
+
+.anonymize {
+  .title {
+    margin-top: 2em;
+  }
+}
+
+.verified {
+  display: flex;
+  align-items: center;
+  .icon {
+    color: #52c41a;
+    margin-left: 10px;
+  }
+}
+
+.unverified {
+  display: flex;
+  align-items: center;
+  color: red;
+  .icon {
+    margin-left: 10px;
+  }
 }
