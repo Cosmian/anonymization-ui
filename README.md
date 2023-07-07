@@ -18,4 +18,11 @@ docker build -t anonymization-tool .
 docker run -p 4173:4173 anonymization-tool
 ```
 
-Then open [http://localhost:4173](http://localhost:4173) to view it in the browser.
+## Run containers
+Using the docker-compose file, you can simply launch the interface :
+````
+docker-compose up
+```
+
+Access it on :
+http://localhost:4173

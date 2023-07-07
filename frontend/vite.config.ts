@@ -19,4 +19,7 @@ export default defineConfig({
       },
     },
   },
+  define: {
+    "import.meta.env.VITE_ENV": JSON.stringify("import.meta.env.VITE_ENV"),
+  },
 })

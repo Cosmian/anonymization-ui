@@ -3,5 +3,8 @@ export const paths_config = {
   upload: "/upload",
   edit: "/edit",
   import: "/import",
+  anonymize: "/anonymize",
+  anonymization: "/anonymization",
+  configuration: "/configuration",
   notFound: "/404",
 }

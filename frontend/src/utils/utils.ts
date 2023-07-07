@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// import { Anonymization, Fpe } from "cloudproof_js"
-
 import { notification } from "antd"
 import { DefaultOptionType } from "antd/lib/select"
 import { Anonymization, Fpe } from "cloudproof_js"
@@ -18,7 +16,11 @@ export type MetaData = {
 
 export type ConfigurationInfo = { uuid: string; name: string; created_at: string; file: string; delimiter: string }
 
+export type UploadedConfigurationInfo = { uuid: string; name: string; created_at: string; hash: string }
+
 export type FileInfo = { last_modified: number; name: string; size: number; type: string }
+
+export type AnonymizationType = { key: number; name: string; created_at: number }
 
 export enum DataType {
   Integer = "Integer",
@@ -358,6 +360,22 @@ const datePrecisionFactor = (unit: "Minute" | "Hour" | "Day" | "Month" | "Year")
   }
 }
 
+export const downloadFile = async (content: any, type: { type: string }, fileName: string): Promise<void> => {
+  const blob = new Blob([content], type)
+  const href = await URL.createObjectURL(blob)
+  const link = document.createElement("a")
+  link.href = href
+  link.download = fileName
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  notification.success({
+    duration: 3,
+    message: "Download",
+    description: "File successfully downloaded.",
+  })
+}
+
 export const getCorrelatedColumns = (uuid: string, fileMetadata: MetaData[] | undefined): string[] => {
   if (fileMetadata && uuid) {
     const columns = fileMetadata.reduce((acc: string[], column: MetaData) => {
@@ -369,25 +387,13 @@ export const getCorrelatedColumns = (uuid: string, fileMetadata: MetaData[] | un
   return []
 }
 
-export const downloadFile = async (uuid: string | undefined): Promise<void> => {
+export const downloadLocalConfiguration = async (uuid: string | undefined): Promise<void> => {
   if (uuid) {
     const configuration: { configurationInfo: ConfigurationInfo; metadata: MetaData[] } | null = await localForage.getItem(uuid)
     if (configuration) {
-      const fileName = "config-" + configuration.configurationInfo.name
-      const json = JSON.stringify(configuration)
-      const blob = new Blob([json], { type: "application/json" })
-      const href = await URL.createObjectURL(blob)
-      const link = document.createElement("a")
-      link.href = href
-      link.download = fileName + ".json"
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      notification.success({
-        duration: 3,
-        message: "Download",
-        description: "File successfully downloaded.",
-      })
+      const fileName = "config-" + configuration.configurationInfo.name + ".json"
+      const content = JSON.stringify(configuration)
+      downloadFile(content, { type: "application/json" }, fileName)
       return
     }
   }
@@ -396,4 +402,70 @@ export const downloadFile = async (uuid: string | undefined): Promise<void> => {
     message: "Download",
     description: "An error occured.",
   })
+}
+
+export const downloadUploadedConfiguration = async (uuid: string | undefined): Promise<void> => {
+  if (uuid) {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations/${uuid}`)
+    if (response.ok) {
+      const configuration = await response.json()
+      const content = JSON.stringify(configuration)
+      const fileName = "config-" + configuration.configurationInfo.name + ".json"
+      downloadFile(content, { type: "application/json" }, fileName)
+      return
+    }
+    const responseContent = await response.text()
+    notification.error({
+      duration: 3,
+      message: "Download",
+      description: responseContent,
+    })
+  }
+}
+
+export const downloadAnonymization = async (name: string | undefined): Promise<void> => {
+  if (name) {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/anonymizations/${name}`)
+    if (response.ok) {
+      const content = await response.text()
+      const index = name.indexOf("_", name.indexOf("_") + 1)
+      const fileName = name.substring(index + 1)
+      const finalFileName = name.split("_")[0] + "_" + fileName
+      downloadFile(content, { type: "text/csv" }, finalFileName)
+      return
+    }
+    const responseContent = await response.text()
+    notification.error({
+      duration: 3,
+      message: "Download",
+      description: responseContent,
+    })
+  }
+}
+
+export const uploadConfiguration = async (uuid: string | undefined): Promise<void> => {
+  if (uuid) {
+    const configuration: { configurationInfo: ConfigurationInfo; metadata: MetaData[] } | null = await localForage.getItem(uuid)
+    const jsonFile = new Blob([JSON.stringify(configuration)], { type: "application/json" })
+    const formData = new FormData()
+    formData.append("file", jsonFile, `${configuration?.configurationInfo.name}.json`)
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations`, {
+      method: "POST",
+      body: formData,
+    })
+    const responseContent = await response.text()
+    if (response.ok) {
+      notification.success({
+        duration: 3,
+        message: "Upload",
+        description: responseContent,
+      })
+      return
+    }
+    notification.error({
+      duration: 3,
+      message: "Upload",
+      description: responseContent,
+    })
+  }
 }
