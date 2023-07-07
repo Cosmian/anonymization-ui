@@ -31,3 +31,4 @@ frontend/dist
 
 backend/target
 backend/.cargo_check
+backend/.env

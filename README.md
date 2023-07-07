@@ -1,21 +1,27 @@
-This is the main UI for Cosmian CipherCompute and ZeroTrust
+This is the complete interface to perform Cosmian data anonymization.
 
-# Cosmian Anonymization Configuration tool
+# Cosmian Anonymization
+This UI is composed of a frontend and a small backend (redirecting requests to a Cosmian microservice).
 
-## Start application locally
+You need to configure the different environment variables in the docker-compose file.
+
+
+## Deploy anonymization microservice
+First you need to deploy an anonymization microservice - using this repository:
+https://github.com/Cosmian/anonymization-flask-app
+
+
+## Build images
+Build frontend and backend images using:
 
 ```
-npm install
-npm run dev
+docker build -t backend-anonymization backend
+docker build -t frontend-anonymization frontend
 ```
 
-Then open [http://localhost:4173](http://localhost:4173) to view it in the browser.
-
-## Start application using Docker
-
+Or using docker-compose :
 ```
-docker build -t anonymization-tool .
-docker run -p 4173:4173 anonymization-tool
+docker-compose build
 ```
 
 ## Run containers

@@ -1,0 +1,16 @@
+version: "3"
+services:
+  backend:
+    image: backend-anonymization
+    environment:
+      - MICROSERVICE_URL=https://999d38026d6f5dc3.cosmian.app
+      - MICROSERVICE_CERT_PATH=/root/cert.conf.pem
+    ports:
+      - 8000:8000
+
+  frontend:
+    image: frontend-anonymization
+    environment:
+      - VITE_API_URL=http://127.0.0.1:8000/api
+    ports:
+      - 5173:5173
