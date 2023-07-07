@@ -1,16 +1,23 @@
 version: "3"
 services:
-  backend:
-    image: backend-anonymization
+  anonymization-backend:
+    build:
+      context: backend/
+      dockerfile: Dockerfile
+    volumes:
+      -  /var/folders/gp/49n5c76n72q8lh1yslcl_k1c0000gp/T/tmplbvtiuxf/cert.conf.pem:/root/cert.conf.pem
     environment:
       - MICROSERVICE_URL=https://999d38026d6f5dc3.cosmian.app
       - MICROSERVICE_CERT_PATH=/root/cert.conf.pem
+      - API_PORT=8000
     ports:
       - 8000:8000
 
-  frontend:
-    image: frontend-anonymization
+  anonymization-frontend:
+    build:
+      context: frontend/
+      dockerfile: Dockerfile
     environment:
-      - VITE_API_URL=http://127.0.0.1:8000/api
+      - VITE_API_URL=http://127.0.0.1:8000
     ports:
-      - 5173:5173
+      - 4173:4173

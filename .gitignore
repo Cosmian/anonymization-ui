@@ -24,6 +24,8 @@ frontend/npm-debug.log*
 frontend/yarn-debug.log*
 frontend/yarn-error.log*
 
+frontend/dist
+
 
 # npx tsc compilation
 frontend/dist-tsc
@@ -32,3 +34,4 @@ frontend/dist
 backend/target
 backend/.cargo_check
 backend/.env
+backend/cert.conf.pem
