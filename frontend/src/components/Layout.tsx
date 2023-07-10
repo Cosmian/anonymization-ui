@@ -14,7 +14,7 @@ const Layout = (): JSX.Element => {
 
   const logo = <CosmianLogo link={window.location.origin} />
   const verifiedContent =
-    "The microservice that you're querying has been verified by the application owner : code is running inside an enclave and code's fingerprint has been checked."
+    "The microservice that you're querying has been verified by the application owner: code is running inside an enclave and code's fingerprint has been checked."
   const unverifiedContent = "The microservice that you're querying is not running."
   const rightElement = (
     <>
