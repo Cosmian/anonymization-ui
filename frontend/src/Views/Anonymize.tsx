@@ -7,7 +7,7 @@ import { IoCheckboxOutline, IoDownloadOutline } from "react-icons/io5"
 import { useNavigate } from "react-router-dom"
 import AppContext from "../AppContext"
 import { paths_config } from "../config/paths"
-import { UploadedConfigurationInfo } from "../utils/utils"
+import { UploadedConfigurationInfo, encryptContent } from "../utils/utils"
 
 const Anonymize = (): JSX.Element => {
   const [form] = Form.useForm()
@@ -60,10 +60,35 @@ const Anonymize = (): JSX.Element => {
     form.setFieldValue("configuration", undefined)
   }
 
+  const readFileContentAsync = (file: Blob): Promise<string | Uint8Array> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = function (event) {
+        if (event && event.target && event.target.result) {
+          const fileContent = event.target.result
+          if (typeof fileContent === "string") {
+            resolve(fileContent)
+          } else {
+            resolve(fileContent as Uint8Array)
+          }
+        } else {
+          reject(new Error("Error with file content."))
+        }
+      }
+      reader.onerror = function () {
+        reject(new Error("Error reading the file."))
+      }
+      reader.readAsText(file)
+    })
+  }
+
   const anonymizeFile = async (): Promise<void> => {
-    if (file) {
+    if (file && context && context.enclaveKey) {
+      const content = await readFileContentAsync(file as Blob)
+      const encryptedContent = await encryptContent(content, context.enclaveKey)
+      const dataFile = new Blob([encryptedContent], { type: "text/csv" })
       const formData = new FormData()
-      formData.append("file", file)
+      formData.append("file", dataFile, file.name)
       const configurationId = form.getFieldValue("configuration")
       const response = await fetch(`${import.meta.env.VITE_API_URL}/anonymize/${configurationId}`, {
         method: "POST",

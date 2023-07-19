@@ -7,20 +7,17 @@ import { useLocation, useNavigate, useParams } from "react-router-dom"
 import AppContext from "../AppContext"
 import EditMethodBox from "../components/EditMethodBox"
 import { paths_config } from "../config/paths"
-import { ConfigurationInfo, MetaData, downloadFile, getCorrelatedColumns, uploadConfiguration } from "../utils/utils"
+import {
+  ConfigurationInfo,
+  MetaData,
+  downloadFile,
+  encryptContent,
+  flattenObject,
+  getCorrelatedColumns,
+  uploadConfiguration,
+} from "../utils/utils"
 
 const ellipsisStyle: React.CSSProperties = { maxWidth: 100, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }
-
-const flattenObject = (obj: Record<string, any>): Record<string, string> => {
-  return Object.entries(obj).reduce((result, [key, value]) => {
-    if (key === "wordsList") {
-      return { [key]: value.toString() }
-    } else if (typeof value !== "object" || value === null || value === undefined) {
-      return { ...result, [key]: value }
-    }
-    return { ...result, ...flattenObject(value) }
-  }, {})
-}
 
 const Edit = (): JSX.Element => {
   const { id } = useParams()
@@ -75,7 +72,7 @@ const Edit = (): JSX.Element => {
   }
 
   const handleUploadConfiguration = (configurationUuid: string | undefined): void => {
-    uploadConfiguration(configurationUuid)
+    uploadConfiguration(configurationUuid, context?.enclaveKey)
     setTimeout(() => {
       navigate(paths_config.configurationList)
     }, 1000)
@@ -104,11 +101,12 @@ const Edit = (): JSX.Element => {
           const updatedConfigurationInfo = { ...(configurationInfo as ConfigurationInfo), name: newTitle }
           setConfigurationInfo(updatedConfigurationInfo)
           await localForage.setItem(id, { metadata: fileMetadata, configurationInfo: updatedConfigurationInfo })
-        } else if (fetchType === "uploaded") {
+        } else if (fetchType === "uploaded" && context && context.enclaveKey) {
           const updatedConfigurationInfo = { ...(configurationInfo as ConfigurationInfo), name: newTitle }
           setConfigurationInfo(updatedConfigurationInfo)
           const configuration = { metadata: fileMetadata, configurationInfo: updatedConfigurationInfo }
-          const jsonFile = new Blob([JSON.stringify(configuration)], { type: "application/json" })
+          const encryptedConfiguration = await encryptContent(JSON.stringify(configuration), context.enclaveKey)
+          const jsonFile = new Blob([encryptedConfiguration], { type: "application/json" })
           const formData = new FormData()
           formData.append("file", jsonFile, `${configuration?.configurationInfo.name}.json`)
           const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations/${id}`, {
@@ -174,40 +172,10 @@ const Edit = (): JSX.Element => {
       key: "methodOptions",
       width: 120,
       render: (methodOptions: any) => {
-        const flatten = methodOptions ? flattenObject(methodOptions) : {}
-        return (
-          <>
-            <div
-              style={{
-                width: methodOptions ? 250 : 0,
-                display: "block",
-                height: "auto",
-                maxHeight: 100,
-                overflow: "scroll",
-              }}
-            >
-              {Object.entries(flatten).map((value, key) => {
-                if (value[0] === "correlation") {
-                  return (
-                    <span key={key}>
-                      – <span className="strong">{value[0].charAt(0).toUpperCase() + value[0].slice(1)}</span>:{" "}
-                      {getCorrelatedColumns(value[1], fileMetadata).map((name, index) => (
-                        <Tag key={index}>{name}</Tag>
-                      ))}{" "}
-                      <br />
-                    </span>
-                  )
-                } else {
-                  return (
-                    <span key={key}>
-                      – <span className="strong">{value[0].charAt(0).toUpperCase() + value[0].slice(1)}</span>: {value[1]} <br />
-                    </span>
-                  )
-                }
-              })}
-            </div>
-          </>
-        )
+        if (methodOptions) {
+          return <OptionBox methodOptions={methodOptions} fileMetadata={fileMetadata as MetaData[]} />
+        }
+        return <></>
       },
     },
     {
@@ -275,3 +243,46 @@ const Edit = (): JSX.Element => {
 }
 
 export default Edit
+
+const OptionBox: React.FC<{ methodOptions: any; fileMetadata: MetaData[] }> = ({ methodOptions, fileMetadata }) => {
+  const flatten = flattenObject(methodOptions)
+  if (flatten) {
+    return (
+      <>
+        <div
+          style={{
+            width: methodOptions ? 250 : 0,
+            display: "block",
+            height: "auto",
+            maxHeight: 100,
+            overflow: "auto",
+          }}
+        >
+          {Object.entries(flatten).map((value, key) => {
+            if (value[1] && key != null) {
+              if (value[0] === "correlation") {
+                return (
+                  <span key={key}>
+                    – <span className="strong">{value[0].charAt(0).toUpperCase() + value[0].slice(1)}</span>:{" "}
+                    {getCorrelatedColumns(value[1], fileMetadata).map((name, index) => (
+                      <Tag key={index}>{name}</Tag>
+                    ))}{" "}
+                    <br />
+                  </span>
+                )
+              } else {
+                return (
+                  <span key={key}>
+                    – <span className="strong">{value[0].charAt(0).toUpperCase() + value[0].slice(1)}</span>: {value[1]} <br />
+                  </span>
+                )
+              }
+            }
+          })}
+        </div>
+      </>
+    )
+  } else {
+    return <></>
+  }
+}

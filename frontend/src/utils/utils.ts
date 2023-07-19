@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { notification } from "antd"
 import { DefaultOptionType } from "antd/lib/select"
-import { Anonymization, Fpe } from "cloudproof_js"
+import { Anonymization, Ecies, Fpe } from "cloudproof_js"
 import localForage from "localforage"
 
 export type MetaData = {
@@ -115,6 +115,17 @@ export const methodsInfo: { [key: string]: string } = {
   RescalingFloat:
     "This method aims to partially hide data, while applying normalization and linear transformation to a column. One must provide the mean and standard deviation of the data, as well as the scaling parameters.\n\n /!\\ Keep in mind that these parameters are sensitive, as they allow to recover the original data.",
   DeleteColumn: "This method will exclude the selected column from the result.",
+}
+
+export const flattenObject = (obj: Record<string, any>): Record<string, string> => {
+  return Object.entries(obj).reduce((result, [key, value]) => {
+    if (key === "wordsList") {
+      return { [key]: value.toString() }
+    } else if (typeof value !== "object" || !value) {
+      return { ...result, [key]: value }
+    }
+    return { ...result, ...flattenObject(value) }
+  }, {})
 }
 
 export const getCommonMethods = (types: DataType[]): DefaultOptionType[] => {
@@ -449,10 +460,11 @@ export const downloadAnonymization = async (name: string | undefined): Promise<v
   }
 }
 
-export const uploadConfiguration = async (uuid: string | undefined): Promise<void> => {
-  if (uuid) {
+export const uploadConfiguration = async (uuid: string | undefined, enclaveKey: string | undefined): Promise<void> => {
+  if (uuid && enclaveKey) {
     const configuration: { configurationInfo: ConfigurationInfo; metadata: MetaData[] } | null = await localForage.getItem(uuid)
-    const jsonFile = new Blob([JSON.stringify(configuration)], { type: "application/json" })
+    const encryptedConfiguration = await encryptContent(JSON.stringify(configuration), enclaveKey)
+    const jsonFile = new Blob([encryptedConfiguration], { type: "application/json" })
     const formData = new FormData()
     formData.append("file", jsonFile, `${configuration?.configurationInfo.name}.json`)
     const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations`, {
@@ -474,4 +486,36 @@ export const uploadConfiguration = async (uuid: string | undefined): Promise<voi
       description: responseContent,
     })
   }
+}
+
+export const hexToBytes = (hexString: string): Uint8Array => {
+  if (hexString.startsWith("0x")) {
+    hexString = hexString.slice(2)
+  }
+
+  if (hexString.length % 2 !== 0) {
+    throw new Error("Invalid hex string: Length must be even.")
+  }
+
+  const bytes = []
+  for (let i = 0; i < hexString.length; i += 2) {
+    const byte = parseInt(hexString.slice(i, i + 2), 16)
+    bytes.push(byte)
+  }
+
+  return new Uint8Array(bytes)
+}
+
+export const uint8ArrayToHex = (uint8Array: Uint8Array): string => {
+  const byteArray = Array.from(uint8Array)
+
+  const hexString = byteArray.map((byte) => byte.toString(16).padStart(2, "0")).join("")
+
+  return hexString
+}
+
+export const encryptContent = async (content: string | Uint8Array, enclaveKey: string): Promise<string> => {
+  const { EciesSalsaSealBox } = await Ecies()
+  const ciphertext = EciesSalsaSealBox.encrypt(content, hexToBytes(enclaveKey), "")
+  return uint8ArrayToHex(ciphertext)
 }
