@@ -5,11 +5,12 @@ This is the main UI for Cosmian CipherCompute and ZeroTrust
 ## Start application locally
 
 ```
+cd frontend
+npm install
 npm run dev
 ```
 
-Then open [http://localhost:5173](http://localhost:5173) to view it in the browser.
-
+Then open [http://localhost:4173](http://localhost:4173) to view it in the browser.
 
 ## Start application using Docker
 
