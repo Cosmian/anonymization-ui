@@ -31,11 +31,12 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
   const [result, setResult] = useState<string | number | bigint | undefined>(undefined)
   const [initialType, setInitialType] = useState<DataType | undefined>(undefined)
   const [initialMethod, setInitialMethod] = useState<MethodType | undefined>(undefined)
+  const [initialMethodOptions, setInitialMethodOptions] = useState<string | undefined>(undefined)
   const [open, setOpen] = useState(false)
 
   const selectedType: DataType = Form.useWatch("columnType", form)
   const selectedMethod: MethodType = Form.useWatch("columnMethod", form)
-  const selectedMethodOptions = Form.useWatch("methodOptions", form)
+  const selectedFormMethodOptions = Form.useWatch("methodOptions", form)
 
   // Select the right current type and method according to column's selection
   useEffect(() => {
@@ -62,6 +63,9 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
     form.setFieldValue("columnMethod", method)
     setInitialMethod(method)
 
+    const methodOptions: any | undefined = selectedMethodOptions.size === 1 ? [...selectedMethodOptions][0] : undefined
+    setInitialMethodOptions(methodOptions)
+
     selectedMethods.size === 1 && selectedMethodOptions.size === 1 && [...selectedMethodOptions][0]
       ? form.setFieldValue("methodOptions", JSON.parse([...selectedMethodOptions][0]))
       : form.setFieldValue("methodOptions", undefined)
@@ -74,8 +78,8 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
       form.setFieldValue("methodOptions", undefined)
       form.setFieldValue("columnMethod", undefined)
       setResult(undefined)
-    } else {
-      form.setFieldValue("columnMethod", initialMethod)
+    } else if (initialMethodOptions) {
+      form.setFieldsValue({ methodOptions: JSON.parse(initialMethodOptions) })
     }
   }, [selectedType])
 
@@ -83,6 +87,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
   useEffect(() => {
     if (selectedMethod !== initialMethod) {
       form.setFieldValue("methodOptions", undefined)
+      form.setFieldsValue({ methodOptions: getMethodOptions(selectedMethod) })
       setResult(undefined)
     }
   }, [selectedMethod])
@@ -91,7 +96,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
     if (example && form.getFieldValue("columnMethod") && form.getFieldValue("methodOptions")) {
       handleApplyMethod(example, form.getFieldValue("columnMethod"))
     }
-  }, [example, selectedMethod, selectedMethodOptions])
+  }, [example, selectedMethod, selectedFormMethodOptions])
 
   // Set example and result according to selected columns
   useEffect(() => {
@@ -144,6 +149,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
       const updatedFileMetaData = [...fileMetadata]
       await Promise.all(
         selectedRowKeys.map(async (key) => {
+          const formMethodOptions = form.getFieldsValue().methodOptions
           if (selectedMethod) {
             const rowResult = await applyMethod(
               updatedFileMetaData[Number(key)].example,
@@ -154,7 +160,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
               ...updatedFileMetaData[Number(key)],
               ...(form.getFieldValue("columnType") && { type: form.getFieldValue("columnType") }),
               ...(form.getFieldValue("columnMethod") && { method: form.getFieldValue("columnMethod"), result: rowResult }),
-              ...(form.getFieldValue("methodOptions") && { methodOptions: form.getFieldValue("methodOptions") }),
+              ...{ methodOptions: formMethodOptions },
             }
           } else {
             const methodList = methodsForTypes[selectedType]
@@ -252,3 +258,67 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
 }
 
 export default EditMethodBox
+
+const getMethodOptions = (method: MethodType): any => {
+  switch (method) {
+    case "Hash":
+      return {
+        hashType: "SHA2",
+      }
+    case "FpeInteger":
+      return {
+        digit: 6,
+        radix: 10,
+      }
+    case "FpeString":
+      return {
+        alphabet: "alpha_numeric",
+      }
+    case "MaskWords" || "TokenizeWords":
+      return {
+        wordsList: [],
+      }
+    case "Regex":
+      return {}
+    case "AggregationDate":
+      return {
+        timeUnit: "Day",
+      }
+    case "AggregationInteger" || "AggregationFloat":
+      return {
+        powerOfTen: 0,
+      }
+    case "NoiseDate":
+      return {
+        distribution: "Gaussian",
+        mean: {
+          precision: 1,
+          unit: "Day",
+        },
+        stdDev: {
+          precision: 1,
+          unit: "Day",
+        },
+      }
+    case "NoiseInteger" || "NoiseFloat":
+      return {
+        distribution: "Gaussian",
+        lowerBoundary: 1,
+        upperBoundary: 2,
+        mean: 1,
+        stdDev: 1,
+      }
+    case "RescalingInteger" || "RescalingFloat":
+      return {
+        mean: 1,
+        stdDev: 1,
+        scale: 1,
+        translation: 1,
+      }
+    case "DeleteColumn":
+      return {}
+
+    default:
+      return {}
+  }
+}
