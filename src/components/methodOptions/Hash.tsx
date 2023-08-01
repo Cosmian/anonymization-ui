@@ -27,12 +27,7 @@ export const HashOptions: React.FC<HashOptionsProps> = ({ form }) => {
 
   return (
     <>
-      <Form.Item
-        name={["methodOptions", "hashType"]}
-        label="Type"
-        rules={[{ required: true, message: "Please select a type" }]}
-        initialValue={"SHA2"}
-      >
+      <Form.Item name={["methodOptions", "hashType"]} label="Type" rules={[{ required: true, message: "Please select a type" }]}>
         <Select
           options={[
             { value: "SHA2", label: "SHA 2" },

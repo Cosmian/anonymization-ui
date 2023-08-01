@@ -4,13 +4,12 @@ import { Rule } from "antd/lib/form"
 export const FpeIntegerOptions: React.FC = () => {
   return (
     <>
-      <Form.Item name={["methodOptions", "radix"]} label="Radix" initialValue={10} style={{ display: "none" }}>
+      <Form.Item name={["methodOptions", "radix"]} label="Radix" style={{ display: "none" }}>
         <InputNumber disabled />
       </Form.Item>
       <Form.Item
         name={["methodOptions", "digit"]}
         label="Digit"
-        initialValue={6}
         rules={[
           { required: true, message: "Please provide a value" },
           {
@@ -29,7 +28,7 @@ export const FpeIntegerOptions: React.FC = () => {
 export const FpeStringOptions: React.FC = () => {
   return (
     <>
-      <Form.Item name={["methodOptions", "alphabet"]} label="Alphabet" initialValue="alpha_numeric">
+      <Form.Item name={["methodOptions", "alphabet"]} label="Alphabet">
         <Select
           options={[
             { value: "alpha_numeric", label: "Alpha numeric" },
