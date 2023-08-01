@@ -89,13 +89,14 @@ const Edit = (): JSX.Element => {
                 }}
               >
                 {Object.entries(flatten).map((value, key) => {
-                  if (value[0] === "correlation") {
-                    return (
-                      <span key={key}>
+                  if (key!= null) {
+                    if (value[0] === "correlation") {
+                      return (
+                        <span key={key}>
                         – <span className="strong">{value[0].charAt(0).toUpperCase() + value[0].slice(1)}</span>:{" "}
                         {getCorrelatedColumns(value[1], fileMetadata).map((name, index) => (
                           <Tag key={index}>{name}</Tag>
-                        ))}{" "}
+                          ))}{" "}
                         <br />
                       </span>
                     )
@@ -106,6 +107,7 @@ const Edit = (): JSX.Element => {
                       </span>
                     )
                   }
+                }
                 })}
               </div>
             </>
