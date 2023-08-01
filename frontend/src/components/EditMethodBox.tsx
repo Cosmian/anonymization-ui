@@ -85,6 +85,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
 
   // Reset form methodOptions when changing method selection
   useEffect(() => {
+    console.log(selectedMethod, initialMethod)
     if (selectedMethod !== initialMethod) {
       form.setFieldsValue({ methodOptions: getMethodOptions(selectedMethod) })
       setResult(undefined)
@@ -127,6 +128,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
     setSelectMethodList([])
     setExample(undefined)
     setResult(undefined)
+    setOpen(false)
   }
 
   const clearMethod = async (): Promise<void> => {

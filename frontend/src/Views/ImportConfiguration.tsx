@@ -1,4 +1,4 @@
-import { notification } from "antd"
+import { Space, notification } from "antd"
 import { Metadata } from "cloudproof_js"
 import { BackArrow, Button, FileDrop, RoundedFrame } from "cosmian_ui"
 import localForage from "localforage"
@@ -10,7 +10,7 @@ import { ConfigurationInfo, FileInfo } from "../utils/utils"
 
 type fileResult = { metadata: Metadata[]; configurationInfo: ConfigurationInfo }
 
-const Import = (): JSX.Element => {
+const ImportConfiguration = (): JSX.Element => {
   const navigate = useNavigate()
   const [configurationInfo, setConfigurationInfo] = useState<ConfigurationInfo | undefined>()
   const [fileInfo, setFileInfo] = useState<FileInfo | undefined>()
@@ -33,7 +33,7 @@ const Import = (): JSX.Element => {
       notification.error({
         duration: 4,
         message: "Import",
-        description: "Error importing this JSON: is not a configuration.",
+        description: "Error importing this JSON: is not a Configuration.",
       })
       resetFile()
     }
@@ -50,7 +50,7 @@ const Import = (): JSX.Element => {
       const uuid = uuidv4()
       try {
         await localForage.setItem(uuid, { metadata: fileMetadata, configurationInfo: { ...configurationInfo, uuid } })
-        navigate(paths_config.edit, { state: { uuid } })
+        navigate(paths_config.edit + `/${uuid}`, { state: { type: "local" } })
       } catch (error) {
         notification.error({
           duration: 3,
@@ -64,7 +64,7 @@ const Import = (): JSX.Element => {
 
   return (
     <div className="create">
-      <BackArrow onClick={() => navigate(paths_config.home)} text="Back to configurations list" />
+      <BackArrow onClick={() => navigate(paths_config.configurationList)} text="Back to configurations list" />
       <h1>Import configuration file</h1>
       <RoundedFrame>
         <h2 className="h4">Upload your JSON file</h2>
@@ -75,16 +75,16 @@ const Import = (): JSX.Element => {
           updateFile={fileInfo}
         />
       </RoundedFrame>
-      <div className="buttons">
+      <Space className="buttons">
         <Button type="outline" onClick={() => resetFile()} disabled={!fileMetadata}>
           Cancel
         </Button>
         <Button onClick={() => saveFile()} disabled={!fileMetadata}>
           Import configuration
         </Button>
-      </div>
+      </Space>
     </div>
   )
 }
 
-export default Import
+export default ImportConfiguration
