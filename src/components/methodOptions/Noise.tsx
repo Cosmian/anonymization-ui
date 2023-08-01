@@ -58,7 +58,13 @@ export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form, columns, getCo
         <Select disabled={!notCorrelated} options={noiseFormOptions} />
       </Form.Item>
       {notCorrelated ? (
-        <Form.Item valuePropName="checked" initialValue={undefined} style={{ marginBottom: 0 }} className="tags-list">
+        <Form.Item
+          valuePropName="checked"
+          initialValue={undefined}
+          style={{ marginBottom: 0 }}
+          className="tags-list"
+          name={["methodOptions", "correlation"]}
+        >
           <>
             <Checkbox onChange={() => setUuidCorrelation()} disabled={columns.length < 2}>
               Apply correlated noise for columns:

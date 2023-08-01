@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DownloadOutlined, EditOutlined } from "@ant-design/icons"
 import { Skeleton, Space, Table, Tag, Typography, notification } from "antd"
 import { BackArrow, Button, RoundedFrame } from "cosmian_ui"
@@ -75,43 +76,7 @@ const Edit = (): JSX.Element => {
       key: "methodOptions2",
       width: 120,
       render: (methodOptions: any) => {
-        const flatten = flattenObject(methodOptions)
-        if (flatten)
-          return (
-            <>
-              <div
-                style={{
-                  width: methodOptions ? 250 : 0,
-                  display: "block",
-                  height: "auto",
-                  maxHeight: 100,
-                  overflow: "auto",
-                }}
-              >
-                {Object.entries(flatten).map((value, key) => {
-                  if (key != null) {
-                    if (value[0] === "correlation") {
-                      return (
-                        <span key={key}>
-                          – <span className="strong">{value[0].charAt(0).toUpperCase() + value[0].slice(1)}</span>:{" "}
-                          {getCorrelatedColumns(value[1], fileMetadata).map((name, index) => (
-                            <Tag key={index}>{name}</Tag>
-                          ))}{" "}
-                          <br />
-                        </span>
-                      )
-                    } else {
-                      return (
-                        <span key={key}>
-                          – <span className="strong">{value[0].charAt(0).toUpperCase() + value[0].slice(1)}</span>: {value[1]} <br />
-                        </span>
-                      )
-                    }
-                  }
-                })}
-              </div>
-            </>
-          )
+        return <OptionBox methodOptions={methodOptions} fileMetadata={fileMetadata as MetaData[]} />
       },
     },
     {
@@ -165,6 +130,7 @@ const Edit = (): JSX.Element => {
       })
     }
   }
+
   if (configurationInfo == null || fileMetadata == null) return <Skeleton />
   return (
     <div className="edit-view">
@@ -211,3 +177,47 @@ const Edit = (): JSX.Element => {
 }
 
 export default Edit
+
+const OptionBox: React.FC<{ methodOptions: any; fileMetadata: MetaData[] }> = ({ methodOptions, fileMetadata }) => {
+  const flatten = flattenObject(methodOptions)
+  if (flatten) {
+    return (
+      <>
+        <div
+          style={{
+            width: methodOptions ? 250 : 0,
+            display: "block",
+            height: "auto",
+            maxHeight: 100,
+            overflow: "scroll",
+          }}
+        >
+          {Object.entries(flatten).map((value, key) => {
+            if (!value[1]) return <></>
+            if (key != null) {
+              if (value[0] === "correlation") {
+                return (
+                  <span key={key}>
+                    – <span className="strong">{value[0].charAt(0).toUpperCase() + value[0].slice(1)}</span>:{" "}
+                    {getCorrelatedColumns(value[1], fileMetadata).map((name, index) => (
+                      <Tag key={index}>{name}</Tag>
+                    ))}{" "}
+                    <br />
+                  </span>
+                )
+              } else {
+                return (
+                  <span key={key}>
+                    – <span className="strong">{value[0].charAt(0).toUpperCase() + value[0].slice(1)}</span>: {value[1]} <br />
+                  </span>
+                )
+              }
+            }
+          })}
+        </div>
+      </>
+    )
+  } else {
+    return <></>
+  }
+}
