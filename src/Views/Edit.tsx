@@ -189,7 +189,7 @@ const OptionBox: React.FC<{ methodOptions: any; fileMetadata: MetaData[] }> = ({
             display: "block",
             height: "auto",
             maxHeight: 100,
-            overflow: "scroll",
+            overflow: "auto",
           }}
         >
           {Object.entries(flatten).map((value, key) => {

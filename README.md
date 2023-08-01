@@ -5,7 +5,6 @@ This is the main UI for Cosmian CipherCompute and ZeroTrust
 ## Start application locally
 
 ```
-cd frontend
 npm install
 npm run dev
 ```

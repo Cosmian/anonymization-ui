@@ -86,7 +86,6 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
   // Reset form methodOptions when changing method selection
   useEffect(() => {
     if (selectedMethod !== initialMethod) {
-      form.setFieldValue("methodOptions", undefined)
       form.setFieldsValue({ methodOptions: getMethodOptions(selectedMethod) })
       setResult(undefined)
     } else if (initialMethodOptions) {
