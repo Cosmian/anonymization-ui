@@ -42,7 +42,7 @@ export enum MethodType {
   NoiseFloat = "NoiseFloat",
   RescalingInteger = "RescalingInteger",
   RescalingFloat = "RescalingFloat",
-  DeleteColumn = "DeleteColumn"
+  DeleteColumn = "DeleteColumn",
 }
 
 export const dataTypesSelect: { value: string; label: string; example: string | number }[] = [
@@ -63,11 +63,13 @@ export const methodsForTypes: {
     { value: "AggregationInteger", label: "Aggregation" },
     { value: "NoiseInteger", label: "Noise" },
     { value: "RescalingInteger", label: "Rescaling" },
+    { value: "DeleteColumn", label: "Delete column" },
   ],
   Float: [
-    { value: "AggregationFloat", label: "AggregationFloat" },
+    { value: "AggregationFloat", label: "Aggregation" },
     { value: "NoiseFloat", label: "Noise" },
     { value: "RescalingFloat", label: "Rescaling" },
+    { value: "DeleteColumn", label: "Delete column" },
   ],
   Text: [
     { value: "Hash", label: "Hash" },
@@ -75,10 +77,12 @@ export const methodsForTypes: {
     { value: "MaskWords", label: "Mask words" },
     { value: "TokenizeWords", label: "Tokenize words" },
     { value: "Regex", label: "Regex" },
+    { value: "DeleteColumn", label: "Delete column" },
   ],
   Date: [
     { value: "AggregationDate", label: "Aggregation" },
     { value: "NoiseDate", label: "Noise" },
+    { value: "DeleteColumn", label: "Delete column" },
   ],
 }
 
@@ -108,6 +112,7 @@ export const methodsInfo: { [key: string]: string } = {
     "This method aims to partially hide data, while applying normalization and linear transformation to a column. One must provide the mean and standard deviation of the data, as well as the scaling parameters.\n\n /!\\ Keep in mind that these parameters are sensitive, as they allow to recover the original data.",
   RescalingFloat:
     "This method aims to partially hide data, while applying normalization and linear transformation to a column. One must provide the mean and standard deviation of the data, as well as the scaling parameters.\n\n /!\\ Keep in mind that these parameters are sensitive, as they allow to recover the original data.",
+  DeleteColumn: "This method will exclude the selected column from the result.",
 }
 
 export const getCommonMethods = (types: DataType[]): DefaultOptionType[] => {

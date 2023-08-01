@@ -7,13 +7,13 @@ services:
       - 8000:8000
     volumes:
       - ./nginx.conf:/etc/nginx/templates/nginx.conf.template
-      - /var/folders/bb/v_s_3mdd7qjcrjg_pw3zcvy00000gn/T/tmp0v2wk63l/cert.conf.pem:/root/cert.conf.pem
+      - /var/folders/bb/v_s_3mdd7qjcrjg_pw3zcvy00000gn/T/tmpkxcmwdek/cert.conf.pem:/root/cert.conf.pem
     environment:
       NGINX_ENVSUBST_OUTPUT_DIR: /etc/nginx
-      MICROSERVICE_DOMAIN_NAME: b9ee77cc45ecf913.cosmian.app
+      MICROSERVICE_DOMAIN_NAME: b246c17483ad1bd2.cosmian.app
   anonymization-frontend:
     build:
-      context: frontend/
+      context: .
       dockerfile: Dockerfile
       args:
         - VITE_API_URL=http://127.0.0.1:8000
