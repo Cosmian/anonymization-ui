@@ -85,29 +85,29 @@ const Edit = (): JSX.Element => {
                   display: "block",
                   height: "auto",
                   maxHeight: 100,
-                  overflow: "scroll",
+                  overflow: "auto",
                 }}
               >
                 {Object.entries(flatten).map((value, key) => {
-                  if (key!= null) {
+                  if (key != null) {
                     if (value[0] === "correlation") {
                       return (
                         <span key={key}>
-                        – <span className="strong">{value[0].charAt(0).toUpperCase() + value[0].slice(1)}</span>:{" "}
-                        {getCorrelatedColumns(value[1], fileMetadata).map((name, index) => (
-                          <Tag key={index}>{name}</Tag>
+                          – <span className="strong">{value[0].charAt(0).toUpperCase() + value[0].slice(1)}</span>:{" "}
+                          {getCorrelatedColumns(value[1], fileMetadata).map((name, index) => (
+                            <Tag key={index}>{name}</Tag>
                           ))}{" "}
-                        <br />
-                      </span>
-                    )
-                  } else {
-                    return (
-                      <span key={key}>
-                        – <span className="strong">{value[0].charAt(0).toUpperCase() + value[0].slice(1)}</span>: {value[1]} <br />
-                      </span>
-                    )
+                          <br />
+                        </span>
+                      )
+                    } else {
+                      return (
+                        <span key={key}>
+                          – <span className="strong">{value[0].charAt(0).toUpperCase() + value[0].slice(1)}</span>: {value[1]} <br />
+                        </span>
+                      )
+                    }
                   }
-                }
                 })}
               </div>
             </>
