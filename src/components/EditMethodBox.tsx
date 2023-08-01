@@ -164,6 +164,12 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
               ...(form.getFieldValue("columnMethod") && { method: form.getFieldValue("columnMethod"), result: rowResult }),
               ...{ methodOptions: formMethodOptions },
             }
+            if (form.getFieldValue("columnMethod") === "DeleteColumn") {
+              updatedFileMetaData[Number(key)] = {
+                ...updatedFileMetaData[Number(key)],
+                methodOptions: {},
+              }
+            }
           } else {
             const methodList = methodsForTypes[selectedType]
             if (!methodList.some((method: DefaultOptionType) => method.value === updatedFileMetaData[Number(key)].method)) {
@@ -227,18 +233,22 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
               </Form.Item>
             </>
           )}
-          <h3 className="h6" style={customDisabledTextStyle}>
-            Result
-          </h3>
-          <Form.Item>
-            {result !== undefined && result.toString().substring(0, 5) === "Error" ? (
-              <div style={{ color: "#e34319", fontStyle: "italic" }}>{result as string}</div>
-            ) : (
-              <div className="input" style={customDisabledBackgroundStyle}>
-                {result?.toString()}
-              </div>
-            )}
-          </Form.Item>
+          {selectedMethod !== "DeleteColumn" && (
+            <>
+              <h3 className="h6" style={customDisabledTextStyle}>
+                Result
+              </h3>
+              <Form.Item>
+                {result !== undefined && result.toString().substring(0, 5) === "Error" ? (
+                  <div style={{ color: "#e34319", fontStyle: "italic" }}>{result as string}</div>
+                ) : (
+                  <div className="input" style={customDisabledBackgroundStyle}>
+                    {result?.toString()}
+                  </div>
+                )}
+              </Form.Item>
+            </>
+          )}
         </div>
         <div className="buttons">
           <Button type="dark" onClick={() => clearMethod()} disabled={!selectedRowKeys.length}>
