@@ -42,6 +42,7 @@ export enum MethodType {
   NoiseFloat = "NoiseFloat",
   RescalingInteger = "RescalingInteger",
   RescalingFloat = "RescalingFloat",
+  DeleteColumn = "DeleteColumn"
 }
 
 export const dataTypesSelect: { value: string; label: string; example: string | number }[] = [

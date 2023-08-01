@@ -89,6 +89,8 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
       form.setFieldValue("methodOptions", undefined)
       form.setFieldsValue({ methodOptions: getMethodOptions(selectedMethod) })
       setResult(undefined)
+    } else if (initialMethodOptions) {
+      form.setFieldsValue({ methodOptions: JSON.parse(initialMethodOptions) })
     }
   }, [selectedMethod])
 
