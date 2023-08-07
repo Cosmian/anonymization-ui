@@ -7,15 +7,17 @@ services:
       - 8001:8000
     volumes:
       - ./nginx.conf:/etc/nginx/templates/nginx.conf.template
-      - /var/folders/gp/49n5c76n72q8lh1yslcl_k1c0000gp/T/tmpuzf9cr9d/cert.conf.pem:/root/cert.conf.pem
+      - /var/folders/gp/49n5c76n72q8lh1yslcl_k1c0000gp/T/tmpn1e5u2u0/cert.conf.pem:/root/cert.conf.pem
     environment:
       NGINX_ENVSUBST_OUTPUT_DIR: /etc/nginx
       MICROSERVICE_DOMAIN_NAME: 92152a2b6d83a8ed.staging.cosmian.app
-  # anonymization-frontend:
-  #   build:
-  #     context: frontend/
-  #     dockerfile: Dockerfile
-  #     args:
-  #       - VITE_API_URL=http://127.0.0.1:8000
-  #   ports:
-  #     - 4173:4173
+  anonymization-frontend:
+    build:
+      context: frontend/
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=http://127.0.0.1:8001
+    ports:
+      - 4173:4173
+    volumes:
+      - /var/folders/gp/49n5c76n72q8lh1yslcl_k1c0000gp/T/tmpn1e5u2u0/cert.conf.pem:/app/public/cert.conf.pem
