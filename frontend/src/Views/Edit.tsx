@@ -36,7 +36,9 @@ const Edit = (): JSX.Element => {
       if (fetchType === "local" && id) {
         configuration = await localForage.getItem(id)
       } else {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations/${id}`)
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations/${id}`, {
+          credentials: "include",
+        })
         if (response.ok) {
           configuration = await response.json()
         }
@@ -111,6 +113,7 @@ const Edit = (): JSX.Element => {
           formData.append("file", jsonFile, `${configuration?.configurationInfo.name}.json`)
           const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations/${id}`, {
             method: "PUT",
+            credentials: "include",
             body: formData,
           })
           const responseContent = await response.text()

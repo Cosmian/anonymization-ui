@@ -423,7 +423,9 @@ export const downloadLocalConfiguration = async (uuid: string | undefined): Prom
 
 export const downloadUploadedConfiguration = async (uuid: string | undefined): Promise<void> => {
   if (uuid) {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations/${uuid}`)
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations/${uuid}`, {
+      credentials: "include",
+    })
     if (response.ok) {
       const configuration = await response.json()
       const content = JSON.stringify(configuration)
@@ -442,7 +444,9 @@ export const downloadUploadedConfiguration = async (uuid: string | undefined): P
 
 export const downloadAnonymization = async (name: string | undefined): Promise<void> => {
   if (name) {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/anonymizations/${name}`)
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/anonymizations/${name}`, {
+      credentials: "include",
+    })
     if (response.ok) {
       const content = await response.text()
       const index = name.indexOf("_", name.indexOf("_") + 1)
@@ -469,6 +473,7 @@ export const uploadConfiguration = async (uuid: string | undefined, enclaveKey: 
     formData.append("file", jsonFile, `${configuration?.configurationInfo.name}.json`)
     const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations`, {
       method: "POST",
+      credentials: "include",
       body: formData,
     })
     const responseContent = await response.text()

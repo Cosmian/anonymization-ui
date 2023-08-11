@@ -45,7 +45,9 @@ const ConfigurationList = (): JSX.Element => {
       }
     }
     const fetchUploadedConfigurations = async (): Promise<void> => {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations`)
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations`, {
+        credentials: "include",
+      })
       const data = await response.json()
       if (data) {
         const keys = Object.keys(data)
@@ -89,6 +91,7 @@ const ConfigurationList = (): JSX.Element => {
     if (uploadedConfigToDelete) {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations/${uploadedConfigToDelete}`, {
         method: "DELETE",
+        credentials: "include",
       })
       const responseContent = await response.text()
       if (response.ok) {

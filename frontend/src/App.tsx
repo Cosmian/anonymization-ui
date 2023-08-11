@@ -28,8 +28,10 @@ function App(): JSX.Element {
       .catch((error) => console.error("Error fetching file:", error))
   }
 
-  const checkMicroserviceHealth = async (): Promise<void> => {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/health`)
+  const checkMicroserviceHealth = async (): Promise<any> => {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/health`, {
+      credentials: "include",
+    })
     if (response.status === 200) {
       setMicroserviceState(true)
     } else {
