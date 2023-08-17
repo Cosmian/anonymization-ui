@@ -14,7 +14,9 @@ const AnonymizationList = (): JSX.Element => {
   useEffect(() => {
     context?.checkMicroserviceHealth()
     const fetchDataSets = async (): Promise<void> => {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/anonymizations`)
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/anonymizations`, {
+        credentials: "include",
+      })
       const data = await response.json()
       if (data) {
         setDataSetList(data)
@@ -90,6 +92,7 @@ const AnonymizationList = (): JSX.Element => {
     if (anonymizationToDelete) {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/anonymizations/${anonymizationToDelete}`, {
         method: "DELETE",
+        credentials: "include",
       })
       const responseContent = await response.text()
       if (response.ok) {

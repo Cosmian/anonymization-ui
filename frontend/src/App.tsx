@@ -7,7 +7,9 @@ function App(): JSX.Element {
   const [microserviceState, setMicroserviceState] = useState(false)
 
   const checkMicroserviceHealth = async (): Promise<void> => {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/health`)
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/health`, {
+      credentials: "include",
+    })
     if (response.status === 200) {
       setMicroserviceState(true)
     } else {
