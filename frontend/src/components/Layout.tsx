@@ -1,21 +1,32 @@
 import { Menu, MenuProps, Tooltip } from "antd"
 import { ItemType } from "antd/lib/menu/hooks/useItems"
 import { CosmianLogo, Header, MainLayout } from "cosmian_ui"
-import { useContext } from "react"
+import localForage from "localforage"
+import { useContext, useEffect, useState } from "react"
 import { IoBuildOutline, IoCloudOfflineOutline, IoCloudUploadOutline, IoDocumentLockOutline, IoFingerPrintSharp } from "react-icons/io5"
 import { Outlet, useLocation, useNavigate } from "react-router-dom"
 import AppContext from "../AppContext"
 import "../Views/style.less"
 
-const Layout = (): JSX.Element => {
+const Layout: React.FC = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const context = useContext(AppContext)
+  const [role, setRole] = useState<null | string>(null)
 
   const logo = <CosmianLogo link={window.location.origin} />
   const verifiedContent =
     "The microservice that you're querying has been verified by the application owner: code is running inside an enclave and code's fingerprint has been checked."
   const unverifiedContent = "The microservice that you're querying is not running."
+
+  useEffect(() => {
+    const handleGetRole = async (): Promise<void> => {
+      const role: string | null = await localForage.getItem("role")
+      setRole(role)
+    }
+    handleGetRole()
+  }, [])
+
   const rightElement = (
     <>
       {context?.microserviceState ? (
@@ -38,20 +49,28 @@ const Layout = (): JSX.Element => {
 
   const items: MenuProps["items"] = [
     {
-      icon: <IoDocumentLockOutline />,
-      key: "/anonymizations",
-      label: "Anonymized datasets",
-    },
-    {
       icon: <IoBuildOutline />,
       key: "/configurations",
       label: "Configuration",
     },
-    {
-      icon: <IoCloudUploadOutline />,
-      key: "/anonymize",
-      label: "Anonymize",
-    },
+    ...(role === "ateam"
+      ? [
+          {
+            icon: <IoDocumentLockOutline />,
+            key: "/anonymizations",
+            label: "Anonymized datasets",
+          },
+        ]
+      : []),
+    ...(role === "bteam"
+      ? [
+          {
+            icon: <IoCloudUploadOutline />,
+            key: "/anonymize",
+            label: "Anonymize",
+          },
+        ]
+      : []),
   ]
 
   const navigationClick = (item: ItemType): void => {
