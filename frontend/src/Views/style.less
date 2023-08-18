@@ -24,6 +24,12 @@
   .edit-table {
     max-height: 90vh;
     overflow-y: scroll;
+    .ant-checkbox-disabled .ant-checkbox-inner {
+      display: none;
+    }
+    .finetuning {
+      color: @primary;
+    }
   }
 }
 
@@ -241,9 +247,10 @@ textarea {
   display: flex;
   align-items: center;
   font-size: 0.9rem;
+  margin: 20px;
   .icon {
     color: @success;
-    margin-left: 10px;
+    margin: 10px;
   }
 }
 
@@ -252,7 +259,29 @@ textarea {
   align-items: center;
   font-size: 0.9rem;
   color: @danger;
+  margin: 20px;
   .icon {
-    margin-left: 10px;
+    margin: 10px;
+  }
+}
+
+.finetuning {
+  .ant-space {
+    display: block !important;
+    button {
+      width: 100%;
+    }
+  }
+}
+.finetuning,
+.anonymization {
+  .finalized {
+    color: @success;
+  }
+  .pending {
+    color: @primary;
+  }
+  .status {
+    margin-left: 5px;
   }
 }

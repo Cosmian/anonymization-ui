@@ -1,4 +1,4 @@
-import { CloudServerOutlined, DesktopOutlined } from "@ant-design/icons"
+import { CheckCircleOutlined, CloudServerOutlined, DesktopOutlined, ToolOutlined } from "@ant-design/icons"
 import { Dropdown, Space, Table, notification } from "antd"
 import { Button, OptionButton, RoundedFrame } from "cosmian_ui"
 import localForage from "localforage"
@@ -12,6 +12,7 @@ import { paths_config } from "../config/paths"
 import {
   ConfigurationInfo,
   MetaData,
+  Status,
   UploadedConfigurationInfo,
   downloadLocalConfiguration,
   downloadUploadedConfiguration,
@@ -57,6 +58,7 @@ const ConfigurationList = (): JSX.Element => {
             name: data[key].name,
             created_at: data[key].created_at,
             hash: data[key].hash,
+            status: data[key].status,
           }
           return [...acc, configuration]
         }, [])
@@ -135,21 +137,51 @@ const ConfigurationList = (): JSX.Element => {
       },
     },
     {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (status: Status) => {
+        switch (status) {
+          case "open":
+            return (
+              <div className="pending">
+                <ToolOutlined />
+                <span className="status">Fine-tuning pending</span>
+              </div>
+            )
+          case "closed":
+            return (
+              <div className="finalized">
+                <CheckCircleOutlined />
+                <span className="status">Finalized</span>
+              </div>
+            )
+          case "finetuned":
+            return (
+              <div className="finalized">
+                <CheckCircleOutlined />
+                <span className="status">Fine-tuned</span>
+              </div>
+            )
+        }
+      },
+    },
+    {
       title: "",
       key: "options",
       width: 100,
-      render: (configuration: ConfigurationInfo) => {
+      render: (configuration: UploadedConfigurationInfo) => {
+        const finetuned = configuration.status === "finetuned"
         const handleSelect = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
           e.stopPropagation()
-          navigate(paths_config.edit + `/${configuration.uuid}`, { state: { type: "uploaded" } })
+          navigate(paths_config.configuration + `/${configuration.uuid}`, { state: { status: "closed" } })
         }
 
         const handleDownload = (): void => {
           downloadUploadedConfiguration(configuration.uuid)
         }
-
         const items = [
-          { label: "Download Configuration", key: "download", onClick: handleDownload },
+          { label: "Download Configuration", key: "download", onClick: handleDownload, disabled: finetuned },
           {
             label: "Delete uploaded configuration",
             key: "delete",
@@ -164,7 +196,7 @@ const ConfigurationList = (): JSX.Element => {
 
         return (
           <Space>
-            <Button type="dark" onClick={(e) => handleSelect(e)}>
+            <Button type="dark" onClick={(e) => handleSelect(e)} disabled={finetuned}>
               Details
             </Button>
             <Dropdown menu={{ items }} placement="bottomRight" trigger={["hover"]}>
@@ -201,7 +233,7 @@ const ConfigurationList = (): JSX.Element => {
       render: (configuration: ConfigurationInfo) => {
         const handleSelect = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
           e.stopPropagation()
-          navigate(paths_config.edit + `/${configuration.uuid}`, { state: { type: "local" } })
+          navigate(paths_config.configuration + `/${configuration.uuid}`, { state: { status: "local" } })
         }
 
         const handleDownload = (): void => {

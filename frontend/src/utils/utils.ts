@@ -10,13 +10,13 @@ export type MetaData = {
   type: string
   example: string
   method: undefined | string
-  methodOptions: undefined | { [key: string]: string }
+  methodOptions: undefined | { [key: string]: string | boolean }
   result: undefined | string
 }
 
 export type ConfigurationInfo = { uuid: string; name: string; created_at: string; file: string; delimiter: string }
 
-export type UploadedConfigurationInfo = { uuid: string; name: string; created_at: string; hash: string }
+export type UploadedConfigurationInfo = { uuid: string; name: string; created_at: string; hash: string; status: Status }
 
 export type FileInfo = { last_modified: number; name: string; size: number; type: string }
 
@@ -45,6 +45,13 @@ export enum MethodType {
   RescalingInteger = "RescalingInteger",
   RescalingFloat = "RescalingFloat",
   DeleteColumn = "DeleteColumn",
+}
+
+export enum Status {
+  Local = "local",
+  Open = "open",
+  Closed = "closed",
+  FineTuned = "finetuned",
 }
 
 export const dataTypesSelect: { value: string; label: string; example: string | number }[] = [
@@ -453,13 +460,30 @@ export const downloadAnonymization = async (name: string | undefined): Promise<v
   }
 }
 
+const checkFineTuningOption = (fileMetadata: MetaData[] | undefined): boolean => {
+  if (fileMetadata) {
+    return fileMetadata.some((data) => data.methodOptions?.fineTuning === true)
+  }
+  return false
+}
+
+const checkFineTuningNotFilled = (fileMetadata: MetaData[] | undefined): boolean => {
+  if (fileMetadata) {
+    return fileMetadata.some(
+      (data) => data.methodOptions?.fineTuning === true && !data.methodOptions.distribution && !data.methodOptions.mean
+    )
+  }
+  return false
+}
+
 export const uploadConfiguration = async (uuid: string | undefined): Promise<void> => {
   if (uuid) {
     const configuration: { configurationInfo: ConfigurationInfo; metadata: MetaData[] } | null = await localForage.getItem(uuid)
     const jsonFile = new Blob([JSON.stringify(configuration)], { type: "application/json" })
     const formData = new FormData()
     formData.append("file", jsonFile, `${configuration?.configurationInfo.name}.json`)
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations`, {
+    const status = checkFineTuningOption(configuration?.metadata) ? "open" : "closed"
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations?status=${status}`, {
       method: "POST",
       body: formData,
       credentials: "include",
@@ -480,3 +504,60 @@ export const uploadConfiguration = async (uuid: string | undefined): Promise<voi
     })
   }
 }
+
+export const updateConfiguration = async (
+  uuid: string | undefined,
+  configuration: { metadata: MetaData[]; configurationInfo: ConfigurationInfo }
+): Promise<void> => {
+  if (uuid) {
+    const jsonFile = new Blob([JSON.stringify(configuration)], { type: "application/json" })
+    const formData = new FormData()
+    formData.append("file", jsonFile, `${configuration?.configurationInfo.name}.json`)
+    const status = checkFineTuningNotFilled(configuration?.metadata) ? "open" : "finetuned"
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations/${uuid}?status=${status}`, {
+      method: "PUT",
+      body: formData,
+      credentials: "include",
+    })
+    const responseContent = await response.text()
+    if (response.ok) {
+      notification.success({
+        duration: 3,
+        message: "Update",
+        description: responseContent,
+      })
+      return
+    }
+    notification.error({
+      duration: 3,
+      message: "Update",
+      description: responseContent,
+    })
+  }
+}
+
+// const updatedConfigurationInfo = { ...(configurationInfo as ConfigurationInfo), name: newTitle }
+// setConfigurationInfo(updatedConfigurationInfo)
+// const configuration = { metadata: fileMetadata, configurationInfo: updatedConfigurationInfo }
+// const jsonFile = new Blob([JSON.stringify(configuration)], { type: "application/json" })
+// const formData = new FormData()
+// formData.append("file", jsonFile, `${configuration?.configurationInfo.name}.json`)
+// const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations/${id}`, {
+//   method: "PUT",
+//   body: formData,
+//   credentials: "include",
+// })
+// const responseContent = await response.text()
+// if (response.ok) {
+//   notification.success({
+//     duration: 3,
+//     message: "Rename configuration",
+//     description: responseContent,
+//   })
+// } else {
+//   notification.error({
+//     duration: 3,
+//     message: "Rename configuration",
+//     description: responseContent,
+//   })
+// }

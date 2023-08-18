@@ -60,7 +60,7 @@ const CreateConfiguration = (): JSX.Element => {
           metadata: fileMetadata,
           configurationInfo: { name, created_at: new Date().toLocaleString(), file: fileInfo?.name, uuid, delimiter },
         })
-        navigate(paths_config.edit + `/${uuid}`, { state: { type: "local" } })
+        navigate(paths_config.configuration + `/${uuid}`, { state: { statuss: "local" } })
       } catch (error) {
         notification.error({
           duration: 3,

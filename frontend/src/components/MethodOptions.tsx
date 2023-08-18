@@ -1,6 +1,6 @@
 import { FormInstance } from "antd"
 import React from "react"
-import { MethodType } from "../utils/utils"
+import { MethodType, Status } from "../utils/utils"
 import { DateAggregationOptions, NumberAggregationOptions } from "./methodOptions/Aggregation"
 import { MaskWordsOptions, TokenizeWordsOptions } from "./methodOptions/BlockWords"
 import { FpeIntegerOptions, FpeStringOptions } from "./methodOptions/Fpe"
@@ -14,9 +14,10 @@ interface MethodOptionsProps {
   form: FormInstance
   columns: string[]
   getCorrelatedColumns: (uuid: string) => string[]
+  status: Status
 }
 
-const MethodOptions: React.FC<MethodOptionsProps> = ({ selected, form, columns, getCorrelatedColumns }) => {
+const MethodOptions: React.FC<MethodOptionsProps> = ({ selected, form, columns, getCorrelatedColumns, status }) => {
   return (
     <>
       {selected === "Hash" && <HashOptions form={form} />}
@@ -29,9 +30,9 @@ const MethodOptions: React.FC<MethodOptionsProps> = ({ selected, form, columns, 
       {(selected === "AggregationInteger" || selected === "AggregationFloat") && (
         <NumberAggregationOptions float={form.getFieldValue("columnType") === "Float"} />
       )}
-      {(selected === "RescalingInteger" || selected === "RescalingFloat") && <RescalingOptions />}
+      {(selected === "RescalingInteger" || selected === "RescalingFloat") && <RescalingOptions form={form} status={status} />}
       {(selected === "NoiseInteger" || selected === "NoiseFloat" || selected === "NoiseDate") && (
-        <NoiseOptions form={form} columns={columns} getCorrelatedColumns={getCorrelatedColumns} />
+        <NoiseOptions form={form} columns={columns} getCorrelatedColumns={getCorrelatedColumns} status={status} />
       )}
     </>
   )

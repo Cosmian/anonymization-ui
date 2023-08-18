@@ -1,4 +1,3 @@
-import localForage from "localforage"
 import { useEffect, useState } from "react"
 import AppContext from "./AppContext"
 import AppRouter from "./Router"
@@ -14,7 +13,6 @@ function App(): JSX.Element {
         credentials: "include",
       })
       const role = await response.text()
-      await localForage.setItem("role", role)
       setRole(role)
     }
     fetchRole().catch((error) => {
@@ -35,7 +33,7 @@ function App(): JSX.Element {
 
   return (
     <>
-      <AppContext.Provider value={{ microserviceState, checkMicroserviceHealth }}>{role && <AppRouter />}</AppContext.Provider>
+      <AppContext.Provider value={{ microserviceState, checkMicroserviceHealth, role }}>{role && <AppRouter />}</AppContext.Provider>
     </>
   )
 }

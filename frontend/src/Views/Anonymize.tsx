@@ -24,7 +24,7 @@ const Anonymize = (): JSX.Element => {
   useEffect(() => {
     context?.checkMicroserviceHealth()
     const fetchConfigurations = async (): Promise<void> => {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/finalized_configurations`, {
         credentials: "include",
       })
       const data: { [key: string]: UploadedConfigurationInfo } = await response.json()
@@ -96,7 +96,7 @@ const Anonymize = (): JSX.Element => {
     <div className="anonymize">
       <h1>Anonymize data</h1>
       <RoundedFrame>
-        <h2 className="h4">1. Select Uploaded Configuration</h2>
+        <h2 className="h4">1. Select Finalized Configuration</h2>
         <Form form={form}>
           <Form.Item name="configuration">
             <Select options={configList} />

@@ -7,7 +7,15 @@ import { useLocation, useNavigate, useParams } from "react-router-dom"
 import AppContext from "../AppContext"
 import EditMethodBox from "../components/EditMethodBox"
 import { paths_config } from "../config/paths"
-import { ConfigurationInfo, MetaData, downloadFile, getCorrelatedColumns, uploadConfiguration } from "../utils/utils"
+import {
+  ConfigurationInfo,
+  MetaData,
+  Status,
+  downloadFile,
+  getCorrelatedColumns,
+  updateConfiguration,
+  uploadConfiguration,
+} from "../utils/utils"
 
 const ellipsisStyle: React.CSSProperties = { maxWidth: 100, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }
 
@@ -15,16 +23,19 @@ const flattenObject = (obj: Record<string, any>): Record<string, string> => {
   return Object.entries(obj).reduce((result, [key, value]) => {
     if (key === "wordsList") {
       return { [key]: value.toString() }
-    } else if (typeof value !== "object" || value === null || value === undefined) {
-      return { ...result, [key]: value }
+    } else if (typeof value === "object" && value) {
+      const nestedValues = Object.values(value)
+      result[key] = nestedValues.join(" ")
+    } else {
+      result[key] = value
     }
-    return { ...result, ...flattenObject(value) }
+    return result
   }, {})
 }
 
-const Edit = (): JSX.Element => {
+const Configuration = (): JSX.Element => {
   const { id } = useParams()
-  const fetchType: string = useLocation().state?.type
+  const fetchType: Status = useLocation().state?.status
   const navigate = useNavigate()
   const context = useContext(AppContext)
 
@@ -44,6 +55,10 @@ const Edit = (): JSX.Element => {
         })
         if (response.ok) {
           configuration = await response.json()
+        } else if (response.status === 403) {
+          throw new Error("Access forbidden to this configuration")
+        } else {
+          throw new Error("Error fetching configuration")
         }
       }
       if (configuration) {
@@ -62,13 +77,6 @@ const Edit = (): JSX.Element => {
     })
   }, [])
 
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: (newSelectedRowKeys: React.Key[]): void => {
-      setSelectedRowKeys(newSelectedRowKeys)
-    },
-  }
-
   const handleDownloadConfiguration = async (): Promise<void> => {
     const configuration = { configurationInfo, metadata: fileMetadata }
     const fileName = "config-" + configurationInfo?.name
@@ -78,6 +86,16 @@ const Edit = (): JSX.Element => {
 
   const handleUploadConfiguration = (configurationUuid: string | undefined): void => {
     uploadConfiguration(configurationUuid)
+    setTimeout(() => {
+      navigate(paths_config.configurationList)
+    }, 1000)
+  }
+
+  const handleUpdateConfiguration = (
+    configurationUuid: string | undefined,
+    configuration: { metadata: MetaData[]; configurationInfo: ConfigurationInfo }
+  ): void => {
+    updateConfiguration(configurationUuid, configuration)
     setTimeout(() => {
       navigate(paths_config.configurationList)
     }, 1000)
@@ -102,37 +120,9 @@ const Edit = (): JSX.Element => {
   const renameConfigTitle = async (newTitle: string): Promise<void> => {
     if (id) {
       try {
-        if (fetchType === "local") {
-          const updatedConfigurationInfo = { ...(configurationInfo as ConfigurationInfo), name: newTitle }
-          setConfigurationInfo(updatedConfigurationInfo)
-          await localForage.setItem(id, { metadata: fileMetadata, configurationInfo: updatedConfigurationInfo })
-        } else if (fetchType === "uploaded") {
-          const updatedConfigurationInfo = { ...(configurationInfo as ConfigurationInfo), name: newTitle }
-          setConfigurationInfo(updatedConfigurationInfo)
-          const configuration = { metadata: fileMetadata, configurationInfo: updatedConfigurationInfo }
-          const jsonFile = new Blob([JSON.stringify(configuration)], { type: "application/json" })
-          const formData = new FormData()
-          formData.append("file", jsonFile, `${configuration?.configurationInfo.name}.json`)
-          const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations/${id}`, {
-            method: "PUT",
-            body: formData,
-            credentials: "include",
-          })
-          const responseContent = await response.text()
-          if (response.ok) {
-            notification.success({
-              duration: 3,
-              message: "Rename configuration",
-              description: responseContent,
-            })
-          } else {
-            notification.error({
-              duration: 3,
-              message: "Rename configuration",
-              description: responseContent,
-            })
-          }
-        }
+        const updatedConfigurationInfo = { ...(configurationInfo as ConfigurationInfo), name: newTitle }
+        setConfigurationInfo(updatedConfigurationInfo)
+        await localForage.setItem(id, { metadata: fileMetadata, configurationInfo: updatedConfigurationInfo })
       } catch (error) {
         notification.error({
           duration: 3,
@@ -189,25 +179,37 @@ const Edit = (): JSX.Element => {
                 overflow: "scroll",
               }}
             >
-              {Object.entries(flatten).map((value, key) => {
-                if (value[0] === "correlation") {
-                  return (
+              {Object.entries(flatten).reduce((result: any[], [key, value]) => {
+                if (key === "correlation" && value) {
+                  return [
+                    ...result,
                     <span key={key}>
-                      – <span className="strong">{value[0].charAt(0).toUpperCase() + value[0].slice(1)}</span>:{" "}
-                      {getCorrelatedColumns(value[1], fileMetadata).map((name, index) => (
+                      – <span className="strong">{key.charAt(0).toUpperCase() + key.slice(1)}</span>:{" "}
+                      {getCorrelatedColumns(value, fileMetadata).map((name, index) => (
                         <Tag key={index}>{name}</Tag>
                       ))}{" "}
                       <br />
-                    </span>
-                  )
-                } else {
-                  return (
+                    </span>,
+                  ]
+                } else if (key === "fineTuning" && value) {
+                  return [
                     <span key={key}>
-                      – <span className="strong">{value[0].charAt(0).toUpperCase() + value[0].slice(1)}</span>: {value[1]} <br />
-                    </span>
-                  )
+                      <span className="strong finetuning">
+                        Fine-tuning <br />
+                      </span>
+                    </span>,
+                    ...result,
+                  ]
+                } else if (key && value) {
+                  return [
+                    ...result,
+                    <span key={key}>
+                      – <span className="strong">{key.charAt(0).toUpperCase() + key.slice(1)}</span>: {value.toString()} <br />
+                    </span>,
+                  ]
                 }
-              })}
+                return result
+              }, [])}
             </div>
           </>
         )
@@ -229,17 +231,19 @@ const Edit = (): JSX.Element => {
   if (configurationInfo == null || fileMetadata == null) return <Skeleton />
   return (
     <div className="edit-view">
-      <div className={fetchType === "local" ? "with-box" : ""}>
+      <div className={fetchType === "local" || fetchType !== "closed" ? "with-box" : ""}>
         <BackArrow onClick={() => navigate(paths_config.configurationList)} text="Back to Configuration list" />
         <Typography.Title
           level={1}
           style={{ marginBottom: "1em", fontSize: "1.875rem" }}
-          editable={{
-            onChange: (text) => renameConfigTitle(text),
-            text: configurationInfo?.name,
-            autoSize: { maxRows: 1, minRows: 1 },
-            icon: <EditOutlined style={{ marginLeft: "0.25em" }} />,
-          }}
+          editable={
+            fetchType === "local" && {
+              onChange: (text) => renameConfigTitle(text),
+              text: configurationInfo?.name,
+              autoSize: { maxRows: 1, minRows: 1 },
+              icon: <EditOutlined style={{ marginLeft: "0.25em" }} />,
+            }
+          }
         >
           {configurationInfo?.name}
         </Typography.Title>
@@ -252,6 +256,14 @@ const Edit = (): JSX.Element => {
               Upload Configuration
             </Button>
           )}
+          {fetchType === "open" && (
+            <Button
+              onClick={() => handleUpdateConfiguration(id, { metadata: fileMetadata, configurationInfo })}
+              icon={<CloudUploadOutlined />}
+            >
+              Update Configuration
+            </Button>
+          )}
         </Space>
         <RoundedFrame className="edit-table">
           <Table
@@ -259,22 +271,31 @@ const Edit = (): JSX.Element => {
             dataSource={fileMetadata}
             columns={columns}
             pagination={false}
-            rowSelection={fetchType === "local" ? rowSelection : undefined}
+            rowSelection={{
+              selectedRowKeys,
+              onChange: (newSelectedRowKeys: React.Key[]): void => {
+                setSelectedRowKeys(newSelectedRowKeys)
+              },
+              getCheckboxProps: (meta: MetaData) => ({
+                disabled: (fetchType === "open" && !meta.methodOptions?.fineTuning) || fetchType === "closed" || fetchType === undefined,
+              }),
+            }}
             tableLayout="auto"
             scroll={{ x: 800 }}
           />
         </RoundedFrame>
       </div>
-      {fetchType === "local" && (
+      {(fetchType === "local" || fetchType !== "closed") && (
         <EditMethodBox
           selectedRowKeys={selectedRowKeys}
           fileMetadata={fileMetadata}
           saveConfiguration={saveConfiguration}
           setSelectedRowKeys={setSelectedRowKeys}
+          status={fetchType}
         />
       )}
     </div>
   )
 }
 
-export default Edit
+export default Configuration
