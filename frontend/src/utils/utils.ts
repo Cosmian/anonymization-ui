@@ -535,29 +535,3 @@ export const updateConfiguration = async (
     })
   }
 }
-
-// const updatedConfigurationInfo = { ...(configurationInfo as ConfigurationInfo), name: newTitle }
-// setConfigurationInfo(updatedConfigurationInfo)
-// const configuration = { metadata: fileMetadata, configurationInfo: updatedConfigurationInfo }
-// const jsonFile = new Blob([JSON.stringify(configuration)], { type: "application/json" })
-// const formData = new FormData()
-// formData.append("file", jsonFile, `${configuration?.configurationInfo.name}.json`)
-// const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations/${id}`, {
-//   method: "PUT",
-//   body: formData,
-//   credentials: "include",
-// })
-// const responseContent = await response.text()
-// if (response.ok) {
-//   notification.success({
-//     duration: 3,
-//     message: "Rename configuration",
-//     description: responseContent,
-//   })
-// } else {
-//   notification.error({
-//     duration: 3,
-//     message: "Rename configuration",
-//     description: responseContent,
-//   })
-// }

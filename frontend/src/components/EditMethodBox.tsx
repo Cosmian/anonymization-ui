@@ -153,7 +153,13 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
       const updatedFileMetaData = [...fileMetadata]
       await Promise.all(
         selectedRowKeys.map(async (key) => {
-          const formMethodOptions = form.getFieldsValue().methodOptions
+          let formMethodOptions = form.getFieldsValue().methodOptions
+          if (initialMethodOptions) {
+            const initialCorrelationId = JSON.parse(initialMethodOptions).correlation
+            if (initialCorrelationId && selectedRowKeys.length === getCorrelatedColumns(initialCorrelationId, updatedFileMetaData).length) {
+              formMethodOptions = { ...formMethodOptions, correlation: initialCorrelationId }
+            }
+          }
           if (selectedMethod) {
             const rowResult = await applyMethod(
               updatedFileMetaData[Number(key)].example,
@@ -274,7 +280,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
 
 export default EditMethodBox
 
-const getMethodOptions = (method: MethodType): any => {
+export const getMethodOptions = (method: MethodType): any => {
   switch (method) {
     case "Hash":
       return {

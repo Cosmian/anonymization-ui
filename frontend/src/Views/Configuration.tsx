@@ -26,11 +26,11 @@ const flattenObject = (obj: Record<string, any>): Record<string, string> => {
     } else if (typeof value === "object" && value) {
       const nestedValues = Object.values(value)
       result[key] = nestedValues.join(" ")
-    } else {
+    } else if (value) {
       result[key] = value
     }
     return result
-  }, {})
+  }, {} as { [key: string]: string })
 }
 
 const Configuration = (): JSX.Element => {
@@ -181,16 +181,20 @@ const Configuration = (): JSX.Element => {
             >
               {Object.entries(flatten).reduce((result: any[], [key, value]) => {
                 if (key === "correlation" && value) {
-                  return [
-                    ...result,
-                    <span key={key}>
-                      – <span className="strong">{key.charAt(0).toUpperCase() + key.slice(1)}</span>:{" "}
-                      {getCorrelatedColumns(value, fileMetadata).map((name, index) => (
-                        <Tag key={index}>{name}</Tag>
-                      ))}{" "}
-                      <br />
-                    </span>,
-                  ]
+                  const correlatedColumns = getCorrelatedColumns(value, fileMetadata)
+                  if (correlatedColumns.length) {
+                    return [
+                      ...result,
+                      <span key={key}>
+                        – <span className="strong">{key.charAt(0).toUpperCase() + key.slice(1)}</span>:{" "}
+                        {correlatedColumns.map((name, index) => (
+                          <Tag key={index}>{name}</Tag>
+                        ))}{" "}
+                        <br />
+                      </span>,
+                    ]
+                  }
+                  return []
                 } else if (key === "fineTuning" && value) {
                   return [
                     <span key={key}>
@@ -231,7 +235,7 @@ const Configuration = (): JSX.Element => {
   if (configurationInfo == null || fileMetadata == null) return <Skeleton />
   return (
     <div className="edit-view">
-      <div className={fetchType === "local" || fetchType !== "closed" ? "with-box" : ""}>
+      <div className={fetchType === "local" || fetchType === "open" ? "with-box" : ""}>
         <BackArrow onClick={() => navigate(paths_config.configurationList)} text="Back to Configuration list" />
         <Typography.Title
           level={1}
@@ -274,7 +278,25 @@ const Configuration = (): JSX.Element => {
             rowSelection={{
               selectedRowKeys,
               onChange: (newSelectedRowKeys: React.Key[]): void => {
-                setSelectedRowKeys(newSelectedRowKeys)
+                let keys = [...newSelectedRowKeys]
+                for (const key of keys) {
+                  if (fileMetadata && fetchType !== "local") {
+                    const metaData = fileMetadata[Number(key)]
+                    if (metaData.methodOptions?.correlation) {
+                      const correlationId = metaData.methodOptions.correlation
+                      const correlatedColumns = fileMetadata.reduce((acc: string[], column: MetaData) => {
+                        if (column.methodOptions?.correlation === correlationId) return [...acc, column.key]
+                        return acc
+                      }, [] as string[])
+                      if (newSelectedRowKeys.length > selectedRowKeys.length) {
+                        keys = [...new Set(keys.concat(correlatedColumns))]
+                      } else {
+                        keys = keys.filter((key) => !correlatedColumns.includes(key as string))
+                      }
+                    }
+                  }
+                }
+                setSelectedRowKeys(keys)
               },
               getCheckboxProps: (meta: MetaData) => ({
                 disabled: (fetchType === "open" && !meta.methodOptions?.fineTuning) || fetchType === "closed" || fetchType === undefined,
@@ -285,7 +307,7 @@ const Configuration = (): JSX.Element => {
           />
         </RoundedFrame>
       </div>
-      {(fetchType === "local" || fetchType !== "closed") && (
+      {(fetchType === "local" || fetchType === "open") && (
         <EditMethodBox
           selectedRowKeys={selectedRowKeys}
           fileMetadata={fileMetadata}

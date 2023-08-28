@@ -31,6 +31,10 @@ const FineTuningList = (): JSX.Element => {
           }
           return [...acc, configuration]
         }, [])
+        configurations.sort(
+          (a: UploadedConfigurationInfo, b: UploadedConfigurationInfo): number =>
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        )
         setConfigList(configurations)
       }
     }
