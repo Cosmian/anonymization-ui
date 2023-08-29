@@ -1,28 +1,25 @@
-This is the main UI for Cosmian CipherCompute and ZeroTrust
+This is the main UI to perfom Cosmian data anonymization
 
-# Cosmian Anonymization Configuration tool
+# Cosmian Anonymization
 
-## Start application locally
+## Setup the application
 
 ```
 npm install
+```
+
+## Setup env variable
+
+You need to setup backend's URL as an env variable :
+
+```
+VITE_API_URL=http://localhost:8000
+```
+
+## Start application
+
+```
 npm run dev
 ```
 
-Then open [http://localhost:4173](http://localhost:4173) to view it in the browser.
-
-## Start application using Docker
-
-```
-docker build -t anonymization-tool .
-docker run -p 4173:4173 anonymization-tool
-```
-
-## Run containers
-Using the docker-compose file, you can simply launch the interface :
-````
-docker-compose up
-```
-
-Access it on :
-http://localhost:4173
+Then open [http://localhost:5173](http://localhost:5173) to view it in the browser.
