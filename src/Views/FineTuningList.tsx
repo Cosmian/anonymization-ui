@@ -111,12 +111,11 @@ const FineTuningList = (): JSX.Element => {
 
         return (
           <Space className="optionButtons">
-            {closed && (
+            {closed ? (
               <Button type="dark" onClick={(e) => handleSelect(e)}>
                 Details
               </Button>
-            )}
-            {!closed && (
+            ) : (
               <Button type="primary" onClick={(e) => handleSelect(e)}>
                 Edit
               </Button>

@@ -54,6 +54,12 @@ export enum Status {
   FineTuned = "finetuned",
 }
 
+export enum Role {
+  Configure = "configure",
+  Finetune = "finetune",
+  Anonymize = "anonymize",
+}
+
 export const dataTypesSelect: { value: string; label: string; example: string | number }[] = [
   { value: "Text", label: "Text", example: "This is a text" },
   { value: "Integer", label: "Integer", example: 42 },

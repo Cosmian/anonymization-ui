@@ -10,6 +10,7 @@ import ImportConfiguration from "./Views/ImportConfiguration"
 import Layout from "./components/Layout"
 import ProtectedRoute from "./components/ProtectedRoute"
 import { paths_config } from "./config/paths"
+import { Role } from "./utils/utils"
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -19,7 +20,7 @@ const router = createBrowserRouter(
         <Route
           path={paths_config.create}
           element={
-            <ProtectedRoute requiredRoles={["configurationProvider"]}>
+            <ProtectedRoute requiredRole={Role.Configure}>
               <CreateConfiguration />
             </ProtectedRoute>
           }
@@ -27,7 +28,7 @@ const router = createBrowserRouter(
         <Route
           path={paths_config.import}
           element={
-            <ProtectedRoute requiredRoles={["configurationProvider"]}>
+            <ProtectedRoute requiredRole={Role.Configure}>
               <ImportConfiguration />
             </ProtectedRoute>
           }
@@ -35,7 +36,7 @@ const router = createBrowserRouter(
         <Route
           path={paths_config.configurationList}
           element={
-            <ProtectedRoute requiredRoles={["configurationProvider"]}>
+            <ProtectedRoute requiredRole={Role.Configure}>
               <ConfigurationList />
             </ProtectedRoute>
           }
@@ -43,7 +44,7 @@ const router = createBrowserRouter(
         <Route
           path={paths_config.anonymize}
           element={
-            <ProtectedRoute requiredRoles={["dataProvider"]}>
+            <ProtectedRoute requiredRole={Role.Anonymize}>
               <Anonymize />
             </ProtectedRoute>
           }
@@ -51,7 +52,7 @@ const router = createBrowserRouter(
         <Route
           path={paths_config.fineTuningList}
           element={
-            <ProtectedRoute requiredRoles={["dataProvider"]}>
+            <ProtectedRoute requiredRole={Role.Finetune}>
               <FineTuningList />
             </ProtectedRoute>
           }

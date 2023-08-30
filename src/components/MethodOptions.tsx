@@ -31,7 +31,7 @@ const MethodOptions: React.FC<MethodOptionsProps> = ({ selected, form, columns, 
         <NumberAggregationOptions float={form.getFieldValue("columnType") === "Float"} />
       )}
       {(selected === "RescalingInteger" || selected === "RescalingFloat") && (
-        <RescalingOptions hidden={form.getFieldValue(["methodOptions", "fineTuning"]) && status === "local"} status={status} />
+        <RescalingOptions form={form} hidden={form.getFieldValue(["methodOptions", "fineTuning"]) && status === "local"} status={status} />
       )}
       {(selected === "NoiseInteger" || selected === "NoiseFloat" || selected === "NoiseDate") && (
         <NoiseOptions form={form} columns={columns} getCorrelatedColumns={getCorrelatedColumns} status={status} />

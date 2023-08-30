@@ -89,6 +89,7 @@ const ConfigurationList = (): JSX.Element => {
       }
       await localForage.removeItem(localConfigToDelete)
       setDeleteConfigModalVisible(false)
+      setLocalConfigToDelete(undefined)
     }
     if (uploadedConfigToDelete) {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations/${uploadedConfigToDelete}`, {
@@ -110,8 +111,8 @@ const ConfigurationList = (): JSX.Element => {
         })
       }
       setDeleteConfigModalVisible(false)
+      setUploadedConfigToDelete(undefined)
     }
-    setUploadedConfigToDelete(undefined)
   }
 
   const uploadedColumns = [

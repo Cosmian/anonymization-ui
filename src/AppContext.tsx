@@ -1,9 +1,10 @@
 import { createContext } from "react"
+import { Role } from "./utils/utils"
 
 interface AppContextValue {
   microserviceState: boolean
   checkMicroserviceHealth: () => void
-  role: string | undefined
+  roles: Role[] | undefined
 }
 
 const AppContext = createContext<AppContextValue | undefined>(undefined)

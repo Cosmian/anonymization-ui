@@ -1,7 +1,7 @@
 export const paths_config = {
   home: "/",
   create: "/create",
-  configuration: "/configuration",
+  configuration: "/configurations",
   import: "/import",
   anonymize: "/anonymize",
   anonymizationList: "/anonymizations",

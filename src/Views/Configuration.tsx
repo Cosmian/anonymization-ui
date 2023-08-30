@@ -279,8 +279,8 @@ const Configuration = (): JSX.Element => {
               selectedRowKeys,
               onChange: (newSelectedRowKeys: React.Key[]): void => {
                 let keys = [...newSelectedRowKeys]
-                for (const key of keys) {
-                  if (fileMetadata && fetchType !== "local") {
+                if (fileMetadata && fetchType !== "local") {
+                  for (const key of keys) {
                     const metaData = fileMetadata[Number(key)]
                     if (metaData.methodOptions?.correlation) {
                       const correlationId = metaData.methodOptions.correlation

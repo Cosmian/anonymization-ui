@@ -1,4 +1,4 @@
-import { Avatar, Menu, MenuProps, Tooltip } from "antd"
+import { Menu, MenuProps, Tooltip } from "antd"
 import { ItemType } from "antd/lib/menu/hooks/useItems"
 import { CosmianLogo, Header, MainLayout } from "cosmian_ui"
 import { useContext, useEffect, useState } from "react"
@@ -13,38 +13,25 @@ import {
 import { Outlet, useLocation, useNavigate } from "react-router-dom"
 import AppContext from "../AppContext"
 import "../Views/style.less"
+import { Role } from "../utils/utils"
 
 const Layout: React.FC = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const context = useContext(AppContext)
-  const [role, setRole] = useState<undefined | string>(undefined)
+  const [roles, setRoles] = useState<Role[] | undefined>(undefined)
 
   const logo = <CosmianLogo link={window.location.origin} />
   const verifiedContent =
     "The microservice that you're querying has been verified by the application owner: code is running inside an enclave and code's fingerprint has been checked."
   const unverifiedContent = "The microservice that you're querying is not running."
 
-  const UserAvatar = () => {
-    return (
-      <>
-        <Avatar
-          style={
-            role === "configurationProvider" ? { color: "#fff", backgroundColor: "#f56a00" } : { color: "#fff", backgroundColor: "#87d068" }
-          }
-        >
-          {role === "configurationProvider" ? "CP" : "DP"}
-        </Avatar>
-      </>
-    )
-  }
-
   useEffect(() => {
-    const handleGetRole = async (): Promise<void> => {
-      const role: string | undefined = context?.role
-      setRole(role)
+    const handleGetRoles = async (): Promise<void> => {
+      const roles: Role[] | undefined = context?.roles
+      setRoles(roles)
     }
-    handleGetRole()
+    handleGetRoles()
   }, [])
 
   const rightElement = (
@@ -57,7 +44,6 @@ const Layout: React.FC = () => {
               Microservice running & verified
             </div>
           </Tooltip>
-          <UserAvatar />
         </>
       ) : (
         <>
@@ -67,7 +53,6 @@ const Layout: React.FC = () => {
               Microservice is not running
             </div>
           </Tooltip>
-          <UserAvatar />
         </>
       )}
     </>
@@ -83,19 +68,19 @@ const Layout: React.FC = () => {
       icon: <IoOptionsOutline />,
       key: "/configurations",
       label: "Configuration",
-      disabled: role === "dataProvider",
+      disabled: !roles?.includes(Role.Configure),
     },
     {
       icon: <IoBuildOutline />,
       key: "/finetunings",
       label: "Configuration Fine-tuning",
-      disabled: role === "configurationProvider",
+      disabled: !roles?.includes(Role.Finetune),
     },
     {
       icon: <IoCloudUploadOutline />,
       key: "/anonymize",
       label: "Anonymize Data",
-      disabled: role === "configurationProvider",
+      disabled: !roles?.includes(Role.Anonymize),
     },
   ]
 

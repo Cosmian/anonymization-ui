@@ -2,20 +2,21 @@ import { useEffect, useState } from "react"
 import AppContext from "./AppContext"
 import AppRouter from "./Router"
 import "./Views/style.less"
+import { Role } from "./utils/utils"
 
 function App(): JSX.Element {
   const [microserviceState, setMicroserviceState] = useState(false)
-  const [role, setRole] = useState<string | undefined>(undefined)
+  const [roles, setRoles] = useState<Role[] | undefined>(undefined)
 
   useEffect(() => {
-    const fetchRole = async (): Promise<void> => {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/role`, {
+    const fetchRoles = async (): Promise<void> => {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/roles`, {
         credentials: "include",
       })
-      const role = await response.text()
-      setRole(role)
+      const roles = await response.json()
+      setRoles(roles.roles)
     }
-    fetchRole().catch((error) => {
+    fetchRoles().catch((error) => {
       throw new Error((error as Error).message)
     })
   }, [])
@@ -33,7 +34,7 @@ function App(): JSX.Element {
 
   return (
     <>
-      <AppContext.Provider value={{ microserviceState, checkMicroserviceHealth, role }}>{role && <AppRouter />}</AppContext.Provider>
+      <AppContext.Provider value={{ microserviceState, checkMicroserviceHealth, roles }}>{roles && <AppRouter />}</AppContext.Provider>
     </>
   )
 }

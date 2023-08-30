@@ -295,7 +295,8 @@ export const getMethodOptions = (method: MethodType): any => {
       return {
         alphabet: "alpha_numeric",
       }
-    case "MaskWords" || "TokenizeWords":
+    case "MaskWords":
+    case "TokenizeWords":
       return {
         wordsList: [],
       }
@@ -305,7 +306,8 @@ export const getMethodOptions = (method: MethodType): any => {
       return {
         timeUnit: "Day",
       }
-    case "AggregationInteger" || "AggregationFloat":
+    case "AggregationInteger":
+    case "AggregationFloat":
       return {
         powerOfTen: 0,
       }
@@ -321,7 +323,8 @@ export const getMethodOptions = (method: MethodType): any => {
           unit: "Day",
         },
       }
-    case "NoiseInteger" || "NoiseFloat":
+    case "NoiseInteger":
+    case "NoiseFloat":
       return {
         distribution: "Gaussian",
         lowerBoundary: 1,
@@ -329,7 +332,8 @@ export const getMethodOptions = (method: MethodType): any => {
         mean: 1,
         stdDev: 1,
       }
-    case "RescalingInteger" || "RescalingFloat":
+    case "RescalingInteger":
+    case "RescalingFloat":
       return {
         mean: 1,
         stdDev: 1,
