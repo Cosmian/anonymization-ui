@@ -1,11 +1,11 @@
-import { CheckCircleOutlined, ToolOutlined } from "@ant-design/icons"
+import { CheckCircleOutlined, CloudServerOutlined, ToolOutlined } from "@ant-design/icons"
 import { Space, Table, notification } from "antd"
 import { Button, RoundedFrame } from "cosmian_ui"
 import { useContext, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import AppContext from "../AppContext"
 import { paths_config } from "../config/paths"
-import { Status, UploadedConfigurationInfo } from "../utils/utils"
+import { Step, UploadedConfigurationInfo } from "../utils/utils"
 
 const FineTuningList = (): JSX.Element => {
   const navigate = useNavigate()
@@ -27,7 +27,7 @@ const FineTuningList = (): JSX.Element => {
             name: data[key].name,
             created_at: data[key].created_at,
             hash: data[key].hash,
-            status: data[key].status,
+            step: data[key].step,
           }
           return [...acc, configuration]
         }, [])
@@ -69,30 +69,30 @@ const FineTuningList = (): JSX.Element => {
       },
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status: Status) => {
-        switch (status) {
-          case "open":
+      title: "Step",
+      dataIndex: "step",
+      key: "step",
+      render: (step: Step) => {
+        switch (step) {
+          case "finetuning":
             return (
               <div className="pending">
                 <ToolOutlined />
-                <span className="status">Fine-tuning pending</span>
+                <span className="step">Fine-tuning pending</span>
               </div>
             )
-          case "closed":
+          case "finalized":
             return (
               <div className="finalized">
                 <CheckCircleOutlined />
-                <span className="status">Finalized</span>
+                <span className="step">Finalized</span>
               </div>
             )
           case "finetuned":
             return (
               <div className="finalized">
                 <CheckCircleOutlined />
-                <span className="status">Fine-tuned</span>
+                <span className="step">Fine-tuned</span>
               </div>
             )
         }
@@ -103,15 +103,15 @@ const FineTuningList = (): JSX.Element => {
       key: "options",
       width: 100,
       render: (configuration: UploadedConfigurationInfo) => {
-        const closed = configuration.status === "closed"
+        const finalized = configuration.step === "finalized"
         const handleSelect = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
           e.stopPropagation()
-          navigate(paths_config.configuration + `/${configuration.uuid}`, { state: { status: closed ? "closed" : "open" } })
+          navigate(paths_config.configuration + `/${configuration.uuid}`, { state: { step: finalized ? "finalized" : "finetuning" } })
         }
 
         return (
           <Space className="optionButtons">
-            {closed ? (
+            {finalized ? (
               <Button type="dark" onClick={(e) => handleSelect(e)}>
                 Details
               </Button>
@@ -130,7 +130,10 @@ const FineTuningList = (): JSX.Element => {
     <div className="finetuning">
       <h1>Fine-tune Configuration</h1>
       <RoundedFrame>
-        <h2 className="h4">Uploaded configurations</h2>
+        <h2 className="h4">
+          <CloudServerOutlined style={{ marginRight: ".5em" }} />
+          Uploaded Configuration
+        </h2>{" "}
         <p>List of configurations uploaded on your Microservice Encryption server. You can fine-tune these configurations when needed.</p>
         <Table rowKey={"uuid"} dataSource={configList} columns={configColumns} pagination={false} />
       </RoundedFrame>

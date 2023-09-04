@@ -7,12 +7,12 @@ import { IoTrashOutline } from "react-icons/io5"
 import { useNavigate } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
 import AppContext from "../AppContext"
-import { DeleteConfigModal } from "../components/DeleteConfigModal"
+import { DeleteModal } from "../components/DeleteModal"
 import { paths_config } from "../config/paths"
 import {
   ConfigurationInfo,
   MetaData,
-  Status,
+  Step,
   UploadedConfigurationInfo,
   downloadLocalConfiguration,
   downloadUploadedConfiguration,
@@ -58,7 +58,7 @@ const ConfigurationList = (): JSX.Element => {
             name: data[key].name,
             created_at: data[key].created_at,
             hash: data[key].hash,
-            status: data[key].status,
+            step: data[key].step,
           }
           return [...acc, configuration]
         }, [])
@@ -138,30 +138,30 @@ const ConfigurationList = (): JSX.Element => {
       },
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status: Status) => {
-        switch (status) {
-          case "open":
+      title: "Step",
+      dataIndex: "step",
+      key: "step",
+      render: (step: Step) => {
+        switch (step) {
+          case "finetuning":
             return (
               <div className="pending">
                 <ToolOutlined />
-                <span className="status">Fine-tuning pending</span>
+                <span className="step">Fine-tuning pending</span>
               </div>
             )
-          case "closed":
+          case "finalized":
             return (
               <div className="finalized">
                 <CheckCircleOutlined />
-                <span className="status">Finalized</span>
+                <span className="step">Finalized</span>
               </div>
             )
           case "finetuned":
             return (
               <div className="finalized">
                 <CheckCircleOutlined />
-                <span className="status">Fine-tuned</span>
+                <span className="step">Fine-tuned</span>
               </div>
             )
         }
@@ -172,10 +172,10 @@ const ConfigurationList = (): JSX.Element => {
       key: "options",
       width: 100,
       render: (configuration: UploadedConfigurationInfo) => {
-        const finetuned = configuration.status === "finetuned"
+        const finetuned = configuration.step === "finetuned"
         const handleSelect = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
           e.stopPropagation()
-          navigate(paths_config.configuration + `/${configuration.uuid}`, { state: { status: "closed" } })
+          navigate(paths_config.configuration + `/${configuration.uuid}`, { state: { step: "finalized" } })
         }
 
         const handleDownload = (): void => {
@@ -234,7 +234,7 @@ const ConfigurationList = (): JSX.Element => {
       render: (configuration: ConfigurationInfo) => {
         const handleSelect = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
           e.stopPropagation()
-          navigate(paths_config.configuration + `/${configuration.uuid}`, { state: { status: "local" } })
+          navigate(paths_config.configuration + `/${configuration.uuid}`, { state: { step: "local" } })
         }
 
         const handleDownload = (): void => {
@@ -338,8 +338,9 @@ const ConfigurationList = (): JSX.Element => {
         <p>List of local configurations, only available on your browser. You can edit, duplicate and delete these configurations.</p>
         <Table rowKey={"uuid"} dataSource={localConfigList} columns={localColumns} pagination={false} />
       </RoundedFrame>
-      <DeleteConfigModal
+      <DeleteModal
         visible={deleteConfigModalVisible}
+        type="configuration"
         onCancel={() => setDeleteConfigModalVisible(false)}
         onDelete={() => handleDelete()}
       />

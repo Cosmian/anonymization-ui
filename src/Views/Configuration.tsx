@@ -10,7 +10,7 @@ import { paths_config } from "../config/paths"
 import {
   ConfigurationInfo,
   MetaData,
-  Status,
+  Step,
   downloadFile,
   getCorrelatedColumns,
   updateConfiguration,
@@ -35,7 +35,7 @@ const flattenObject = (obj: Record<string, any>): Record<string, string> => {
 
 const Configuration = (): JSX.Element => {
   const { id } = useParams()
-  const fetchType: Status = useLocation().state?.status
+  const step: Step = useLocation().state?.step
   const navigate = useNavigate()
   const context = useContext(AppContext)
 
@@ -47,7 +47,7 @@ const Configuration = (): JSX.Element => {
     context?.checkMicroserviceHealth()
     const fetchConfig = async (): Promise<void> => {
       let configuration: { configurationInfo: ConfigurationInfo; metadata: MetaData[] } | null = null
-      if (fetchType === "local" && id) {
+      if (step === "local" && id) {
         configuration = await localForage.getItem(id)
       } else {
         const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations/${id}`, {
@@ -97,7 +97,7 @@ const Configuration = (): JSX.Element => {
   ): void => {
     updateConfiguration(configurationUuid, configuration)
     setTimeout(() => {
-      navigate(paths_config.configurationList)
+      navigate(paths_config.fineTuningList)
     }, 1000)
   }
 
@@ -194,7 +194,7 @@ const Configuration = (): JSX.Element => {
                       </span>,
                     ]
                   }
-                  return []
+                  return result
                 } else if (key === "fineTuning" && value) {
                   return [
                     <span key={key}>
@@ -235,13 +235,16 @@ const Configuration = (): JSX.Element => {
   if (configurationInfo == null || fileMetadata == null) return <Skeleton />
   return (
     <div className="edit-view">
-      <div className={fetchType === "local" || fetchType === "open" ? "with-box" : ""}>
-        <BackArrow onClick={() => navigate(paths_config.configurationList)} text="Back to Configuration list" />
+      <div className={step === "local" || step === "finetuning" ? "with-box" : ""}>
+        <BackArrow
+          onClick={() => (step === "finetuning" ? navigate(paths_config.fineTuningList) : navigate(paths_config.configurationList))}
+          text="Back to Configuration list"
+        />
         <Typography.Title
           level={1}
           style={{ marginBottom: "1em", fontSize: "1.875rem" }}
           editable={
-            fetchType === "local" && {
+            step === "local" && {
               onChange: (text) => renameConfigTitle(text),
               text: configurationInfo?.name,
               autoSize: { maxRows: 1, minRows: 1 },
@@ -255,12 +258,12 @@ const Configuration = (): JSX.Element => {
           <Button onClick={() => handleDownloadConfiguration()} type="dark" icon={<DownloadOutlined />}>
             Download Configuration
           </Button>
-          {fetchType === "local" && (
+          {step === "local" && (
             <Button onClick={() => handleUploadConfiguration(configurationInfo?.uuid)} icon={<CloudUploadOutlined />}>
               Upload Configuration
             </Button>
           )}
-          {fetchType === "open" && (
+          {step === "finetuning" && (
             <Button
               onClick={() => handleUpdateConfiguration(id, { metadata: fileMetadata, configurationInfo })}
               icon={<CloudUploadOutlined />}
@@ -279,7 +282,7 @@ const Configuration = (): JSX.Element => {
               selectedRowKeys,
               onChange: (newSelectedRowKeys: React.Key[]): void => {
                 let keys = [...newSelectedRowKeys]
-                if (fileMetadata && fetchType !== "local") {
+                if (fileMetadata && step !== "local") {
                   for (const key of keys) {
                     const metaData = fileMetadata[Number(key)]
                     if (metaData.methodOptions?.correlation) {
@@ -299,7 +302,7 @@ const Configuration = (): JSX.Element => {
                 setSelectedRowKeys(keys)
               },
               getCheckboxProps: (meta: MetaData) => ({
-                disabled: (fetchType === "open" && !meta.methodOptions?.fineTuning) || fetchType === "closed" || fetchType === undefined,
+                disabled: (step === "finetuning" && !meta.methodOptions?.fineTuning) || step === "finalized" || step === undefined,
               }),
             }}
             tableLayout="auto"
@@ -307,13 +310,13 @@ const Configuration = (): JSX.Element => {
           />
         </RoundedFrame>
       </div>
-      {(fetchType === "local" || fetchType === "open") && (
+      {(step === "local" || step === "finetuning") && (
         <EditMethodBox
           selectedRowKeys={selectedRowKeys}
           fileMetadata={fileMetadata}
           saveConfiguration={saveConfiguration}
           setSelectedRowKeys={setSelectedRowKeys}
-          status={fetchType}
+          step={step}
         />
       )}
     </div>

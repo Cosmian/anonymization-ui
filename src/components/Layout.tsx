@@ -1,8 +1,9 @@
 import { Menu, MenuProps, Tooltip } from "antd"
 import { ItemType } from "antd/lib/menu/hooks/useItems"
-import { CosmianLogo, Header, MainLayout } from "cosmian_ui"
+import { CosmianLogo, ExternalLinkButton, Header, MainLayout } from "cosmian_ui"
 import { useContext, useEffect, useState } from "react"
 import {
+  IoBookOutline,
   IoBuildOutline,
   IoCloudOfflineOutline,
   IoCloudUploadOutline,
@@ -36,6 +37,11 @@ const Layout: React.FC = () => {
 
   const rightElement = (
     <>
+      <ExternalLinkButton
+        title="Documentation"
+        url=" https://docs.cosmian.com/cloudproof_encryption/data_anonymization/"
+        icon={<IoBookOutline />}
+      />
       {context?.microserviceState ? (
         <>
           <Tooltip title={verifiedContent}>

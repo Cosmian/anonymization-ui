@@ -1,31 +1,31 @@
 import { Checkbox, Form, FormInstance, InputNumber, Select, Tag } from "antd"
 import { useEffect, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
-import { Status } from "../../utils/utils"
+import { Step } from "../../utils/utils"
 import { getMethodOptions } from "../EditMethodBox"
 
 interface NoiseOptionsProps {
   form: FormInstance
   columns: string[]
   getCorrelatedColumns: (uuid: string) => string[]
-  status: Status
+  step: Step
 }
 
 interface NoiseSubOptionsProps {
   form: FormInstance
   distribution: "Gaussian" | "Laplace" | "Uniform"
   fineTuning: boolean
-  status: Status
+  step: Step
 }
 
 interface DurationInputProps {
   label: string
   name: string
   fineTuning: boolean
-  status: Status
+  step: Step
 }
 
-export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form, columns, getCorrelatedColumns, status }) => {
+export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form, columns, getCorrelatedColumns, step }) => {
   const [correlatedColumns, setCorrelatedColumns] = useState<string[]>([])
   const distribution = form.getFieldValue(["methodOptions", "distribution"])
   const correlationId: string = form.getFieldValue(["methodOptions", "correlation"])
@@ -69,7 +69,7 @@ export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form, columns, getCo
           name={["methodOptions", "correlation"]}
         >
           <>
-            <Checkbox onChange={() => setUuidCorrelation()} disabled={columns.length < 2 || status === "open"}>
+            <Checkbox onChange={() => setUuidCorrelation()} disabled={columns.length < 2 || step === "finetuning"}>
               Apply correlated noise for columns:
             </Checkbox>
             {columns.map((name, index) => (
@@ -88,7 +88,7 @@ export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form, columns, getCo
       <Form.Item name={["methodOptions", "fineTuning"]} valuePropName="checked">
         <Checkbox
           checked={false}
-          disabled={status === "open"}
+          disabled={step === "finetuning"}
           // if finetuned is checked, inner form Items will be hidden but can be empty (differents options selected) - this will fill methodOptions with default values when checking fineTuning.
           onChange={() => form.setFieldsValue({ methodOptions: getMethodOptions(form.getFieldValue("columnMethod")) })}
         >
@@ -98,22 +98,22 @@ export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form, columns, getCo
       <Form.Item
         name={["methodOptions", "distribution"]}
         label="Distribution"
-        hidden={form.getFieldValue(["methodOptions", "fineTuning"]) && status === "local"}
+        hidden={form.getFieldValue(["methodOptions", "fineTuning"]) && step === "local"}
         rules={[{ required: true, message: "Please select a value" }]}
       >
         <Select options={noiseFormOptions} />
       </Form.Item>
       {dataType === "Date" ? (
-        <NoiseDateOptions form={form} distribution={distribution} fineTuning={fineTuning} status={status} />
+        <NoiseDateOptions form={form} distribution={distribution} fineTuning={fineTuning} step={step} />
       ) : (
-        <NoiseNumberOptions form={form} distribution={distribution} fineTuning={fineTuning} status={status} />
+        <NoiseNumberOptions form={form} distribution={distribution} fineTuning={fineTuning} step={step} />
       )}
     </>
   )
 }
 
-const NoiseNumberOptions: React.FC<NoiseSubOptionsProps> = ({ form, distribution, fineTuning, status }) => {
-  const hiddenOptions: boolean = fineTuning && status === "local"
+const NoiseNumberOptions: React.FC<NoiseSubOptionsProps> = ({ form, distribution, fineTuning, step }) => {
+  const hiddenOptions: boolean = fineTuning && step === "local"
   return (
     <>
       <div className="box">
@@ -167,9 +167,9 @@ const NoiseNumberOptions: React.FC<NoiseSubOptionsProps> = ({ form, distribution
   )
 }
 
-const DurationInput: React.FC<DurationInputProps> = ({ label, name, fineTuning, status }) => {
+const DurationInput: React.FC<DurationInputProps> = ({ label, name, fineTuning, step }) => {
   return (
-    <Form.Item label={label} className="option-parameter input-inline" hidden={fineTuning && status === "local"}>
+    <Form.Item label={label} className="option-parameter input-inline" hidden={fineTuning && step === "local"}>
       <>
         <Form.Item name={["methodOptions", name, "precision"]} rules={[{ required: true, message: "Please provide a value" }]}>
           <InputNumber min={0} step={1} precision={1} />
@@ -190,21 +190,21 @@ const DurationInput: React.FC<DurationInputProps> = ({ label, name, fineTuning, 
   )
 }
 
-const NoiseDateOptions: React.FC<NoiseSubOptionsProps> = ({ distribution, fineTuning, status }) => {
-  const hiddenOptions: boolean = fineTuning && status === "local"
+const NoiseDateOptions: React.FC<NoiseSubOptionsProps> = ({ distribution, fineTuning, step }) => {
+  const hiddenOptions: boolean = fineTuning && step === "local"
   return (
     <div className="box">
       {distribution !== "Uniform" ? (
         <>
           {!hiddenOptions && <div className="subtitle">Distribution's parameters:</div>}
-          <DurationInput label="Mean" name="mean" fineTuning={fineTuning} status={status} />
-          <DurationInput label="Standard deviation" name="stdDev" fineTuning={fineTuning} status={status} />
+          <DurationInput label="Mean" name="mean" fineTuning={fineTuning} step={step} />
+          <DurationInput label="Standard deviation" name="stdDev" fineTuning={fineTuning} step={step} />
         </>
       ) : (
         <>
           {!hiddenOptions && <div className="subtitle">Distribution's range:</div>}
-          <DurationInput label="Lower boundary" name="lowerBoundary" fineTuning={fineTuning} status={status} />
-          <DurationInput label="Upper boundary" name="upperBoundary" fineTuning={fineTuning} status={status} />
+          <DurationInput label="Lower boundary" name="lowerBoundary" fineTuning={fineTuning} step={step} />
+          <DurationInput label="Upper boundary" name="upperBoundary" fineTuning={fineTuning} step={step} />
         </>
       )}
     </div>

@@ -1,20 +1,20 @@
 import { Checkbox, Form, FormInstance, InputNumber } from "antd"
-import { Status } from "../../utils/utils"
+import { Step } from "../../utils/utils"
 import { getMethodOptions } from "../EditMethodBox"
 
 interface RescalingOptionsProps {
   form: FormInstance
   hidden: boolean
-  status: Status
+  step: Step
 }
 
-export const RescalingOptions: React.FC<RescalingOptionsProps> = ({ form, hidden, status }) => {
+export const RescalingOptions: React.FC<RescalingOptionsProps> = ({ form, hidden, step }) => {
   return (
     <>
       <Form.Item name={["methodOptions", "fineTuning"]} valuePropName="checked">
         <Checkbox
           checked={false}
-          disabled={status === "open"}
+          disabled={step === "finetuning"}
           // if finetuned is checked, inner form Items will be hidden but can be empty (differents options selected) - this will fill methodOptions with default values when checking fineTuning.
           onChange={() => form.setFieldsValue({ methodOptions: getMethodOptions(form.getFieldValue("columnMethod")) })}
         >

@@ -6,7 +6,7 @@ import {
   DataType,
   MetaData,
   MethodType,
-  Status,
+  Step,
   applyMethod,
   dataTypesSelect,
   getCommonMethods,
@@ -21,10 +21,10 @@ interface EditMethodBoxProps {
   fileMetadata: MetaData[] | undefined
   saveConfiguration: (fileMetadata: MetaData[]) => void
   setSelectedRowKeys: (rowKeys: Key[]) => void
-  status: Status
+  step: Step
 }
 
-const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMetadata, saveConfiguration, setSelectedRowKeys, status }) => {
+const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMetadata, saveConfiguration, setSelectedRowKeys, step }) => {
   const [form] = Form.useForm()
 
   const [selectedColumns, setSelectedColumns] = useState<string[]>([])
@@ -212,7 +212,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
             Type
           </h3>
           <Form.Item name="columnType">
-            <Select disabled={!selectedRowKeys.length || status === "open"} options={dataTypesSelect} />
+            <Select disabled={!selectedRowKeys.length || step === "finetuning"} options={dataTypesSelect} />
           </Form.Item>
           <h3 className="h6" style={customDisabledTextStyle}>
             Example
@@ -224,7 +224,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
             Method
           </h3>
           <Form.Item name="columnMethod">
-            <Select disabled={!selectMethodList?.length || status === "open"} options={selectMethodList} />
+            <Select disabled={!selectMethodList?.length || step === "finetuning"} options={selectMethodList} />
           </Form.Item>
           {selectedMethod && (
             <>
@@ -237,7 +237,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
                   form={form}
                   columns={selectedColumns}
                   getCorrelatedColumns={(uuid) => getCorrelatedColumns(uuid, fileMetadata)}
-                  status={status}
+                  step={step}
                 />
               </Form.Item>
             </>
@@ -260,7 +260,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
           )}
         </div>
         <div className="buttons">
-          <Button type="dark" onClick={() => clearMethod()} disabled={!selectedRowKeys.length || status === "open"}>
+          <Button type="dark" onClick={() => clearMethod()} disabled={!selectedRowKeys.length || step === "finetuning"}>
             Clear selected column(s) method
           </Button>
           <div className="horizontal-buttons">

@@ -16,7 +16,7 @@ export type MetaData = {
 
 export type ConfigurationInfo = { uuid: string; name: string; created_at: string; file: string; delimiter: string }
 
-export type UploadedConfigurationInfo = { uuid: string; name: string; created_at: string; hash: string; status: Status }
+export type UploadedConfigurationInfo = { uuid: string; name: string; created_at: string; hash: string; step: Step }
 
 export type FileInfo = { last_modified: number; name: string; size: number; type: string }
 
@@ -47,11 +47,11 @@ export enum MethodType {
   DeleteColumn = "DeleteColumn",
 }
 
-export enum Status {
-  Local = "local",
-  Open = "open",
-  Closed = "closed",
-  FineTuned = "finetuned",
+export enum Step {
+  Local = "local", // a configuration stored in localforage
+  FineTuning = "finetuning", // an uploaded configuration needing finetuning
+  Finalized = "finalized", // an uploaded configuration that does not need finetuning
+  FineTuned = "finetuned", // an uploaded configuration that has been finetuned
 }
 
 export enum Role {
@@ -488,8 +488,8 @@ export const uploadConfiguration = async (uuid: string | undefined): Promise<voi
     const jsonFile = new Blob([JSON.stringify(configuration)], { type: "application/json" })
     const formData = new FormData()
     formData.append("file", jsonFile, `${configuration?.configurationInfo.name}.json`)
-    const status = checkFineTuningOption(configuration?.metadata) ? "open" : "closed"
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations?status=${status}`, {
+    const step = checkFineTuningOption(configuration?.metadata) ? "finetuning" : "finalized"
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations?step=${step}`, {
       method: "POST",
       body: formData,
       credentials: "include",
@@ -519,8 +519,8 @@ export const updateConfiguration = async (
     const jsonFile = new Blob([JSON.stringify(configuration)], { type: "application/json" })
     const formData = new FormData()
     formData.append("file", jsonFile, `${configuration?.configurationInfo.name}.json`)
-    const status = checkFineTuningNotFilled(configuration?.metadata) ? "open" : "finetuned"
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations/${uuid}?status=${status}`, {
+    const step = checkFineTuningNotFilled(configuration?.metadata) ? "finetuning" : "finetuned"
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations/${uuid}?step=${step}`, {
       method: "PUT",
       body: formData,
       credentials: "include",

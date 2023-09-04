@@ -2,7 +2,7 @@ import { Space, Table, notification } from "antd"
 import { Button, RoundedFrame } from "cosmian_ui"
 import { useContext, useEffect, useState } from "react"
 import AppContext from "../AppContext"
-import { DeleteAnonymizationModal } from "../components/DeleteAnonymizationModal"
+import { DeleteModal } from "../components/DeleteModal"
 import { AnonymizationType, downloadAnonymization } from "../utils/utils"
 
 const AnonymizationList = (): JSX.Element => {
@@ -28,7 +28,7 @@ const AnonymizationList = (): JSX.Element => {
         message: "Error fetching anonymized Dataset list",
         description: (error as Error).message,
       })
-      console.log(error)
+      console.error(error)
     })
   }, [anonymizationToDelete])
 
@@ -122,8 +122,9 @@ const AnonymizationList = (): JSX.Element => {
         <p className="h4">List of anonymized Datasets</p>
         <Table rowKey={"key"} dataSource={dataSetList} columns={columns} pagination={false} />
       </RoundedFrame>
-      <DeleteAnonymizationModal
+      <DeleteModal
         visible={deleteModalVisible}
+        type="anonymization"
         onCancel={() => setDeleteModalVisible(false)}
         onDelete={() => handleDelete()}
       />
