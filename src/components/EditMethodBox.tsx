@@ -6,6 +6,7 @@ import {
   DataType,
   MetaData,
   MethodType,
+  Step,
   applyMethod,
   dataTypesSelect,
   getCommonMethods,
@@ -20,9 +21,10 @@ interface EditMethodBoxProps {
   fileMetadata: MetaData[] | undefined
   saveConfiguration: (fileMetadata: MetaData[]) => void
   setSelectedRowKeys: (rowKeys: Key[]) => void
+  step: Step
 }
 
-const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMetadata, saveConfiguration, setSelectedRowKeys }) => {
+const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMetadata, saveConfiguration, setSelectedRowKeys, step }) => {
   const [form] = Form.useForm()
 
   const [selectedColumns, setSelectedColumns] = useState<string[]>([])
@@ -127,6 +129,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
     setSelectMethodList([])
     setExample(undefined)
     setResult(undefined)
+    setOpen(false)
   }
 
   const clearMethod = async (): Promise<void> => {
@@ -150,7 +153,13 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
       const updatedFileMetaData = [...fileMetadata]
       await Promise.all(
         selectedRowKeys.map(async (key) => {
-          const formMethodOptions = form.getFieldsValue().methodOptions
+          let formMethodOptions = form.getFieldsValue().methodOptions
+          if (initialMethodOptions) {
+            const initialCorrelationId = JSON.parse(initialMethodOptions).correlation
+            if (initialCorrelationId && selectedRowKeys.length === getCorrelatedColumns(initialCorrelationId, updatedFileMetaData).length) {
+              formMethodOptions = { ...formMethodOptions, correlation: initialCorrelationId }
+            }
+          }
           if (selectedMethod) {
             const rowResult = await applyMethod(
               updatedFileMetaData[Number(key)].example,
@@ -203,7 +212,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
             Type
           </h3>
           <Form.Item name="columnType">
-            <Select disabled={!selectedRowKeys.length} options={dataTypesSelect} />
+            <Select disabled={!selectedRowKeys.length || step === "finetuning"} options={dataTypesSelect} />
           </Form.Item>
           <h3 className="h6" style={customDisabledTextStyle}>
             Example
@@ -215,7 +224,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
             Method
           </h3>
           <Form.Item name="columnMethod">
-            <Select disabled={!selectMethodList?.length} options={selectMethodList} />
+            <Select disabled={!selectMethodList?.length || step === "finetuning"} options={selectMethodList} />
           </Form.Item>
           {selectedMethod && (
             <>
@@ -228,6 +237,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
                   form={form}
                   columns={selectedColumns}
                   getCorrelatedColumns={(uuid) => getCorrelatedColumns(uuid, fileMetadata)}
+                  step={step}
                 />
               </Form.Item>
             </>
@@ -250,7 +260,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
           )}
         </div>
         <div className="buttons">
-          <Button type="dark" onClick={() => clearMethod()} disabled={!selectedRowKeys.length}>
+          <Button type="dark" onClick={() => clearMethod()} disabled={!selectedRowKeys.length || step === "finetuning"}>
             Clear selected column(s) method
           </Button>
           <div className="horizontal-buttons">
@@ -270,7 +280,7 @@ const EditMethodBox: React.FC<EditMethodBoxProps> = ({ selectedRowKeys, fileMeta
 
 export default EditMethodBox
 
-const getMethodOptions = (method: MethodType): any => {
+export const getMethodOptions = (method: MethodType): any => {
   switch (method) {
     case "Hash":
       return {
@@ -285,7 +295,8 @@ const getMethodOptions = (method: MethodType): any => {
       return {
         alphabet: "alpha_numeric",
       }
-    case "MaskWords" || "TokenizeWords":
+    case "MaskWords":
+    case "TokenizeWords":
       return {
         wordsList: [],
       }
@@ -295,7 +306,8 @@ const getMethodOptions = (method: MethodType): any => {
       return {
         timeUnit: "Day",
       }
-    case "AggregationInteger" || "AggregationFloat":
+    case "AggregationInteger":
+    case "AggregationFloat":
       return {
         powerOfTen: 0,
       }
@@ -311,7 +323,8 @@ const getMethodOptions = (method: MethodType): any => {
           unit: "Day",
         },
       }
-    case "NoiseInteger" || "NoiseFloat":
+    case "NoiseInteger":
+    case "NoiseFloat":
       return {
         distribution: "Gaussian",
         lowerBoundary: 1,
@@ -319,7 +332,8 @@ const getMethodOptions = (method: MethodType): any => {
         mean: 1,
         stdDev: 1,
       }
-    case "RescalingInteger" || "RescalingFloat":
+    case "RescalingInteger":
+    case "RescalingFloat":
       return {
         mean: 1,
         stdDev: 1,
