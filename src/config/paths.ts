@@ -3,9 +3,5 @@ export const paths_config = {
   create: "/create",
   configuration: "/configurations",
   import: "/import",
-  anonymize: "/anonymize",
-  anonymizationList: "/anonymizations",
-  configurationList: "/configurations",
-  fineTuningList: "/finetunings",
   notFound: "/404",
 }

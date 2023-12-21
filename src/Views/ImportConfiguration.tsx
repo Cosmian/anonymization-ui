@@ -50,7 +50,7 @@ const ImportConfiguration = (): JSX.Element => {
       const uuid = uuidv4()
       try {
         await localForage.setItem(uuid, { metadata: fileMetadata, configurationInfo: { ...configurationInfo, uuid } })
-        navigate(paths_config.configuration + `/${uuid}`, { state: { step: "local" } })
+        navigate(paths_config.configuration + `/${uuid}`)
       } catch (error) {
         notification.error({
           duration: 3,
@@ -64,7 +64,7 @@ const ImportConfiguration = (): JSX.Element => {
 
   return (
     <div className="create">
-      <BackArrow onClick={() => navigate(paths_config.configurationList)} text="Back to configurations list" />
+      <BackArrow onClick={() => navigate(paths_config.home)} text="Back to configurations list" />
       <h1>Import configuration file</h1>
       <RoundedFrame>
         <h2 className="h4">Upload your JSON file</h2>

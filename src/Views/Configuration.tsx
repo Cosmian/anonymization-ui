@@ -1,21 +1,12 @@
-import { CloudUploadOutlined, DownloadOutlined, EditOutlined } from "@ant-design/icons"
+import { DownloadOutlined, EditOutlined } from "@ant-design/icons"
 import { Skeleton, Space, Table, Tag, Typography, notification } from "antd"
 import { BackArrow, Button, RoundedFrame } from "cosmian_ui"
 import localForage from "localforage"
-import { Key, useContext, useEffect, useState } from "react"
-import { useLocation, useNavigate, useParams } from "react-router-dom"
-import AppContext from "../AppContext"
+import { Key, useEffect, useState } from "react"
+import { useNavigate, useParams } from "react-router-dom"
 import EditMethodBox from "../components/EditMethodBox"
 import { paths_config } from "../config/paths"
-import {
-  ConfigurationInfo,
-  MetaData,
-  Step,
-  downloadFile,
-  getCorrelatedColumns,
-  updateConfiguration,
-  uploadConfiguration,
-} from "../utils/utils"
+import { ConfigurationInfo, MetaData, downloadFile, getCorrelatedColumns } from "../utils/utils"
 
 const ellipsisStyle: React.CSSProperties = { maxWidth: 100, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }
 
@@ -35,35 +26,21 @@ const flattenObject = (obj: Record<string, any>): Record<string, string> => {
 
 const Configuration = (): JSX.Element => {
   const { id } = useParams()
-  const step: Step = useLocation().state?.step
   const navigate = useNavigate()
-  const context = useContext(AppContext)
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([])
   const [configurationInfo, setConfigurationInfo] = useState<ConfigurationInfo>()
   const [fileMetadata, setFileMetadata] = useState<MetaData[] | undefined>(undefined)
 
   useEffect(() => {
-    context?.checkMicroserviceHealth()
     const fetchConfig = async (): Promise<void> => {
       let configuration: { configurationInfo: ConfigurationInfo; metadata: MetaData[] } | null = null
-      if (step === "local" && id) {
+      if (id) {
         configuration = await localForage.getItem(id)
-      } else {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations/${id}`, {
-          credentials: "include",
-        })
-        if (response.ok) {
-          configuration = await response.json()
-        } else if (response.status === 403) {
-          throw new Error("Access forbidden to this configuration")
-        } else {
-          throw new Error("Error fetching configuration")
+        if (configuration) {
+          setConfigurationInfo(configuration.configurationInfo)
+          setFileMetadata(configuration.metadata)
         }
-      }
-      if (configuration) {
-        setConfigurationInfo(configuration.configurationInfo)
-        setFileMetadata(configuration.metadata)
       }
     }
     fetchConfig().catch((error) => {
@@ -72,7 +49,7 @@ const Configuration = (): JSX.Element => {
         message: "Error fetching configuration",
         description: (error as Error).message,
       })
-      navigate(paths_config.configurationList)
+      navigate(paths_config.home)
       throw new Error((error as Error).message)
     })
   }, [])
@@ -82,23 +59,6 @@ const Configuration = (): JSX.Element => {
     const fileName = "config-" + configurationInfo?.name
     const content = JSON.stringify(configuration)
     downloadFile(content, { type: "application/json" }, fileName)
-  }
-
-  const handleUploadConfiguration = (configurationUuid: string | undefined): void => {
-    uploadConfiguration(configurationUuid)
-    setTimeout(() => {
-      navigate(paths_config.configurationList)
-    }, 1000)
-  }
-
-  const handleUpdateConfiguration = (
-    configurationUuid: string | undefined,
-    configuration: { metadata: MetaData[]; configurationInfo: ConfigurationInfo }
-  ): void => {
-    updateConfiguration(configurationUuid, configuration)
-    setTimeout(() => {
-      navigate(paths_config.fineTuningList)
-    }, 1000)
   }
 
   const saveConfiguration = async (updatedFileMetaData: MetaData[]): Promise<void> => {
@@ -195,15 +155,6 @@ const Configuration = (): JSX.Element => {
                     ]
                   }
                   return result
-                } else if (key === "fineTuning" && value) {
-                  return [
-                    <span key={key}>
-                      <span className="strong finetuning">
-                        Fine-tuning <br />
-                      </span>
-                    </span>,
-                    ...result,
-                  ]
                 } else if (key && value) {
                   return [
                     ...result,
@@ -235,22 +186,17 @@ const Configuration = (): JSX.Element => {
   if (configurationInfo == null || fileMetadata == null) return <Skeleton />
   return (
     <div className="edit-view">
-      <div className={step === "local" || step === "finetuning" ? "with-box" : ""}>
-        <BackArrow
-          onClick={() => (step === "finetuning" ? navigate(paths_config.fineTuningList) : navigate(paths_config.configurationList))}
-          text="Back to Configuration list"
-        />
+      <div className={"with-box"}>
+        <BackArrow onClick={() => navigate(paths_config.home)} text="Back to Configuration list" />
         <Typography.Title
           level={1}
           style={{ marginBottom: "1em", fontSize: "1.875rem" }}
-          editable={
-            step === "local" && {
-              onChange: (text) => renameConfigTitle(text),
-              text: configurationInfo?.name,
-              autoSize: { maxRows: 1, minRows: 1 },
-              icon: <EditOutlined style={{ marginLeft: "0.25em" }} />,
-            }
-          }
+          editable={{
+            onChange: (text) => renameConfigTitle(text),
+            text: configurationInfo?.name,
+            autoSize: { maxRows: 1, minRows: 1 },
+            icon: <EditOutlined style={{ marginLeft: "0.25em" }} />,
+          }}
         >
           {configurationInfo?.name}
         </Typography.Title>
@@ -258,19 +204,6 @@ const Configuration = (): JSX.Element => {
           <Button onClick={() => handleDownloadConfiguration()} type="dark" icon={<DownloadOutlined />}>
             Download Configuration
           </Button>
-          {step === "local" && (
-            <Button onClick={() => handleUploadConfiguration(configurationInfo?.uuid)} icon={<CloudUploadOutlined />}>
-              Upload Configuration
-            </Button>
-          )}
-          {step === "finetuning" && (
-            <Button
-              onClick={() => handleUpdateConfiguration(id, { metadata: fileMetadata, configurationInfo })}
-              icon={<CloudUploadOutlined />}
-            >
-              Update Configuration
-            </Button>
-          )}
         </Space>
         <RoundedFrame className="edit-table">
           <Table
@@ -281,44 +214,21 @@ const Configuration = (): JSX.Element => {
             rowSelection={{
               selectedRowKeys,
               onChange: (newSelectedRowKeys: React.Key[]): void => {
-                let keys = [...newSelectedRowKeys]
-                if (fileMetadata && step !== "local") {
-                  for (const key of keys) {
-                    const metaData = fileMetadata[Number(key)]
-                    if (metaData.methodOptions?.correlation) {
-                      const correlationId = metaData.methodOptions.correlation
-                      const correlatedColumns = fileMetadata.reduce((acc: string[], column: MetaData) => {
-                        if (column.methodOptions?.correlation === correlationId) return [...acc, column.key]
-                        return acc
-                      }, [] as string[])
-                      if (newSelectedRowKeys.length > selectedRowKeys.length) {
-                        keys = [...new Set(keys.concat(correlatedColumns))]
-                      } else {
-                        keys = keys.filter((key) => !correlatedColumns.includes(key as string))
-                      }
-                    }
-                  }
-                }
+                const keys = [...newSelectedRowKeys]
                 setSelectedRowKeys(keys)
               },
-              getCheckboxProps: (meta: MetaData) => ({
-                disabled: (step === "finetuning" && !meta.methodOptions?.fineTuning) || step === "finalized" || step === undefined,
-              }),
             }}
             tableLayout="auto"
             scroll={{ x: 800 }}
           />
         </RoundedFrame>
       </div>
-      {(step === "local" || step === "finetuning") && (
-        <EditMethodBox
-          selectedRowKeys={selectedRowKeys}
-          fileMetadata={fileMetadata}
-          saveConfiguration={saveConfiguration}
-          setSelectedRowKeys={setSelectedRowKeys}
-          step={step}
-        />
-      )}
+      <EditMethodBox
+        selectedRowKeys={selectedRowKeys}
+        fileMetadata={fileMetadata}
+        saveConfiguration={saveConfiguration}
+        setSelectedRowKeys={setSelectedRowKeys}
+      />
     </div>
   )
 }

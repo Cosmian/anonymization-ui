@@ -1,34 +1,22 @@
-import { CheckCircleOutlined, CloudServerOutlined, DesktopOutlined, ToolOutlined } from "@ant-design/icons"
+import { DesktopOutlined } from "@ant-design/icons"
 import { Dropdown, Space, Table, notification } from "antd"
 import { Button, OptionButton, RoundedFrame } from "cosmian_ui"
 import localForage from "localforage"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { IoTrashOutline } from "react-icons/io5"
 import { useNavigate } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
-import AppContext from "../AppContext"
 import { DeleteModal } from "../components/DeleteModal"
 import { paths_config } from "../config/paths"
-import {
-  ConfigurationInfo,
-  MetaData,
-  Step,
-  UploadedConfigurationInfo,
-  downloadLocalConfiguration,
-  downloadUploadedConfiguration,
-} from "../utils/utils"
+import { ConfigurationInfo, MetaData, downloadLocalConfiguration } from "../utils/utils"
 
 const ConfigurationList = (): JSX.Element => {
   const navigate = useNavigate()
-  const context = useContext(AppContext)
   const [localConfigList, setLocalConfigList] = useState<ConfigurationInfo[]>([])
-  const [uploadedConfigList, setUploadedConfigList] = useState<UploadedConfigurationInfo[]>([])
   const [deleteConfigModalVisible, setDeleteConfigModalVisible] = useState<boolean>(false)
   const [localConfigToDelete, setLocalConfigToDelete] = useState<string | undefined>(undefined)
-  const [uploadedConfigToDelete, setUploadedConfigToDelete] = useState<string | undefined>(undefined)
 
   useEffect(() => {
-    context?.checkMicroserviceHealth()
     const fetchLocalConfigurations = async (): Promise<void> => {
       const elements = await localForage.keys()
       const data = await Promise.all(
@@ -45,39 +33,13 @@ const ConfigurationList = (): JSX.Element => {
         setLocalConfigList(filteredData)
       }
     }
-    const fetchUploadedConfigurations = async (): Promise<void> => {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations`, {
-        credentials: "include",
-      })
-      const data = await response.json()
-      if (data) {
-        const keys = Object.keys(data)
-        const configurations: UploadedConfigurationInfo[] = keys.reduce((acc: UploadedConfigurationInfo[], key) => {
-          const configuration: UploadedConfigurationInfo = {
-            uuid: key,
-            name: data[key].name,
-            created_at: data[key].created_at,
-            hash: data[key].hash,
-            step: data[key].step,
-          }
-          return [...acc, configuration]
-        }, [])
-        setUploadedConfigList(configurations)
-      }
-    }
     fetchLocalConfigurations().catch(() => {
       notification.error({
         duration: 3,
         message: "Error fetching local configuration list",
       })
     })
-    fetchUploadedConfigurations().catch(() => {
-      notification.error({
-        duration: 3,
-        message: "Error fetching uploaded configuration list",
-      })
-    })
-  }, [uploadedConfigToDelete])
+  }, [])
 
   const handleDelete = async (): Promise<void> => {
     if (localConfigToDelete) {
@@ -91,125 +53,7 @@ const ConfigurationList = (): JSX.Element => {
       setDeleteConfigModalVisible(false)
       setLocalConfigToDelete(undefined)
     }
-    if (uploadedConfigToDelete) {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/configurations/${uploadedConfigToDelete}`, {
-        method: "DELETE",
-        credentials: "include",
-      })
-      const responseContent = await response.text()
-      if (response.ok) {
-        notification.success({
-          duration: 3,
-          message: "Delete",
-          description: responseContent,
-        })
-      } else {
-        notification.error({
-          duration: 3,
-          message: "Delete",
-          description: responseContent,
-        })
-      }
-      setDeleteConfigModalVisible(false)
-      setUploadedConfigToDelete(undefined)
-    }
   }
-
-  const uploadedColumns = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-    },
-    {
-      title: "Creation date",
-      dataIndex: "created_at",
-      key: "created_at",
-      render: (timestamp: number) => {
-        return new Date(timestamp * 1000).toLocaleString()
-      },
-    },
-    {
-      title: "Hash",
-      dataIndex: "hash",
-      key: "hash",
-      render: (hash: string) => {
-        return hash.substring(0, 9)
-      },
-    },
-    {
-      title: "Step",
-      dataIndex: "step",
-      key: "step",
-      render: (step: Step) => {
-        switch (step) {
-          case "finetuning":
-            return (
-              <div className="pending">
-                <ToolOutlined />
-                <span className="step">Fine-tuning pending</span>
-              </div>
-            )
-          case "finalized":
-            return (
-              <div className="finalized">
-                <CheckCircleOutlined />
-                <span className="step">Finalized</span>
-              </div>
-            )
-          case "finetuned":
-            return (
-              <div className="finalized">
-                <CheckCircleOutlined />
-                <span className="step">Fine-tuned</span>
-              </div>
-            )
-        }
-      },
-    },
-    {
-      title: "",
-      key: "options",
-      width: 100,
-      render: (configuration: UploadedConfigurationInfo) => {
-        const finetuned = configuration.step === "finetuned"
-        const handleSelect = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
-          e.stopPropagation()
-          navigate(paths_config.configuration + `/${configuration.uuid}`, { state: { step: "finalized" } })
-        }
-
-        const handleDownload = (): void => {
-          downloadUploadedConfiguration(configuration.uuid)
-        }
-        const items = [
-          { label: "Download Configuration", key: "download", onClick: handleDownload, disabled: finetuned },
-          {
-            label: "Delete uploaded configuration",
-            key: "delete",
-            danger: true,
-            onClick: () => {
-              setDeleteConfigModalVisible(true)
-              setUploadedConfigToDelete(configuration.uuid)
-            },
-            icon: <IoTrashOutline />,
-          },
-        ]
-
-        return (
-          <Space>
-            <Button type="dark" onClick={(e) => handleSelect(e)} disabled={finetuned}>
-              Details
-            </Button>
-            <Dropdown menu={{ items }} placement="bottomRight" trigger={["hover"]}>
-              <div>
-                <OptionButton />
-              </div>
-            </Dropdown>
-          </Space>
-        )
-      },
-    },
-  ]
 
   const localColumns = [
     {
@@ -234,7 +78,7 @@ const ConfigurationList = (): JSX.Element => {
       render: (configuration: ConfigurationInfo) => {
         const handleSelect = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
           e.stopPropagation()
-          navigate(paths_config.configuration + `/${configuration.uuid}`, { state: { step: "local" } })
+          navigate(paths_config.configuration + `/${configuration.uuid}`)
         }
 
         const handleDownload = (): void => {
@@ -322,14 +166,6 @@ const ConfigurationList = (): JSX.Element => {
           Create Configuration
         </Button>
       </Space>
-      <RoundedFrame>
-        <h2 className="h4">
-          <CloudServerOutlined style={{ marginRight: ".5em" }} />
-          Uploaded Configuration
-        </h2>
-        <p>List of configurations on your Microservice Encryption server. You can read, download or delete these configurations.</p>
-        <Table rowKey={"uuid"} dataSource={uploadedConfigList} columns={uploadedColumns} pagination={false} />
-      </RoundedFrame>
       <RoundedFrame>
         <h2 className="h4">
           <DesktopOutlined style={{ marginRight: ".5em" }} />

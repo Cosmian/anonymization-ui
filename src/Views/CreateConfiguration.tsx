@@ -60,7 +60,7 @@ const CreateConfiguration = (): JSX.Element => {
           metadata: fileMetadata,
           configurationInfo: { name, created_at: new Date().toLocaleString(), file: fileInfo?.name, uuid, delimiter },
         })
-        navigate(paths_config.configuration + `/${uuid}`, { state: { step: "local" } })
+        navigate(paths_config.configuration + `/${uuid}`)
       } catch (error) {
         notification.error({
           duration: 3,
@@ -74,7 +74,7 @@ const CreateConfiguration = (): JSX.Element => {
 
   return (
     <div className="create">
-      <BackArrow onClick={() => navigate(paths_config.configurationList)} text="Back to configurations list" />
+      <BackArrow onClick={() => navigate(paths_config.home)} text="Back to configurations list" />
       <h1>Create configuration file</h1>
       <RoundedFrame>
         <h2 className="h4">1. Configuration information</h2>

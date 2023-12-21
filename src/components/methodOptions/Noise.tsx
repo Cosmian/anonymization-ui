@@ -1,37 +1,29 @@
 import { Checkbox, Form, FormInstance, InputNumber, Select, Tag } from "antd"
 import { useEffect, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
-import { Step } from "../../utils/utils"
-import { getMethodOptions } from "../EditMethodBox"
 
 interface NoiseOptionsProps {
   form: FormInstance
   columns: string[]
   getCorrelatedColumns: (uuid: string) => string[]
-  step: Step
 }
 
 interface NoiseSubOptionsProps {
   form: FormInstance
   distribution: "Gaussian" | "Laplace" | "Uniform"
-  fineTuning: boolean
-  step: Step
 }
 
 interface DurationInputProps {
   label: string
   name: string
-  fineTuning: boolean
-  step: Step
 }
 
-export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form, columns, getCorrelatedColumns, step }) => {
+export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form, columns, getCorrelatedColumns }) => {
   const [correlatedColumns, setCorrelatedColumns] = useState<string[]>([])
   const distribution = form.getFieldValue(["methodOptions", "distribution"])
   const correlationId: string = form.getFieldValue(["methodOptions", "correlation"])
   const dataType = form.getFieldValue("columnType")
   const correlated = form.getFieldValue(["methodOptions", "correlation"]) && correlatedColumns.length !== 0
-  const fineTuning = form.getFieldValue(["methodOptions", "fineTuning"])
 
   useEffect(() => {
     setCorrelatedColumns(getCorrelatedColumns(correlationId))
@@ -69,7 +61,7 @@ export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form, columns, getCo
           name={["methodOptions", "correlation"]}
         >
           <>
-            <Checkbox onChange={() => setUuidCorrelation()} disabled={columns.length < 2 || step === "finetuning"}>
+            <Checkbox onChange={() => setUuidCorrelation()} disabled={columns.length < 2}>
               Apply correlated noise for columns:
             </Checkbox>
             {columns.map((name, index) => (
@@ -85,47 +77,34 @@ export const NoiseOptions: React.FC<NoiseOptionsProps> = ({ form, columns, getCo
           ))}
         </b>
       )}
-      <Form.Item name={["methodOptions", "fineTuning"]} valuePropName="checked">
-        <Checkbox
-          checked={false}
-          disabled={step === "finetuning"}
-          // if finetuned is checked, inner form Items will be hidden but can be empty (differents options selected) - this will fill methodOptions with default values when checking fineTuning.
-          onChange={() => form.setFieldsValue({ methodOptions: getMethodOptions(form.getFieldValue("columnMethod")) })}
-        >
-          This method needs fine-tuning
-        </Checkbox>
-      </Form.Item>
       <Form.Item
         name={["methodOptions", "distribution"]}
         label="Distribution"
-        hidden={form.getFieldValue(["methodOptions", "fineTuning"]) && step === "local"}
         rules={[{ required: true, message: "Please select a value" }]}
       >
         <Select options={noiseFormOptions} />
       </Form.Item>
       {dataType === "Date" ? (
-        <NoiseDateOptions form={form} distribution={distribution} fineTuning={fineTuning} step={step} />
+        <NoiseDateOptions form={form} distribution={distribution} />
       ) : (
-        <NoiseNumberOptions form={form} distribution={distribution} fineTuning={fineTuning} step={step} />
+        <NoiseNumberOptions form={form} distribution={distribution} />
       )}
     </>
   )
 }
 
-const NoiseNumberOptions: React.FC<NoiseSubOptionsProps> = ({ form, distribution, fineTuning, step }) => {
-  const hiddenOptions: boolean = fineTuning && step === "local"
+const NoiseNumberOptions: React.FC<NoiseSubOptionsProps> = ({ form, distribution }) => {
   return (
     <>
       <div className="box">
         {distribution !== "Uniform" ? (
           <>
-            {!hiddenOptions && <div className="subtitle">Distribution's parameters:</div>}
+            {<div className="subtitle">Distribution's parameters:</div>}
             <Form.Item
               name={["methodOptions", "mean"]}
               label="Mean"
               className="option-parameter"
               rules={[{ required: true, message: "Please provide a value" }]}
-              hidden={hiddenOptions}
             >
               <InputNumber min={0} step={1} precision={1} />
             </Form.Item>
@@ -134,20 +113,18 @@ const NoiseNumberOptions: React.FC<NoiseSubOptionsProps> = ({ form, distribution
               label="Standard deviation"
               className="option-parameter"
               rules={[{ required: true, message: "Please provide a value" }]}
-              hidden={hiddenOptions}
             >
               <InputNumber min={0} step={1} precision={1} />
             </Form.Item>
           </>
         ) : (
           <>
-            {!hiddenOptions && <div className="subtitle">Distribution's range:</div>}
+            {<div className="subtitle">Distribution's range:</div>}
             <Form.Item
               name={["methodOptions", "lowerBoundary"]}
               label="Minimum"
               className="option-parameter"
               rules={[{ required: true, message: "Please provide a boundary" }]}
-              hidden={hiddenOptions}
             >
               <InputNumber min={0} step={1} precision={1} />
             </Form.Item>
@@ -156,7 +133,6 @@ const NoiseNumberOptions: React.FC<NoiseSubOptionsProps> = ({ form, distribution
               label="Maximum"
               className="option-parameter"
               rules={[{ required: true, message: "Please provide a boundary" }]}
-              hidden={hiddenOptions}
             >
               <InputNumber min={form.getFieldValue(["methodOptions", "lowerBoundary"])} step={1} precision={1} />
             </Form.Item>
@@ -167,9 +143,9 @@ const NoiseNumberOptions: React.FC<NoiseSubOptionsProps> = ({ form, distribution
   )
 }
 
-const DurationInput: React.FC<DurationInputProps> = ({ label, name, fineTuning, step }) => {
+const DurationInput: React.FC<DurationInputProps> = ({ label, name }) => {
   return (
-    <Form.Item label={label} className="option-parameter input-inline" hidden={fineTuning && step === "local"}>
+    <Form.Item label={label} className="option-parameter input-inline">
       <>
         <Form.Item name={["methodOptions", name, "precision"]} rules={[{ required: true, message: "Please provide a value" }]}>
           <InputNumber min={0} step={1} precision={1} />
@@ -190,21 +166,20 @@ const DurationInput: React.FC<DurationInputProps> = ({ label, name, fineTuning, 
   )
 }
 
-const NoiseDateOptions: React.FC<NoiseSubOptionsProps> = ({ distribution, fineTuning, step }) => {
-  const hiddenOptions: boolean = fineTuning && step === "local"
+const NoiseDateOptions: React.FC<NoiseSubOptionsProps> = ({ distribution }) => {
   return (
     <div className="box">
       {distribution !== "Uniform" ? (
         <>
-          {!hiddenOptions && <div className="subtitle">Distribution's parameters:</div>}
-          <DurationInput label="Mean" name="mean" fineTuning={fineTuning} step={step} />
-          <DurationInput label="Standard deviation" name="stdDev" fineTuning={fineTuning} step={step} />
+          {<div className="subtitle">Distribution's parameters:</div>}
+          <DurationInput label="Mean" name="mean" />
+          <DurationInput label="Standard deviation" name="stdDev" />
         </>
       ) : (
         <>
-          {!hiddenOptions && <div className="subtitle">Distribution's range:</div>}
-          <DurationInput label="Lower boundary" name="lowerBoundary" fineTuning={fineTuning} step={step} />
-          <DurationInput label="Upper boundary" name="upperBoundary" fineTuning={fineTuning} step={step} />
+          {<div className="subtitle">Distribution's range:</div>}
+          <DurationInput label="Lower boundary" name="lowerBoundary" />
+          <DurationInput label="Upper boundary" name="upperBoundary" />
         </>
       )}
     </div>
